@@ -33,7 +33,11 @@ const CREDITS: [string, string, string][] = [
 
 const TABS: [SettingsTab, string][] = [['general', 'General'], ['alerts', 'Alerts'], ['locations', 'Locations'], ['radar', 'Radar'], ['data', 'Connections']];
 
-export function SettingsScreen({ weather, place, gpsError }: ScreenProps & { gpsError: string | null }) {
+export function SettingsScreen({ weather, place, gpsError, onReplayTour, onShowWhatsNew }: ScreenProps & {
+  gpsError: string | null;
+  onReplayTour: () => void;
+  onShowWhatsNew: () => void;
+}) {
   const { s, set } = useSettings();
   return (
     <div className="screen settings">
@@ -58,6 +62,11 @@ export function SettingsScreen({ weather, place, gpsError }: ScreenProps & { gps
         <div className="field">
           <Label>Temperature units</Label>
           <Segmented<Units> value={s.units} onChange={units => set({ units })} options={[['F', '°F'], ['C', '°C']]} className="start" />
+        </div>
+        <div className="field">
+          <Label>Sky Peek guide</Label>
+          <button type="button" className="link" onClick={onReplayTour}>Replay welcome tour</button>
+          <button type="button" className="link quiet" onClick={onShowWhatsNew}>What’s new</button>
         </div>
         {process.env.NODE_ENV === 'production' && <div className="field">
           <Label>Beta access</Label>

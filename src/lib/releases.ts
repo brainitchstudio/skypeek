@@ -1,0 +1,35 @@
+import { version as APP_VERSION } from '../../package.json';
+
+export { APP_VERSION };
+
+export type Release = { version: string; title: string; changes: string[] };
+
+// Add an entry when package.json's version moves forward. Versions skipped by a
+// visitor are shown together the next time they open the app.
+export const RELEASES: Release[] = [
+  {
+    version: '0.2.0',
+    title: 'A new first look',
+    changes: [
+      'A guided tour introduces the forecast, radar, alerts, and settings.',
+      'The beta entrance now opens with a changing time of day and weather scene.',
+      'The radar map now loads reliably on the hosted app.',
+    ],
+  },
+];
+
+export function compareVersions(a: string, b: string) {
+  const left = a.split('.').map(Number);
+  const right = b.split('.').map(Number);
+  for (let i = 0; i < Math.max(left.length, right.length); i++) {
+    const difference = (left[i] || 0) - (right[i] || 0);
+    if (difference) return Math.sign(difference);
+  }
+  return 0;
+}
+
+export function unseenReleases(lastSeen: string | null, current = APP_VERSION) {
+  if (lastSeen && compareVersions(current, lastSeen) <= 0) return [];
+  return RELEASES.filter(release => compareVersions(release.version, lastSeen ?? '0.0.0') > 0 && compareVersions(release.version, current) <= 0)
+    .sort((a, b) => compareVersions(b.version, a.version));
+}
