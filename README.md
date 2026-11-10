@@ -51,7 +51,8 @@ This public repository contains the source. The app itself uses a server side be
 
 | Server only variable | Purpose |
 | --- | --- |
-| `BETA_ACCESS_CODE` | A shared fallback code for testers. |
+| `BETA_ACCESS_CODE_HASHES` | Comma-separated salted hashes of shared access codes. Takes priority over `BETA_ACCESS_CODE`. |
+| `BETA_ACCESS_CODE` | Optional plaintext fallback for older deployments; remove it after setting the hash. |
 | `BETA_SESSION_SECRET` | Signs access sessions and generated codes. |
 | `BETA_ADMIN_CODE` | Opens the owner code manager at `/beta-admin`. |
 

@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { scryptSync } from 'node:crypto';
 import { acceptsBetaAdminCode, acceptsBetaCode, betaAdminReady, betaGateState, BETA_SESSION_SECONDS, generateBetaInvite, issueBetaAdminSession, issueBetaSession, validBetaAdminSession, validBetaInvite, validBetaSession } from './betaGate';
 
 const CODE = 'rainy-foxes-visit-2026';
@@ -8,6 +9,7 @@ describe('beta gate', () => {
   beforeEach(() => {
     vi.stubEnv('NODE_ENV', 'production');
     vi.stubEnv('BETA_ACCESS_CODE', CODE);
+    vi.stubEnv('BETA_ACCESS_CODE_HASHES', '');
     vi.stubEnv('BETA_SESSION_SECRET', SECRET);
     vi.stubEnv('BETA_ADMIN_CODE', 'owner-only-code-with-high-entropy-2026');
   });
@@ -37,9 +39,35 @@ describe('beta gate', () => {
     expect(validBetaSession(cookie)).toBe(false);
   });
 
+  it('accepts multiple salted hashes instead of the old plaintext code', () => {
+    const replacement = 'another-private-beta-code';
+    const salt = '0123456789abcdef0123456789abcdef';
+    const hash = scryptSync(replacement, Buffer.from(salt, 'hex'), 32).toString('hex');
+    const second = 'rainfox';
+    const secondSalt = 'fedcba9876543210fedcba9876543210';
+    const secondHash = scryptSync(second, Buffer.from(secondSalt, 'hex'), 32).toString('hex');
+    const oldSession = issueBetaSession();
+    vi.stubEnv('BETA_ACCESS_CODE_HASHES', `scrypt$${salt}$${hash},scrypt$${secondSalt}$${secondHash}`);
+    expect(betaGateState()).toBe('ready');
+    expect(acceptsBetaCode(replacement)).toBe(true);
+    expect(acceptsBetaCode(second)).toBe(true);
+    expect(acceptsBetaCode(CODE)).toBe(false);
+    expect(validBetaSession(oldSession)).toBe(false);
+    expect(validBetaSession(issueBetaSession())).toBe(true);
+    expect(betaAdminReady()).toBe(true);
+    expect(acceptsBetaCode(generateBetaInvite(7))).toBe(true);
+  });
+
+  it('fails closed for a malformed hash even when a plaintext code exists', () => {
+    vi.stubEnv('BETA_ACCESS_CODE_HASHES', 'invalid-hash');
+    expect(betaGateState()).toBe('misconfigured');
+    expect(acceptsBetaCode(CODE)).toBe(false);
+  });
+
   it('leaves local development open when no gate is configured', () => {
     vi.stubEnv('NODE_ENV', 'development');
     vi.stubEnv('BETA_ACCESS_CODE', '');
+    vi.stubEnv('BETA_ACCESS_CODE_HASHES', '');
     vi.stubEnv('BETA_SESSION_SECRET', '');
     expect(betaGateState()).toBe('open');
   });

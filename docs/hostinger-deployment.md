@@ -45,11 +45,12 @@ Before starting the production app, add these **runtime** variables in Hostinger
 
 | Variable | Value |
 | --- | --- |
-| `BETA_ACCESS_CODE` | A unique shared fallback code of at least 12 characters. Generate a random one with `openssl rand -hex 16`; share it only if you want a common code for all testers. |
+| `BETA_ACCESS_CODE_HASHES` | Comma-separated salted `scrypt` hashes of shared access codes. This takes priority over `BETA_ACCESS_CODE`, so those codes do not need to be stored as plaintext. |
+| `BETA_ACCESS_CODE` | Legacy plaintext fallback, at least 12 characters. Remove it after configuring the hash. |
 | `BETA_SESSION_SECRET` | An independent random signing secret of at least 32 characters. Generate with `openssl rand -hex 32`; never share it. |
 | `BETA_ADMIN_CODE` | Your private owner code for `/beta-admin`, at least 20 characters. Generate independently with `openssl rand -hex 24`; never share it with testers. |
 
-Do not prefix these names with `NEXT_PUBLIC_` or commit the values to GitHub. The tracked `.env.example` contains names only. If the shared code or signing secret is missing or too short, the production app returns a temporary-unavailable message instead of opening the beta. If the owner code is missing, normal beta access still works but `/beta-admin` cannot generate codes. Local `npm run dev` remains open when no gate variables are set. A tester session lasts seven days. Changing the shared code or signing secret invalidates existing tester sessions; changing the signing secret also invalidates generated codes. Changing the owner code invalidates owner sessions. [Restart the Node.js app](https://www.hostinger.com/support/how-to-edit-or-add-environment-variables-after-deployment/) after changing runtime variables.
+Do not prefix these names with `NEXT_PUBLIC_` or commit the values to GitHub. The tracked `.env.example` contains names only. Set either valid hashes or a plaintext fallback code, plus the signing secret. A malformed nonempty hash list fails closed even if a plaintext code remains. If the shared codes or signing secret are missing or invalid, the production app returns a temporary-unavailable message instead of opening the beta. If the owner code is missing, normal beta access still works but `/beta-admin` cannot generate codes. Local `npm run dev` remains open when no gate variables are set. A tester session lasts seven days. Changing the shared codes or signing secret invalidates existing tester sessions; changing the signing secret also invalidates generated codes. Changing the owner code invalidates owner sessions. [Restart the Node.js app](https://www.hostinger.com/support/how-to-edit-or-add-environment-variables-after-deployment/) after changing runtime variables.
 
 ### Generate codes after deployment
 

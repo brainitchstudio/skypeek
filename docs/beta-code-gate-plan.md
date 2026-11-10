@@ -4,7 +4,7 @@ Status: implemented locally. Production deployment on Hostinger still needs to b
 
 ## Tester access
 
-Visitors enter a code at `/access`. A valid code creates a signed, `HttpOnly`, `Secure`, `SameSite=Lax` cookie lasting up to seven days. Next.js Proxy redirects anonymous page requests to `/access` and returns `401` for protected API requests. The app also supports one shared fallback code from `BETA_ACCESS_CODE`.
+Visitors enter a code at `/access`. A valid code creates a signed, `HttpOnly`, `Secure`, `SameSite=Lax` cookie lasting up to seven days. Next.js Proxy redirects anonymous page requests to `/access` and returns `401` for protected API requests. The app supports multiple shared access codes as comma-separated salted hashes in `BETA_ACCESS_CODE_HASHES` in the hosting environment. The older plaintext `BETA_ACCESS_CODE` works only when no hash is set.
 
 The gate keeps casual visitors out of a small beta. It does not hide client JavaScript or public weather sources, and it is not an account system. Testers can share codes with others. Data such as saved places, optional weather-provider keys and diagnostics remain in each tester's browser.
 

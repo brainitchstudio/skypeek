@@ -144,7 +144,7 @@ export function BetaScene({ time, weather, invalid, unavailable }: {
       {unavailable ? <p className="sp-error" role="alert">Beta access is temporarily unavailable.</p> : <>
         <form action="/api/access" method="post" className="sp-form">
           <label htmlFor="beta-code" className="sp-sr-only">Beta code</label>
-          <input id="beta-code" className="sp-code" name="code" type="password" autoComplete="off" placeholder="Enter code" required minLength={12} maxLength={128} aria-invalid={invalid} aria-describedby={invalid ? 'access-error' : undefined} />
+          <input id="beta-code" className="sp-code" name="code" type="password" autoComplete="off" placeholder="Enter code" required maxLength={128} aria-invalid={invalid} aria-describedby={invalid ? 'access-error' : undefined} />
           <button type="submit" className="sp-enter">Enter <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg></button>
         </form>
         {invalid && <p id="access-error" className="sp-error" role="alert">That code didn’t work. Check it and try again.</p>}

@@ -1,4 +1,4 @@
-import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 
 export const BETA_COOKIE = '__Host-sky-peek-beta';
 export const BETA_COOKIE_DEV = 'sky-peek-beta-dev';
@@ -8,7 +8,13 @@ export const BETA_SESSION_SECONDS = 7 * 24 * 60 * 60;
 export const BETA_ADMIN_SESSION_SECONDS = 12 * 60 * 60;
 export const MAX_INVITE_DAYS = 90;
 
-type GateConfig = { code: string; secret: string };
+type GateConfig = { code: string; secret: string; hashes: string[] | null };
+const HASH_PATTERN = /^scrypt\$([a-f0-9]{32})\$([a-f0-9]{64})$/;
+
+function configuredHashes() {
+  const value = process.env.BETA_ACCESS_CODE_HASHES;
+  return value ? value.split(',').map(hash => hash.trim()) : null;
+}
 
 export function betaCookieName() {
   return process.env.NODE_ENV === 'production' ? BETA_COOKIE : BETA_COOKIE_DEV;
@@ -20,14 +26,26 @@ export function betaAdminCookieName() {
 
 export function betaGateState(): 'open' | 'ready' | 'misconfigured' {
   const code = process.env.BETA_ACCESS_CODE;
+  const hashes = configuredHashes();
   const secret = process.env.BETA_SESSION_SECRET;
-  if (process.env.NODE_ENV !== 'production' && !code && !secret) return 'open';
-  return code && code.length >= 12 && secret && secret.length >= 32 ? 'ready' : 'misconfigured';
+  if (process.env.NODE_ENV !== 'production' && !code && !hashes && !secret) return 'open';
+  const credentialReady = hashes ? hashes.every(hash => HASH_PATTERN.test(hash)) : !!code && code.length >= 12;
+  return credentialReady && !!secret && secret.length >= 32 ? 'ready' : 'misconfigured';
 }
 
 function config(): GateConfig | null {
   if (betaGateState() !== 'ready') return null;
-  return { code: process.env.BETA_ACCESS_CODE!, secret: process.env.BETA_SESSION_SECRET! };
+  const hashes = configuredHashes();
+  return { code: hashes?.join(',') || process.env.BETA_ACCESS_CODE!, secret: process.env.BETA_SESSION_SECRET!, hashes };
+}
+
+function matchesSharedCode(input: string, current: GateConfig) {
+  if (!current.hashes) return equal(input, current.code);
+  return current.hashes.some(hash => {
+    const match = HASH_PATTERN.exec(hash)!;
+    const actual = scryptSync(input, Buffer.from(match[1], 'hex'), 32);
+    return timingSafeEqual(actual, Buffer.from(match[2], 'hex'));
+  });
 }
 
 function equal(a: string, b: string) {
@@ -88,7 +106,7 @@ export function validBetaInvite(value: string, now = Date.now()) {
 
 export function acceptsBetaCode(input: string, now = Date.now()) {
   const current = config();
-  return !!current && input.length <= 128 && (equal(input, current.code) || validBetaInvite(input, now));
+  return !!current && input.length <= 128 && (matchesSharedCode(input, current) || validBetaInvite(input, now));
 }
 
 function signature(payload: string, current: GateConfig) {
