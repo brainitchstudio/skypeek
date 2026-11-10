@@ -36,6 +36,12 @@
   backdrop-filter: blur(20px);
 }
 .onboard-dialog .onboard-location-panel { overflow: visible; }
+.onboard-dialog .onboard-tour-panel { width: min(640px, calc(100vw - 32px)); padding: clamp(20px, 3vw, 30px); }
+.onboard-preview { width: 100%; overflow: hidden; border: 1px solid #dce6eb; border-radius: 15px; background: #f4f7f9; box-shadow: 0 8px 24px #17324d18; }
+.onboard-preview picture { display: block; }
+.onboard-preview img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+.onboard-preview-caption { margin: 7px 0 22px; color: #6c8493; font-size: 11px; text-align: center; }
+.onboard-step-label { display: flex; align-items: center; gap: 8px; }
 .onboard-icon { display: grid; width: 48px; height: 48px; place-items: center; margin-bottom: 24px; border-radius: 15px; background: #e6f3fb; color: #17648e; }
 .onboard-overline { margin-bottom: 10px; color: #3b718f; font-size: 11px; font-weight: 800; letter-spacing: .13em; }
 .onboard-dialog h2 { margin: 0 0 12px; font-size: clamp(27px, 5vw, 36px); font-weight: 700; letter-spacing: -.04em; line-height: 1.1; }
@@ -64,7 +70,17 @@
 .onboard-results button span, .onboard-search-status { color: #657b88; font-size: 13px; }
 .onboard-search-status { padding: 12px; }
 .onboard-dialog .onboard-location-note { margin-top: 16px; font-size: 13px; }
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .onboard-dialog .onboard-panel { padding: 24px; border-radius: 20px; }
+  .onboard-dialog .onboard-tour-panel { padding: 18px; }
+  .onboard-preview { border-radius: 11px; }
+  .onboard-preview img { height: min(31dvh, 240px); aspect-ratio: auto; object-position: center 35%; }
+  .onboard-preview[data-screen="radar"] img { object-position: center 20%; }
+  .onboard-preview[data-screen="alerts"] img, .onboard-preview[data-screen="settings"] img { object-position: center top; }
+  .onboard-preview-caption { margin: 7px 0 14px; }
+  .onboard-step-label { font-size: 10px; }
+  .onboard-dialog .onboard-tour-panel h2 { font-size: 25px; }
+  .onboard-dialog .onboard-tour-panel p { font-size: 14px; }
+  .onboard-tour-panel .onboard-progress { margin: 18px 0; }
   .onboard-actions button { padding: 9px 12px; font-size: 13px; }
 }

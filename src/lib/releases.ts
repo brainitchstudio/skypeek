@@ -8,6 +8,14 @@ export type Release = { version: string; title: string; changes: string[] };
 // visitor are shown together the next time they open the app.
 export const RELEASES: Release[] = [
   {
+    version: '0.3.0',
+    title: 'See Sky Peek before you explore',
+    changes: [
+      'The welcome tour now shows real desktop and mobile previews of each main screen.',
+      'Location suggestions float over the welcome card while you search.',
+    ],
+  },
+  {
     version: '0.2.0',
     title: 'A new first look',
     changes: [

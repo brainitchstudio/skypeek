@@ -11,14 +11,14 @@ import { usePlaceSearch } from '@/lib/usePlaceSearch';
 import '@/app/access/beta-scene.css';
 import './onboarding.css';
 
-type TourStep = { screen: Screen; title: string; description: string; icon: LucideIcon };
+type TourStep = { screen: Screen; title: string; description: string; icon: LucideIcon; preview: string; previewAlt: string };
 export const TOUR_STEPS: TourStep[] = [
-  { screen: 'today', title: 'Your weather at a glance', description: 'See current conditions, the day’s range, and what is coming next for your chosen place.', icon: Sun },
-  { screen: 'hourly', title: 'Follow the next hours', description: 'Move through temperature, precipitation chances, and wind as the day changes.', icon: ChartNoAxesColumn },
-  { screen: 'days', title: 'Plan farther ahead', description: 'Compare the next ten days and open a day for a closer look.', icon: CalendarDays },
-  { screen: 'radar', title: 'Explore the radar', description: 'Watch recent rain, switch map layers, and use SpotCheck to inspect a place or storm.', icon: Radar },
-  { screen: 'alerts', title: 'Know when weather matters', description: 'Read official warnings and advisories that affect your area.', icon: TriangleAlert },
-  { screen: 'settings', title: 'Make Sky Peek yours', description: 'Save places, choose your units, and set alert and radar preferences.', icon: Settings },
+  { screen: 'today', title: 'Your weather at a glance', description: 'See current conditions, the day’s range, and what is coming next for your chosen place.', icon: Sun, preview: 'today', previewAlt: 'Today screen showing current conditions and the next hours for Brooklyn, New York' },
+  { screen: 'hourly', title: 'Follow the next hours', description: 'Move through temperature, precipitation chances, and wind as the day changes.', icon: ChartNoAxesColumn, preview: 'hourly', previewAlt: 'Hourly screen showing an hour-by-hour forecast' },
+  { screen: 'days', title: 'Plan farther ahead', description: 'Compare the next ten days and open a day for a closer look.', icon: CalendarDays, preview: 'days', previewAlt: '10 Day screen comparing daily temperatures and rain chances' },
+  { screen: 'radar', title: 'Explore the radar', description: 'Watch recent rain, switch map layers, and use SpotCheck to inspect a place or storm.', icon: Radar, preview: 'radar', previewAlt: 'Radar screen showing the map, timeline, and map layer controls' },
+  { screen: 'alerts', title: 'Know when weather matters', description: 'Read official warnings and advisories that affect your area.', icon: TriangleAlert, preview: 'alerts', previewAlt: 'Alerts screen showing the no active alerts state for Brooklyn, New York' },
+  { screen: 'settings', title: 'Make Sky Peek yours', description: 'Save places, choose your units, and set alert and radar preferences.', icon: Settings, preview: 'settings', previewAlt: 'Settings screen showing saved locations and the main location' },
 ];
 
 function useModal() {
@@ -37,15 +37,15 @@ const SCENES = [
   ['evening', 'rain'], ['night', 'storm'], ['morning', 'fog'], ['night', 'clear'],
 ] as const;
 
-function OnboardingFrame({ children, scene = 0, titleId, onCancel, location = false }: {
-  children: ReactNode; scene?: number; titleId: string; onCancel: () => void; location?: boolean;
+function OnboardingFrame({ children, scene = 0, titleId, onCancel, location = false, tour = false }: {
+  children: ReactNode; scene?: number; titleId: string; onCancel: () => void; location?: boolean; tour?: boolean;
 }) {
   const ref = useModal();
   const [time, weather] = SCENES[scene];
   return <dialog ref={ref} className="onboard-dialog" aria-labelledby={titleId}
     onCancel={event => { event.preventDefault(); onCancel(); }}>
     <BetaScene time={time} weather={weather} backdropOnly />
-    <div className={`onboard-panel${location ? ' onboard-location-panel' : ''}`}>{children}</div>
+    <div className={`onboard-panel${location ? ' onboard-location-panel' : ''}${tour ? ' onboard-tour-panel' : ''}`}>{children}</div>
   </dialog>;
 }
 
@@ -77,9 +77,15 @@ export function WelcomeTour({ step, onBack, onNext, onSkip }: {
 }) {
   const current = TOUR_STEPS[step];
   const Icon = current.icon;
-  return <OnboardingFrame scene={step + 1} titleId="tour-title" onCancel={onSkip}>
-    <div className="onboard-icon"><Icon size={24} strokeWidth={1.8} aria-hidden /></div>
-    <div className="onboard-overline">WELCOME TO SKY PEEK · {step + 1} OF {TOUR_STEPS.length}</div>
+  return <OnboardingFrame scene={step + 1} titleId="tour-title" onCancel={onSkip} tour>
+    <div className="onboard-preview" data-screen={current.screen}>
+      <picture>
+        <source media="(max-width: 600px)" srcSet={`/onboarding/${current.preview}-mobile.jpg`} />
+        <img src={`/onboarding/${current.preview}.jpg`} width={1280} height={720} alt={current.previewAlt} />
+      </picture>
+    </div>
+    <div className="onboard-preview-caption">Sample screen · Your weather and location will differ</div>
+    <div className="onboard-overline onboard-step-label"><Icon size={15} strokeWidth={2} aria-hidden /> WELCOME TO SKY PEEK · {step + 1} OF {TOUR_STEPS.length}</div>
     <h2 id="tour-title">{current.title}</h2>
     <p>{current.description}</p>
     <div className="onboard-progress" aria-label={`Step ${step + 1} of ${TOUR_STEPS.length}`}>
