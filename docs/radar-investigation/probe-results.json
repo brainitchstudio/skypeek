@@ -1,0 +1,348 @@
+[
+  {
+    "name": "klot-capabilities",
+    "url": "https://opengeo.ncep.noaa.gov/geoserver/klot/ows?service=WMS&version=1.3.0&request=GetCapabilities",
+    "checkedAt": "2026-11-05T17:18:27.099385+00:00",
+    "status": 200,
+    "headers": {
+      "Server": "Apache-Coyote/1.1",
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-Content-Type-Options": "nosniff",
+      "X-XSS-Protection": "1; mode=block",
+      "Content-Security-Policy": "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';, frame-ancestors 'self';",
+      "Access-Control-Allow-Origin": "*",
+      "Content-Disposition": "inline; filename=getcapabilities_1.3.0.xml",
+      "Content-Type": "text/xml",
+      "Vary": "Accept-Encoding",
+      "Cache-Control": "must-revalidate, max-age=15",
+      "Date": "Thu, 05 Nov 2026 17:18:27 GMT",
+      "Content-Length": "15435",
+      "Connection": "close",
+      "Strict-Transport-Security": "max-age=31536000 ; preload"
+    },
+    "bytes": 15435,
+    "sha256": "09cfc13ecf8557fe90c36fd12004a57b0cfa11e1243c25e73ee778cf184ebfc4",
+    "file": "klot-capabilities.xml",
+    "png": false,
+    "seconds": 0.472,
+    "layers": [
+      {
+        "name": "klot_bdhc",
+        "dimensions": {
+          "time": {
+            "attributes": {
+              "name": "time",
+              "default": "2026-11-05T17:08:56Z",
+              "units": "ISO8601",
+              "nearestValue": "1"
+            },
+            "values": "2026-11-05T15:11:59.000Z,2026-11-05T15:20:59.000Z,2026-11-05T15:29:59.000Z,2026-11-05T15:38:59.000Z,2026-11-05T15:47:58.000Z,2026-11-05T15:56:59.000Z,2026-11-05T16:05:58.000Z,2026-11-05T16:14:58.000Z,2026-11-05T16:23:58.000Z,2026-11-05T16:32:58.000Z,2026-11-05T16:41:57.000Z,2026-11-05T16:50:57.000Z,2026-11-05T16:59:57.000Z,2026-11-05T17:08:56.000Z"
+          }
+        },
+        "styles": [
+          "radar_bdhc"
+        ],
+        "crs": [
+          "EPSG:4326",
+          "CRS:84"
+        ]
+      },
+      {
+        "name": "klot_bdsa",
+        "dimensions": {
+          "time": {
+            "attributes": {
+              "name": "time",
+              "default": "2026-11-05T17:08:56Z",
+              "units": "ISO8601",
+              "nearestValue": "1"
+            },
+            "values": "2026-11-05T15:20:59.000Z,2026-11-05T15:29:59.000Z,2026-11-05T15:38:59.000Z,2026-11-05T15:47:58.000Z,2026-11-05T15:56:59.000Z,2026-11-05T16:05:58.000Z,2026-11-05T16:14:58.000Z,2026-11-05T16:23:58.000Z,2026-11-05T16:32:58.000Z,2026-11-05T16:41:57.000Z,2026-11-05T16:50:57.000Z,2026-11-05T16:59:57.000Z,2026-11-05T17:08:56.000Z"
+          }
+        },
+        "styles": [
+          "radar_bdsa"
+        ],
+        "crs": [
+          "EPSG:4326",
+          "CRS:84"
+        ]
+      },
+      {
+        "name": "klot_boha",
+        "dimensions": {
+          "time": {
+            "attributes": {
+              "name": "time",
+              "default": "2026-11-05T17:08:56Z",
+              "units": "ISO8601",
+              "nearestValue": "1"
+            },
+            "values": "2026-11-05T15:20:59.000Z,2026-11-05T15:29:59.000Z,2026-11-05T15:38:59.000Z,2026-11-05T15:47:58.000Z,2026-11-05T15:56:59.000Z,2026-11-05T16:05:58.000Z,2026-11-05T16:14:58.000Z,2026-11-05T16:23:58.000Z,2026-11-05T16:32:58.000Z,2026-11-05T16:41:57.000Z,2026-11-05T16:50:57.000Z,2026-11-05T16:59:57.000Z,2026-11-05T17:08:56.000Z"
+          }
+        },
+        "styles": [
+          "radar_boha"
+        ],
+        "crs": [
+          "EPSG:4326",
+          "CRS:84"
+        ]
+      },
+      {
+        "name": "klot_sr_bref",
+        "dimensions": {
+          "time": {
+            "attributes": {
+              "name": "time",
+              "default": "2026-11-05T17:08:56Z",
+              "units": "ISO8601",
+              "nearestValue": "1"
+            },
+            "values": "2026-11-05T15:11:59.000Z,2026-11-05T15:20:59.000Z,2026-11-05T15:29:59.000Z,2026-11-05T15:38:59.000Z,2026-11-05T15:47:58.000Z,2026-11-05T15:56:59.000Z,2026-11-05T16:05:58.000Z,2026-11-05T16:14:58.000Z,2026-11-05T16:23:58.000Z,2026-11-05T16:32:58.000Z,2026-11-05T16:41:57.000Z,2026-11-05T16:50:57.000Z,2026-11-05T16:59:57.000Z,2026-11-05T17:08:56.000Z"
+          }
+        },
+        "styles": [
+          "radar_reflectivity"
+        ],
+        "crs": [
+          "EPSG:4326",
+          "CRS:84"
+        ]
+      },
+      {
+        "name": "klot_sr_bvel",
+        "dimensions": {
+          "time": {
+            "attributes": {
+              "name": "time",
+              "default": "2026-11-05T17:08:56Z",
+              "units": "ISO8601",
+              "nearestValue": "1"
+            },
+            "values": "2026-11-05T15:11:59.000Z,2026-11-05T15:20:59.000Z,2026-11-05T15:29:59.000Z,2026-11-05T15:38:59.000Z,2026-11-05T15:47:58.000Z,2026-11-05T15:56:59.000Z,2026-11-05T16:05:58.000Z,2026-11-05T16:14:58.000Z,2026-11-05T16:23:58.000Z,2026-11-05T16:32:58.000Z,2026-11-05T16:41:57.000Z,2026-11-05T16:50:57.000Z,2026-11-05T16:59:57.000Z,2026-11-05T17:08:56.000Z"
+          }
+        },
+        "styles": [
+          "radar_velocity"
+        ],
+        "crs": [
+          "EPSG:4326",
+          "CRS:84"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "klot_sr_bref-latest",
+    "url": "https://opengeo.ncep.noaa.gov/geoserver/klot/ows?service=WMS&version=1.3.0&request=GetMap&layers=klot_sr_bref&styles=&format=image%2Fpng&transparent=true&crs=EPSG%3A3857&width=512&height=512&bbox=-9950000%2C4900000%2C-9500000%2C5350000&time=2026-11-05T17%3A08%3A56.000Z",
+    "checkedAt": "2026-11-05T17:18:27.573604+00:00",
+    "status": 200,
+    "headers": {
+      "Server": "Apache-Coyote/1.1",
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-Content-Type-Options": "nosniff",
+      "X-XSS-Protection": "1; mode=block",
+      "Content-Security-Policy": "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';, frame-ancestors 'self';",
+      "Access-Control-Allow-Origin": "*",
+      "Content-Disposition": "inline; filename=klot-klot_sr_bref.png",
+      "Content-Type": "image/png",
+      "Cache-Control": "must-revalidate, max-age=9000",
+      "Expires": "Thu, 05 Nov 2026 19:48:28 GMT",
+      "Date": "Thu, 05 Nov 2026 17:18:28 GMT",
+      "Transfer-Encoding": "chunked",
+      "Connection": "close",
+      "Strict-Transport-Security": "max-age=31536000 ; preload"
+    },
+    "bytes": 114372,
+    "sha256": "4123ab5cbe25f8998367d92266d23357f4e3df322a80c843e286cb308351f36c",
+    "file": "klot_sr_bref-latest.png",
+    "png": true,
+    "seconds": 0.864
+  },
+  {
+    "name": "klot_sr_bref-oldest",
+    "url": "https://opengeo.ncep.noaa.gov/geoserver/klot/ows?service=WMS&version=1.3.0&request=GetMap&layers=klot_sr_bref&styles=&format=image%2Fpng&transparent=true&crs=EPSG%3A3857&width=512&height=512&bbox=-9950000%2C4900000%2C-9500000%2C5350000&time=2026-11-05T15%3A11%3A59.000Z",
+    "checkedAt": "2026-11-05T17:18:28.437289+00:00",
+    "status": 200,
+    "headers": {
+      "Server": "Apache-Coyote/1.1",
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-Content-Type-Options": "nosniff",
+      "X-XSS-Protection": "1; mode=block",
+      "Content-Security-Policy": "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';, frame-ancestors 'self';",
+      "Access-Control-Allow-Origin": "*",
+      "Content-Disposition": "inline; filename=klot-klot_sr_bref.png",
+      "Content-Type": "image/png",
+      "Cache-Control": "must-revalidate, max-age=9000",
+      "Expires": "Thu, 05 Nov 2026 19:48:29 GMT",
+      "Date": "Thu, 05 Nov 2026 17:18:29 GMT",
+      "Transfer-Encoding": "chunked",
+      "Connection": "close",
+      "Strict-Transport-Security": "max-age=31536000 ; preload"
+    },
+    "bytes": 142406,
+    "sha256": "84e958ab2e564a09654532df57e90e59d210fd17ee9744f874a0979065372524",
+    "file": "klot_sr_bref-oldest.png",
+    "png": true,
+    "seconds": 1.034
+  },
+  {
+    "name": "klot_sr_bvel-latest",
+    "url": "https://opengeo.ncep.noaa.gov/geoserver/klot/ows?service=WMS&version=1.3.0&request=GetMap&layers=klot_sr_bvel&styles=&format=image%2Fpng&transparent=true&crs=EPSG%3A3857&width=512&height=512&bbox=-9950000%2C4900000%2C-9500000%2C5350000&time=2026-11-05T17%3A08%3A56.000Z",
+    "checkedAt": "2026-11-05T17:18:29.471325+00:00",
+    "status": 200,
+    "headers": {
+      "Server": "Apache-Coyote/1.1",
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-Content-Type-Options": "nosniff",
+      "X-XSS-Protection": "1; mode=block",
+      "Content-Security-Policy": "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';, frame-ancestors 'self';",
+      "Access-Control-Allow-Origin": "*",
+      "Content-Disposition": "inline; filename=klot-klot_sr_bvel.png",
+      "Content-Type": "image/png",
+      "Cache-Control": "must-revalidate, max-age=9000",
+      "Expires": "Thu, 05 Nov 2026 19:48:30 GMT",
+      "Date": "Thu, 05 Nov 2026 17:18:30 GMT",
+      "Transfer-Encoding": "chunked",
+      "Connection": "close",
+      "Strict-Transport-Security": "max-age=31536000 ; preload"
+    },
+    "bytes": 85656,
+    "sha256": "5405dde3cb6b43a74a76ed0c211ba32de87e54d8a4f7a0903b6e1780147653d8",
+    "file": "klot_sr_bvel-latest.png",
+    "png": true,
+    "seconds": 0.772
+  },
+  {
+    "name": "klot_sr_bvel-oldest",
+    "url": "https://opengeo.ncep.noaa.gov/geoserver/klot/ows?service=WMS&version=1.3.0&request=GetMap&layers=klot_sr_bvel&styles=&format=image%2Fpng&transparent=true&crs=EPSG%3A3857&width=512&height=512&bbox=-9950000%2C4900000%2C-9500000%2C5350000&time=2026-11-05T15%3A11%3A59.000Z",
+    "checkedAt": "2026-11-05T17:18:30.243255+00:00",
+    "status": 200,
+    "headers": {
+      "Server": "Apache-Coyote/1.1",
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-Content-Type-Options": "nosniff",
+      "X-XSS-Protection": "1; mode=block",
+      "Content-Security-Policy": "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';, frame-ancestors 'self';",
+      "Access-Control-Allow-Origin": "*",
+      "Content-Disposition": "inline; filename=klot-klot_sr_bvel.png",
+      "Content-Type": "image/png",
+      "Cache-Control": "must-revalidate, max-age=9000",
+      "Expires": "Thu, 05 Nov 2026 19:48:30 GMT",
+      "Date": "Thu, 05 Nov 2026 17:18:30 GMT",
+      "Content-Length": "111414",
+      "Connection": "close",
+      "Strict-Transport-Security": "max-age=31536000 ; preload"
+    },
+    "bytes": 111414,
+    "sha256": "6a2cafffc3af367bda6cf1394ed3f2f94f9cfe973c32f172fa274bdcc4c3c98b",
+    "file": "klot_sr_bvel-oldest.png",
+    "png": true,
+    "seconds": 0.706
+  },
+  {
+    "name": "conus-capabilities",
+    "url": "https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows?service=WMS&version=1.3.0&request=GetCapabilities",
+    "checkedAt": "2026-11-05T17:18:30.948913+00:00",
+    "status": 200,
+    "headers": {
+      "Server": "Apache-Coyote/1.1",
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-Content-Type-Options": "nosniff",
+      "X-XSS-Protection": "1; mode=block",
+      "Content-Security-Policy": "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';, frame-ancestors 'self';",
+      "Access-Control-Allow-Origin": "*",
+      "Content-Disposition": "inline; filename=getcapabilities_1.3.0.xml",
+      "Content-Type": "text/xml",
+      "Vary": "Accept-Encoding",
+      "Cache-Control": "must-revalidate, max-age=12",
+      "Date": "Thu, 05 Nov 2026 17:18:31 GMT",
+      "Content-Length": "7953",
+      "Connection": "close",
+      "Strict-Transport-Security": "max-age=31536000 ; preload"
+    },
+    "bytes": 7953,
+    "sha256": "5fa468acfe9b50f80e8dc85d35c657c902e462ee735beaf9c7218a59d8273186",
+    "file": "conus-capabilities.xml",
+    "png": false,
+    "seconds": 0.367,
+    "layers": [
+      {
+        "name": "conus_bref_qcd",
+        "dimensions": {
+          "time": {
+            "attributes": {
+              "name": "time",
+              "default": "2026-11-05T17:16:19Z",
+              "units": "ISO8601",
+              "nearestValue": "1"
+            },
+            "values": "2026-11-05T15:18:13.000Z,2026-11-05T15:19:59.000Z,2026-11-05T15:22:07.000Z,2026-11-05T15:23:57.000Z,2026-11-05T15:26:03.000Z,2026-11-05T15:27:55.000Z,2026-11-05T15:29:52.000Z,2026-11-05T15:32:00.000Z,2026-11-05T15:34:04.000Z,2026-11-05T15:36:03.000Z,2026-11-05T15:37:59.000Z,2026-11-05T15:40:09.000Z,2026-11-05T15:41:53.000Z,2026-11-05T15:44:11.000Z,2026-11-05T15:46:09.000Z,2026-11-05T15:47:59.000Z,2026-11-05T15:49:57.000Z,2026-11-05T15:52:08.000Z,2026-11-05T15:54:13.000Z,2026-11-05T15:56:03.000Z,2026-11-05T15:58:10.000Z,2026-11-05T16:00:01.000Z,2026-11-05T16:02:11.000Z,2026-11-05T16:04:04.000Z,2026-11-05T16:06:09.000Z,2026-11-05T16:08:08.000Z,2026-11-05T16:10:07.000Z,2026-11-05T16:12:19.000Z,2026-11-05T16:14:12.000Z,2026-11-05T16:16:07.000Z,2026-11-05T16:18:01.000Z,2026-11-05T16:19:43.000Z,2026-11-05T16:22:07.000Z,2026-11-05T16:23:58.000Z,2026-11-05T16:26:12.000Z,2026-11-05T16:28:13.000Z,2026-11-05T16:30:10.000Z,2026-11-05T16:31:59.000Z,2026-11-05T16:33:53.000Z,2026-11-05T16:35:53.000Z,2026-11-05T16:38:10.000Z,2026-11-05T16:40:12.000Z,2026-11-05T16:42:11.000Z,2026-11-05T16:43:52.000Z,2026-11-05T16:46:11.000Z,2026-11-05T16:47:54.000Z,2026-11-05T16:50:13.000Z,2026-11-05T16:52:13.000Z,2026-11-05T16:53:58.000Z,2026-11-05T16:55:53.000Z,2026-11-05T16:57:58.000Z,2026-11-05T17:00:18.000Z,2026-11-05T17:02:15.000Z,2026-11-05T17:03:55.000Z,2026-11-05T17:06:13.000Z,2026-11-05T17:08:01.000Z,2026-11-05T17:10:03.000Z,2026-11-05T17:12:07.000Z,2026-11-05T17:14:17.000Z,2026-11-05T17:16:19.000Z"
+          }
+        },
+        "styles": [
+          "radar_reflectivity"
+        ],
+        "crs": [
+          "EPSG:4326",
+          "CRS:84"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "conus_bref_qcd-latest",
+    "url": "https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows?service=WMS&version=1.3.0&request=GetMap&layers=conus_bref_qcd&styles=&format=image%2Fpng&transparent=true&crs=EPSG%3A3857&width=512&height=512&bbox=-14000000%2C2800000%2C-7500000%2C6500000&time=2026-11-05T17%3A16%3A19.000Z",
+    "checkedAt": "2026-11-05T17:18:31.318227+00:00",
+    "status": 200,
+    "headers": {
+      "Server": "Apache-Coyote/1.1",
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-Content-Type-Options": "nosniff",
+      "X-XSS-Protection": "1; mode=block",
+      "Content-Security-Policy": "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';, frame-ancestors 'self';",
+      "Access-Control-Allow-Origin": "*",
+      "Content-Disposition": "inline; filename=conus-conus_bref_qcd.png",
+      "Content-Type": "image/png",
+      "Cache-Control": "must-revalidate, max-age=9000",
+      "Expires": "Thu, 05 Nov 2026 19:48:31 GMT",
+      "Date": "Thu, 05 Nov 2026 17:18:31 GMT",
+      "Transfer-Encoding": "chunked",
+      "Connection": "close",
+      "Strict-Transport-Security": "max-age=31536000 ; preload"
+    },
+    "bytes": 51988,
+    "sha256": "cbeb3055aaa7e8e4af145b80f0c1868e5ef136966629dc58925f0856bbcfeedf",
+    "file": "conus_bref_qcd-latest.png",
+    "png": true,
+    "seconds": 0.585
+  },
+  {
+    "name": "conus_bref_qcd-oldest",
+    "url": "https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows?service=WMS&version=1.3.0&request=GetMap&layers=conus_bref_qcd&styles=&format=image%2Fpng&transparent=true&crs=EPSG%3A3857&width=512&height=512&bbox=-14000000%2C2800000%2C-7500000%2C6500000&time=2026-11-05T15%3A18%3A13.000Z",
+    "checkedAt": "2026-11-05T17:18:31.903497+00:00",
+    "status": 200,
+    "headers": {
+      "Server": "Apache-Coyote/1.1",
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-Content-Type-Options": "nosniff",
+      "X-XSS-Protection": "1; mode=block",
+      "Content-Security-Policy": "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';, frame-ancestors 'self';",
+      "Access-Control-Allow-Origin": "*",
+      "Content-Disposition": "inline; filename=conus-conus_bref_qcd.png",
+      "Content-Type": "image/png",
+      "Cache-Control": "must-revalidate, max-age=9000",
+      "Expires": "Thu, 05 Nov 2026 19:48:32 GMT",
+      "Date": "Thu, 05 Nov 2026 17:18:32 GMT",
+      "Transfer-Encoding": "chunked",
+      "Connection": "close",
+      "Strict-Transport-Security": "max-age=31536000 ; preload"
+    },
+    "bytes": 52680,
+    "sha256": "1d6de391b8170b78abc38d69a75aaeb2bb3aff63c6ff81ab03a805f68d2bf832",
+    "file": "conus_bref_qcd-oldest.png",
+    "png": true,
+    "seconds": 0.555
+  }
+]

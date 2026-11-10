@@ -1,0 +1,15 @@
+/* Icon-first radar toolbars: tooltip on hover/focus, popover on click. */
+.rtp-rail button .rtp-tip,.rtp-command button .rtp-tip{display:none;position:absolute;z-index:8;pointer-events:none;background:#111;color:#fff;border-radius:4px;padding:6px 8px;font-size:10px;line-height:1;white-space:nowrap;font-weight:700;box-shadow:0 2px 6px #0002}
+.rtp-rail button .rtp-tip{left:calc(100% + 10px);top:50%;transform:translateY(-50%)}
+.rtp-command button .rtp-tip{left:50%;top:calc(100% + 9px);transform:translateX(-50%)}
+.rtp-rail button:hover:not([aria-expanded="true"]) .rtp-tip,.rtp-rail button:focus-visible:not([aria-expanded="true"]) .rtp-tip,.rtp-command button:hover:not([aria-expanded="true"]) .rtp-tip,.rtp-command button:focus-visible:not([aria-expanded="true"]) .rtp-tip{display:block}
+.rtp-rail button.rtp-selected{background:#111;color:#fff}
+.rtp-command{right:auto;width:auto;max-width:calc(100% - 20px);gap:1px}
+.rtp-command-nav{flex:none;gap:1px}
+.rtp-command button,.rtp-command>button:last-child{width:31px;height:29px;min-width:31px;padding:0;justify-content:center;flex:none}
+.rtp-command button.rtp-selected{background:#111;color:#fff}
+.rtp-command button:hover:not(.rtp-selected){background:#ededed}
+.rtp-command .rtp-alert-dot{top:3px;right:2px}
+.rtp-bar>.rtp-panel{left:10px;top:55px}
+.rtp-mobile-dock button .rtp-tip{display:none}
+@media(max-width:550px){.rtp-command-title{margin:0 6px 0 4px}.rtp-command button,.rtp-command>button:last-child{width:29px;min-width:29px}.rtp-bar>.rtp-panel{left:10px;width:min(235px,calc(100% - 20px))}}

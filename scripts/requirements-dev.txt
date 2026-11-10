@@ -1,0 +1,4 @@
+eccodes
+eccodeslib
+numpy
+pillow

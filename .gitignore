@@ -1,0 +1,15 @@
+node_modules
+.next
+next-env.d.ts
+*.tsbuildinfo
+.DS_Store
+public/maplibre-gl-worker.mjs
+.superpowers
+.claude
+.venv
+.env
+.env.*
+!.env.example
+*.log
+/ChatGPT Image*.png
+/githubready/

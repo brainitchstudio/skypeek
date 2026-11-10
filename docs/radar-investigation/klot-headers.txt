@@ -1,0 +1,16 @@
+HTTP/2 200 
+server: Apache-Coyote/1.1
+x-frame-options: SAMEORIGIN
+x-content-type-options: nosniff
+x-xss-protection: 1; mode=block
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+content-security-policy: base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';, frame-ancestors 'self';
+content-disposition: inline; filename=getcapabilities_1.3.0.xml
+content-type: text/xml
+access-control-allow-origin: *
+cache-control: must-revalidate, max-age=15
+date: Thu, 05 Nov 2026 17:17:43 GMT
+content-length: 15435
+strict-transport-security: max-age=31536000 ; preload
+

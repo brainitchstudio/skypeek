@@ -1,0 +1,938 @@
+[
+  {
+    "id": "KABR",
+    "name": "Aberdeen",
+    "lon": -98.41306,
+    "lat": 45.45583
+  },
+  {
+    "id": "KABX",
+    "name": "La Mesita Negra",
+    "lon": -106.82389,
+    "lat": 35.14972
+  },
+  {
+    "id": "KAKQ",
+    "name": "Wakefield",
+    "lon": -77.0075,
+    "lat": 36.98389
+  },
+  {
+    "id": "KAMA",
+    "name": "Amarillo",
+    "lon": -101.70928,
+    "lat": 35.23333
+  },
+  {
+    "id": "KAMX",
+    "name": "Miami",
+    "lon": -80.41306,
+    "lat": 25.61056
+  },
+  {
+    "id": "KAPX",
+    "name": "Gaylord",
+    "lon": -84.71953,
+    "lat": 44.90635
+  },
+  {
+    "id": "KARX",
+    "name": "La Crosse",
+    "lon": -91.19111,
+    "lat": 43.82278
+  },
+  {
+    "id": "KATX",
+    "name": "Camano Island",
+    "lon": -122.49569,
+    "lat": 48.19461
+  },
+  {
+    "id": "KBBX",
+    "name": "Oroville",
+    "lon": -121.63167,
+    "lat": 39.49611
+  },
+  {
+    "id": "KBGM",
+    "name": "Binghamton",
+    "lon": -75.98472,
+    "lat": 42.19969
+  },
+  {
+    "id": "KBHX",
+    "name": "Bunker Hill",
+    "lon": -124.29217,
+    "lat": 40.49833
+  },
+  {
+    "id": "KBIS",
+    "name": "Bismarck",
+    "lon": -100.76028,
+    "lat": 46.77083
+  },
+  {
+    "id": "KBLX",
+    "name": "Alkali Creek Rd",
+    "lon": -108.60681,
+    "lat": 45.85378
+  },
+  {
+    "id": "KBMX",
+    "name": "Alabaster",
+    "lon": -86.76972,
+    "lat": 33.17194
+  },
+  {
+    "id": "KBOX",
+    "name": "Taunton",
+    "lon": -71.13686,
+    "lat": 41.95578
+  },
+  {
+    "id": "KBRO",
+    "name": "Brownsville",
+    "lon": -97.41861,
+    "lat": 25.91556
+  },
+  {
+    "id": "KBUF",
+    "name": "Cheektowaga",
+    "lon": -78.73694,
+    "lat": 42.94861
+  },
+  {
+    "id": "KBYX",
+    "name": "Key West",
+    "lon": -81.70333,
+    "lat": 24.59694
+  },
+  {
+    "id": "KCAE",
+    "name": "Columbia",
+    "lon": -81.11861,
+    "lat": 33.94861
+  },
+  {
+    "id": "KCBW",
+    "name": "Houlton",
+    "lon": -67.80642,
+    "lat": 46.03917
+  },
+  {
+    "id": "KCBX",
+    "name": "Wild Horse Corral",
+    "lon": -116.23603,
+    "lat": 43.49022
+  },
+  {
+    "id": "KCCX",
+    "name": "Rush",
+    "lon": -78.00389,
+    "lat": 40.92306
+  },
+  {
+    "id": "KCLE",
+    "name": "Cleveland",
+    "lon": -81.86,
+    "lat": 41.41306
+  },
+  {
+    "id": "KCLX",
+    "name": "Grays",
+    "lon": -81.04219,
+    "lat": 32.65553
+  },
+  {
+    "id": "KCRP",
+    "name": "Corpus Christi",
+    "lon": -97.51083,
+    "lat": 27.78389
+  },
+  {
+    "id": "KCXX",
+    "name": "Colchester",
+    "lon": -73.16639,
+    "lat": 44.51111
+  },
+  {
+    "id": "KCYS",
+    "name": "Cheyenne",
+    "lon": -104.80611,
+    "lat": 41.15194
+  },
+  {
+    "id": "KDAX",
+    "name": "Sacramento",
+    "lon": -121.67783,
+    "lat": 38.50111
+  },
+  {
+    "id": "KDDC",
+    "name": "Dodge City",
+    "lon": -99.96889,
+    "lat": 37.76083
+  },
+  {
+    "id": "KDFX",
+    "name": "Brackettville (US Hwy 90)",
+    "lon": -100.28028,
+    "lat": 29.2725
+  },
+  {
+    "id": "KDGX",
+    "name": "Brandon",
+    "lon": -89.98444,
+    "lat": 32.28
+  },
+  {
+    "id": "KDIX",
+    "name": "Manchester",
+    "lon": -74.41072,
+    "lat": 39.94694
+  },
+  {
+    "id": "KDLH",
+    "name": "Duluth",
+    "lon": -92.20972,
+    "lat": 46.83694
+  },
+  {
+    "id": "KDMX",
+    "name": "Johnston",
+    "lon": -93.72286,
+    "lat": 41.73111
+  },
+  {
+    "id": "KDOX",
+    "name": "Ellendale State Forest",
+    "lon": -75.44,
+    "lat": 38.82556
+  },
+  {
+    "id": "KDTX",
+    "name": "White Lake",
+    "lon": -83.47167,
+    "lat": 42.7
+  },
+  {
+    "id": "KDVN",
+    "name": "Davenport",
+    "lon": -90.58083,
+    "lat": 41.61167
+  },
+  {
+    "id": "KDYX",
+    "name": "Moran",
+    "lon": -99.25417,
+    "lat": 32.53833
+  },
+  {
+    "id": "KEAX",
+    "name": "Pleasant Hill",
+    "lon": -94.26447,
+    "lat": 38.81025
+  },
+  {
+    "id": "KEMX",
+    "name": "Empire Mtn",
+    "lon": -110.63028,
+    "lat": 31.89361
+  },
+  {
+    "id": "KENX",
+    "name": "East Berne",
+    "lon": -74.06408,
+    "lat": 42.58656
+  },
+  {
+    "id": "KEOX",
+    "name": "Echo",
+    "lon": -85.45939,
+    "lat": 31.46056
+  },
+  {
+    "id": "KEPZ",
+    "name": "Santa Teresa",
+    "lon": -106.698,
+    "lat": 31.87306
+  },
+  {
+    "id": "KESX",
+    "name": "Opal Mtn",
+    "lon": -114.89139,
+    "lat": 35.70111
+  },
+  {
+    "id": "KEVX",
+    "name": "Redbay",
+    "lon": -85.92167,
+    "lat": 30.56503
+  },
+  {
+    "id": "KEWX",
+    "name": "New Braunfels",
+    "lon": -98.02861,
+    "lat": 29.70406
+  },
+  {
+    "id": "KEYX",
+    "name": "Boron",
+    "lon": -117.56075,
+    "lat": 35.09778
+  },
+  {
+    "id": "KFCX",
+    "name": "Coles Knob",
+    "lon": -80.27417,
+    "lat": 37.02417
+  },
+  {
+    "id": "KFDR",
+    "name": "Frederick",
+    "lon": -98.97667,
+    "lat": 34.36219
+  },
+  {
+    "id": "KFDX",
+    "name": "Field Village (State Rd 89)",
+    "lon": -103.61889,
+    "lat": 34.63417
+  },
+  {
+    "id": "KFFC",
+    "name": "Peachtree City",
+    "lon": -84.56583,
+    "lat": 33.36333
+  },
+  {
+    "id": "KFSD",
+    "name": "Sioux Falls",
+    "lon": -96.72889,
+    "lat": 43.58778
+  },
+  {
+    "id": "KFSX",
+    "name": "Anderson Mesa",
+    "lon": -111.19844,
+    "lat": 34.57433
+  },
+  {
+    "id": "KFTG",
+    "name": "Front Range Arpt",
+    "lon": -104.54581,
+    "lat": 39.78664
+  },
+  {
+    "id": "KFWS",
+    "name": "Fort Worth",
+    "lon": -97.30314,
+    "lat": 32.57278
+  },
+  {
+    "id": "KGGW",
+    "name": "Glasgow",
+    "lon": -106.62469,
+    "lat": 48.20636
+  },
+  {
+    "id": "KGJX",
+    "name": "Grand Mesa",
+    "lon": -108.21376,
+    "lat": 39.06222
+  },
+  {
+    "id": "KGLD",
+    "name": "Goodland",
+    "lon": -101.70028,
+    "lat": 39.36694
+  },
+  {
+    "id": "KGRB",
+    "name": "Ashwaubenon",
+    "lon": -88.11111,
+    "lat": 44.49863
+  },
+  {
+    "id": "KGRK",
+    "name": "Granger",
+    "lon": -97.38278,
+    "lat": 30.72167
+  },
+  {
+    "id": "KGRR",
+    "name": "Kent County Arpt",
+    "lon": -85.54489,
+    "lat": 42.89389
+  },
+  {
+    "id": "KGSP",
+    "name": "Greer",
+    "lon": -82.21983,
+    "lat": 34.88331
+  },
+  {
+    "id": "KGWX",
+    "name": "Greenwood Springs (MS Hwy 8 & US Hwy",
+    "lon": -88.32919,
+    "lat": 33.89692
+  },
+  {
+    "id": "KGYX",
+    "name": "Gray",
+    "lon": -70.25636,
+    "lat": 43.89131
+  },
+  {
+    "id": "KHDC",
+    "name": "Hammond",
+    "lon": -90.407,
+    "lat": 30.519
+  },
+  {
+    "id": "KHDX",
+    "name": "White Sands Missile Range",
+    "lon": -106.12003,
+    "lat": 33.077
+  },
+  {
+    "id": "KHGX",
+    "name": "Dickinson",
+    "lon": -95.07889,
+    "lat": 29.47194
+  },
+  {
+    "id": "KHNX",
+    "name": "Hanford",
+    "lon": -119.63214,
+    "lat": 36.31417
+  },
+  {
+    "id": "KHPX",
+    "name": "Trenton (US Hwy 41N)",
+    "lon": -87.285,
+    "lat": 36.73667
+  },
+  {
+    "id": "KHTX",
+    "name": "Hytop",
+    "lon": -86.08361,
+    "lat": 34.93056
+  },
+  {
+    "id": "KICT",
+    "name": "Wichita",
+    "lon": -97.44306,
+    "lat": 37.65444
+  },
+  {
+    "id": "KICX",
+    "name": "Blowhead Mtn",
+    "lon": -112.86222,
+    "lat": 37.59105
+  },
+  {
+    "id": "KILN",
+    "name": "Wilmington",
+    "lon": -83.82167,
+    "lat": 39.42028
+  },
+  {
+    "id": "KILX",
+    "name": "Logan County Arpt",
+    "lon": -89.33679,
+    "lat": 40.1505
+  },
+  {
+    "id": "KIND",
+    "name": "Indianapolis",
+    "lon": -86.28028,
+    "lat": 39.7075
+  },
+  {
+    "id": "KINX",
+    "name": "Inola",
+    "lon": -95.56414,
+    "lat": 36.175
+  },
+  {
+    "id": "KIWA",
+    "name": "Mesa",
+    "lon": -111.67,
+    "lat": 33.28917
+  },
+  {
+    "id": "KIWX",
+    "name": "North Webster",
+    "lon": -85.7,
+    "lat": 41.35861
+  },
+  {
+    "id": "KJAX",
+    "name": "Jacksonville",
+    "lon": -81.7019,
+    "lat": 30.48463
+  },
+  {
+    "id": "KJGX",
+    "name": "Jeffersonville (State Hwy 96)",
+    "lon": -83.35111,
+    "lat": 32.675
+  },
+  {
+    "id": "KJKL",
+    "name": "Noctor",
+    "lon": -83.31306,
+    "lat": 37.59083
+  },
+  {
+    "id": "KLBB",
+    "name": "Lubbock",
+    "lon": -101.81417,
+    "lat": 33.65414
+  },
+  {
+    "id": "KLCH",
+    "name": "Lake Charles",
+    "lon": -93.21589,
+    "lat": 30.12531
+  },
+  {
+    "id": "KLGX",
+    "name": "Langley Hill",
+    "lon": -124.10664,
+    "lat": 47.1169
+  },
+  {
+    "id": "KLNX",
+    "name": "Thedford",
+    "lon": -100.57622,
+    "lat": 41.95794
+  },
+  {
+    "id": "KLOT",
+    "name": "Romeoville",
+    "lon": -88.08444,
+    "lat": 41.60444
+  },
+  {
+    "id": "KLRX",
+    "name": "Sheep Creek Mtn",
+    "lon": -116.80278,
+    "lat": 40.73972
+  },
+  {
+    "id": "KLSX",
+    "name": "St Charles",
+    "lon": -90.68278,
+    "lat": 38.69889
+  },
+  {
+    "id": "KLTX",
+    "name": "Shallotte",
+    "lon": -78.42917,
+    "lat": 33.98917
+  },
+  {
+    "id": "KLVX",
+    "name": "Fort Knox",
+    "lon": -85.94389,
+    "lat": 37.97528
+  },
+  {
+    "id": "KLWX",
+    "name": "Sterling",
+    "lon": -77.4875,
+    "lat": 38.97611
+  },
+  {
+    "id": "KLZK",
+    "name": "North Little Rock",
+    "lon": -92.26194,
+    "lat": 34.83639
+  },
+  {
+    "id": "KMAF",
+    "name": "Midland",
+    "lon": -102.18925,
+    "lat": 31.94346
+  },
+  {
+    "id": "KMAX",
+    "name": "Mount Ashland",
+    "lon": -122.71736,
+    "lat": 42.08111
+  },
+  {
+    "id": "KMBX",
+    "name": "Deering",
+    "lon": -100.86444,
+    "lat": 48.3925
+  },
+  {
+    "id": "KMHX",
+    "name": "Newport",
+    "lon": -76.87639,
+    "lat": 34.77583
+  },
+  {
+    "id": "KMKX",
+    "name": "Dousman",
+    "lon": -88.55056,
+    "lat": 42.96778
+  },
+  {
+    "id": "KMLB",
+    "name": "Melbourne",
+    "lon": -80.65444,
+    "lat": 28.11306
+  },
+  {
+    "id": "KMOB",
+    "name": "Mobile",
+    "lon": -88.23972,
+    "lat": 30.67944
+  },
+  {
+    "id": "KMPX",
+    "name": "Chanhassen",
+    "lon": -93.56553,
+    "lat": 44.84889
+  },
+  {
+    "id": "KMQT",
+    "name": "Marquette",
+    "lon": -87.54833,
+    "lat": 46.53111
+  },
+  {
+    "id": "KMRX",
+    "name": "Morristown",
+    "lon": -83.40194,
+    "lat": 36.16833
+  },
+  {
+    "id": "KMSX",
+    "name": "Point Six Mtn",
+    "lon": -113.98611,
+    "lat": 47.04111
+  },
+  {
+    "id": "KMTX",
+    "name": "Promontory Pt",
+    "lon": -112.44778,
+    "lat": 41.26278
+  },
+  {
+    "id": "KMUX",
+    "name": "Mt Umunhum",
+    "lon": -121.89844,
+    "lat": 37.15522
+  },
+  {
+    "id": "KMVX",
+    "name": "Mayville",
+    "lon": -97.325,
+    "lat": 47.52806
+  },
+  {
+    "id": "KMXX",
+    "name": "Carrville",
+    "lon": -85.78975,
+    "lat": 32.53665
+  },
+  {
+    "id": "KNKX",
+    "name": "Miramar MCAS",
+    "lon": -117.04194,
+    "lat": 32.91889
+  },
+  {
+    "id": "KNQA",
+    "name": "Millington",
+    "lon": -89.87333,
+    "lat": 35.34472
+  },
+  {
+    "id": "KOAX",
+    "name": "Valley",
+    "lon": -96.36681,
+    "lat": 41.32028
+  },
+  {
+    "id": "KOHX",
+    "name": "Old Hickory",
+    "lon": -86.5625,
+    "lat": 36.24722
+  },
+  {
+    "id": "KOKX",
+    "name": "Upton",
+    "lon": -72.86392,
+    "lat": 40.86553
+  },
+  {
+    "id": "KOTX",
+    "name": "Rambo Rd",
+    "lon": -117.62583,
+    "lat": 47.68056
+  },
+  {
+    "id": "KPAH",
+    "name": "Paducah",
+    "lon": -88.77194,
+    "lat": 37.06833
+  },
+  {
+    "id": "KPBZ",
+    "name": "Coraopolis",
+    "lon": -80.21794,
+    "lat": 40.53167
+  },
+  {
+    "id": "KPDT",
+    "name": "Pendleton",
+    "lon": -118.85292,
+    "lat": 45.69056
+  },
+  {
+    "id": "KPOE",
+    "name": "Leesville",
+    "lon": -92.97583,
+    "lat": 31.15528
+  },
+  {
+    "id": "KPUX",
+    "name": "Boone Highland Rds",
+    "lon": -104.18139,
+    "lat": 38.45944
+  },
+  {
+    "id": "KRAX",
+    "name": "Clayton",
+    "lon": -78.49,
+    "lat": 35.66528
+  },
+  {
+    "id": "KRGX",
+    "name": "Virginia Peak",
+    "lon": -119.46203,
+    "lat": 39.75406
+  },
+  {
+    "id": "KRIW",
+    "name": "Riverton",
+    "lon": -108.4773,
+    "lat": 43.06611
+  },
+  {
+    "id": "KRLX",
+    "name": "Ruthdale",
+    "lon": -81.72278,
+    "lat": 38.31111
+  },
+  {
+    "id": "KRTX",
+    "name": "Dixie Mtn",
+    "lon": -122.965,
+    "lat": 45.715
+  },
+  {
+    "id": "KSFX",
+    "name": "Springfield",
+    "lon": -112.68613,
+    "lat": 43.1056
+  },
+  {
+    "id": "KSGF",
+    "name": "Springfield",
+    "lon": -93.40028,
+    "lat": 37.23528
+  },
+  {
+    "id": "KSHV",
+    "name": "Shreveport",
+    "lon": -93.84125,
+    "lat": 32.45083
+  },
+  {
+    "id": "KSJT",
+    "name": "San Angelo",
+    "lon": -100.49222,
+    "lat": 31.37111
+  },
+  {
+    "id": "KSOX",
+    "name": "Santa Ana Mtns",
+    "lon": -117.636,
+    "lat": 33.81773
+  },
+  {
+    "id": "KSRX",
+    "name": "Ft. Smith",
+    "lon": -94.36189,
+    "lat": 35.29042
+  },
+  {
+    "id": "KTBW",
+    "name": "Ruskin",
+    "lon": -82.40194,
+    "lat": 27.70528
+  },
+  {
+    "id": "KTFX",
+    "name": "Great Falls",
+    "lon": -111.38528,
+    "lat": 47.45972
+  },
+  {
+    "id": "KTLH",
+    "name": "Tallahassee",
+    "lon": -84.32889,
+    "lat": 30.3975
+  },
+  {
+    "id": "KTLX",
+    "name": "Twin Lakes",
+    "lon": -97.27776,
+    "lat": 35.33306
+  },
+  {
+    "id": "KTWX",
+    "name": "Alma",
+    "lon": -96.2325,
+    "lat": 38.99694
+  },
+  {
+    "id": "KTYX",
+    "name": "Montague",
+    "lon": -75.68,
+    "lat": 43.75583
+  },
+  {
+    "id": "KUDX",
+    "name": "New Underwood",
+    "lon": -102.83,
+    "lat": 44.12472
+  },
+  {
+    "id": "KUEX",
+    "name": "Blue Hill",
+    "lon": -98.44194,
+    "lat": 40.32083
+  },
+  {
+    "id": "KVAX",
+    "name": "Stockton (State Rd 129)",
+    "lon": -83.00181,
+    "lat": 30.89028
+  },
+  {
+    "id": "KVBX",
+    "name": "Lompoc",
+    "lon": -120.39792,
+    "lat": 34.83855
+  },
+  {
+    "id": "KVNX",
+    "name": "Jet",
+    "lon": -98.1275,
+    "lat": 36.74083
+  },
+  {
+    "id": "KVTX",
+    "name": "Sulphur Mtn",
+    "lon": -119.17861,
+    "lat": 34.41167
+  },
+  {
+    "id": "KVWX",
+    "name": "Evansville",
+    "lon": -87.72453,
+    "lat": 38.26025
+  },
+  {
+    "id": "KYUX",
+    "name": "Yuma",
+    "lon": -114.65669,
+    "lat": 32.49528
+  },
+  {
+    "id": "PABC",
+    "name": "Bethel",
+    "lon": -161.87639,
+    "lat": 60.79194
+  },
+  {
+    "id": "PACG",
+    "name": "Sitka",
+    "lon": -135.52917,
+    "lat": 56.85278
+  },
+  {
+    "id": "PAEC",
+    "name": "Nome",
+    "lon": -165.295,
+    "lat": 64.51139
+  },
+  {
+    "id": "PAHG",
+    "name": "Kenai",
+    "lon": -151.35147,
+    "lat": 60.72591
+  },
+  {
+    "id": "PAIH",
+    "name": "Middleton Island",
+    "lon": -146.30345,
+    "lat": 59.46077
+  },
+  {
+    "id": "PAKC",
+    "name": "King Salmon",
+    "lon": -156.62944,
+    "lat": 58.67944
+  },
+  {
+    "id": "PAPD",
+    "name": "Pedro Dome",
+    "lon": -147.50143,
+    "lat": 65.03511
+  },
+  {
+    "id": "PGUA",
+    "name": "Barrigada Comms Stn",
+    "lon": 144.81111,
+    "lat": 13.45583
+  },
+  {
+    "id": "PHKI",
+    "name": "South Kauai",
+    "lon": -159.5525,
+    "lat": 21.89389
+  },
+  {
+    "id": "PHKM",
+    "name": "Kohala Mtns",
+    "lon": -155.77778,
+    "lat": 20.12528
+  },
+  {
+    "id": "PHMO",
+    "name": "Molokai",
+    "lon": -157.18028,
+    "lat": 21.13278
+  },
+  {
+    "id": "PHWA",
+    "name": "South Shore Hawaii Is",
+    "lon": -155.56889,
+    "lat": 19.095
+  },
+  {
+    "id": "TJUA",
+    "name": "Cayey",
+    "lat": 18.11567,
+    "lon": -66.07817
+  }
+]

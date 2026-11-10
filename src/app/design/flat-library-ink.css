@@ -1,0 +1,94 @@
+/* Sky Peek's base language: white canvas, black text, color for weather meaning. */
+.design-page{background:#fff;color:#111}
+.fl-library{--fl-ink:#111;--fl-muted:#666;--fl-line:#e6e6e6;--fl-paper:#fff;color:#111;background:#fff;border-color:#e6e6e6}
+.fl-topline i{background:#111}
+.fl-eyebrow,.fl-section-title>span{color:#555}
+.fl-hero h1 em{color:#111}
+.fl-lede{color:#666}
+.fl-hero-links a{border-color:#d9d9d9}
+.fl-hero-art{background:#fafafa;border-left:1px solid #e6e6e6}
+.fl-orbit{border-color:#e2e2e2}
+.fl-art-sun{background:#f2bf49;color:#111}
+.fl-art-cloud{color:#111}
+.fl-spec-head{border-color:#e6e6e6}
+.fl-spec-head span:last-child,.fl-microcopy,.fl-toolbar-meta,.fl-legend-labels{color:#777}
+.fl-layer{background:#fff;border-color:#dcdcdc;color:#333}
+.fl-layer.is-active{background:#fff;border-color:#111;color:#111}
+.fl-layer-indicator{border-color:#bbb}
+.fl-layer.is-active .fl-layer-indicator{background:#111;border-color:#111}
+.fl-switch-row{border-color:#eee}
+.fl-switch{background:#d5d5d5}
+.fl-switch.is-on{background:#111}
+.fl-segment{background:#f1f1f1}
+.fl-segment button{color:#666}
+.fl-segment button.is-selected{color:#111;box-shadow:0 1px 3px #00000019}
+.fl-search{border-color:#d6d6d6;color:#666}
+.fl-place-suggestion,.fl-place-suggestion svg:last-child{color:#555}
+.fl-toolbar{background:#111}
+.fl-toolbar button{color:#fff}
+.fl-toolbar button:hover{background:#333}
+.fl-toolbar-divider{background:#555}
+.fl-timeline{background:#f5f5f5}
+.fl-timeline-top,.fl-timeline-labels{color:#777}
+.fl-play{background:#111}
+.fl-timeline input[type=range]{background:linear-gradient(to right,#111 var(--fl-progress),#d8d8d8 var(--fl-progress))}
+.fl-timeline input[type=range]::-webkit-slider-thumb{border-color:#111}
+.fl-timeline input[type=range]::-moz-range-thumb{border-color:#111}
+.fl-current{background:#fff;border:1px solid #ddd}
+.fl-current-bottom{border-color:#e6e6e6;color:#666}
+.fl-hour-strip button:hover{background:#f8f8f8}
+.fl-hour-strip button.is-selected{background:#f5f5f5;border-color:#d8d8d8}
+.fl-hour-strip button>span,.fl-metrics span,.fl-metrics strong small{color:#777}
+.fl-status{background:#fff;border:1px solid #e6e6e6}
+.fl-status-good{border-left:3px solid #4c9d91}
+.fl-status-warn{border-left:3px solid #d6674d}
+.fl-status-info{border-left:3px solid #3078d4}
+.fl-status-icon{background:#f6f6f6!important}
+.fl-status-good .fl-status-icon{color:#388a7e}
+.fl-status-warn .fl-status-icon{color:#bd563e}
+.fl-status-info .fl-status-icon{color:#3078d4}
+.fl-status small,.fl-status>svg{color:#666}
+.fl-metrics svg{color:#111}
+.fl-palette-head,.fl-type>span,.fl-swatches small,.fl-type small{color:#777}
+.fl-swatches i,.fl-type>div{border-color:#e6e6e6}
+.fl-end{background:#111;color:#fff}
+
+/* Additional primitives and composed patterns. */
+.fl-grid-patterns{grid-template-columns:1fr 1.35fr}
+.fl-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.fl-btn{height:39px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 13px;border:1px solid #111;border-radius:6px;font-size:12px;font-weight:700;white-space:nowrap}
+.fl-btn:hover{transform:translateY(-1px)}
+.fl-btn-primary{background:#111;color:#fff}
+.fl-btn-outline,.fl-btn-icon{background:#fff;color:#111}
+.fl-btn-icon{width:39px;padding:0}
+.fl-badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:22px}
+.fl-badges span{border:1px solid #d9d9d9;border-radius:3px;padding:6px 8px;font-size:9px;font-weight:700;letter-spacing:.08em}
+.fl-badges span:first-child{border-color:#111;background:#111;color:#fff}
+.fl-badges .fl-badge-alert{border-color:#d6674d;color:#bd563e}
+.fl-day-list{display:flex;flex-direction:column}
+.fl-day-list button{display:grid;grid-template-columns:minmax(57px,1fr) 25px 44px 33px minmax(45px,1fr) 33px;align-items:center;gap:10px;min-height:49px;padding:0 10px;border-bottom:1px solid #eee;text-align:left;font-size:12px;border-radius:5px}
+.fl-day-list button:last-child{border-bottom:0}
+.fl-day-list button:hover,.fl-day-list button.is-selected{background:#f5f5f5}
+.fl-day-list button>strong{font-weight:700}
+.fl-day-list button>svg{color:#d6a02a}
+.fl-day-list button:nth-child(3)>svg,.fl-day-chance{color:#3078d4}
+.fl-day-chance{display:flex;align-items:center;gap:2px;font-size:11px}
+.fl-day-list button>span:nth-of-type(2){color:#888}
+.fl-day-list i{height:5px;background:#e9e9e9;border-radius:3px}
+.fl-day-list i b{display:block;height:100%;background:#f2bf49;border-radius:3px}
+.fl-inspection{border:1px solid #dedede;border-radius:7px;padding:17px;max-width:360px}
+.fl-inspection-top{display:flex;justify-content:space-between;gap:10px;font-size:9px;letter-spacing:.08em;color:#777;font-weight:700}
+.fl-inspection h3{font-size:25px;font-weight:500;letter-spacing:-.04em;margin:12px 0 15px}
+.fl-inspection-data{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;border-block:1px solid #e6e6e6;padding:13px 0}
+.fl-inspection-data>div{display:flex;flex-direction:column;gap:6px}
+.fl-inspection-data span{font-size:8px;letter-spacing:.06em;color:#777;font-weight:700}
+.fl-inspection-data strong{font-size:11px}
+.fl-inspection>button{display:flex;align-items:center;gap:7px;margin-top:13px;font-size:11px;font-weight:700}
+.fl-nav{display:flex;border:1px solid #e4e4e4;border-radius:8px;padding:7px;max-width:420px;gap:2px}
+.fl-nav button{min-width:0;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:55px;border-radius:5px;color:#777;font-size:9px}
+.fl-nav button:hover{background:#f5f5f5}
+.fl-nav button.is-selected{background:#111;color:#fff}
+.fl-nav-spec .fl-microcopy{margin-top:12px}
+@media(max-width:1100px){.fl-grid-patterns{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){.fl-hero-art{border-left:0;border-top:1px solid #e6e6e6}.fl-grid-patterns{grid-template-columns:1fr}.fl-day-list button{gap:5px;padding-inline:6px}.fl-inspection{max-width:none}}
+@media(max-width:390px){.fl-day-list button{grid-template-columns:55px 22px 36px 28px minmax(28px,1fr) 28px;font-size:10px;gap:3px}.fl-day-chance{font-size:9px}.fl-nav button{font-size:8px}}
