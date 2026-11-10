@@ -37,35 +37,37 @@ const SCENES = [
   ['evening', 'rain'], ['night', 'storm'], ['morning', 'fog'], ['night', 'clear'],
 ] as const;
 
-function OnboardingFrame({ children, scene = 0, titleId, onCancel }: {
-  children: ReactNode; scene?: number; titleId: string; onCancel: () => void;
+function OnboardingFrame({ children, scene = 0, titleId, onCancel, location = false }: {
+  children: ReactNode; scene?: number; titleId: string; onCancel: () => void; location?: boolean;
 }) {
   const ref = useModal();
   const [time, weather] = SCENES[scene];
   return <dialog ref={ref} className="onboard-dialog" aria-labelledby={titleId}
     onCancel={event => { event.preventDefault(); onCancel(); }}>
     <BetaScene time={time} weather={weather} backdropOnly />
-    <div className="onboard-panel">{children}</div>
+    <div className={`onboard-panel${location ? ' onboard-location-panel' : ''}`}>{children}</div>
   </dialog>;
 }
 
 export function LocationWelcome({ onChoose }: { onChoose: (place: Place) => void }) {
   const [query, setQuery] = useState('');
   const { results, status } = usePlaceSearch(query);
-  return <OnboardingFrame titleId="location-title" onCancel={() => {}}>
+  return <OnboardingFrame titleId="location-title" onCancel={() => {}} location>
     <div className="onboard-overline">WELCOME TO SKY PEEK</div>
     <h2 id="location-title">Where should we look first?</h2>
     <p>Choose a city or ZIP code to build your forecast, center the radar, and show nearby alerts.</p>
     <label className="onboard-search-label" htmlFor="onboard-place">Your first location</label>
-    <input id="onboard-place" className="onboard-search" autoFocus value={query} onChange={event => setQuery(event.target.value)}
-      onKeyDown={event => { if (event.key === 'Enter' && results[0]) onChoose(results[0]); }}
-      placeholder="Search city or ZIP code" autoComplete="off" />
-    {query.trim().length >= 2 && <div className="onboard-results" aria-live="polite">
-      {results.slice(0, 5).map(place => <button type="button" key={place.id} onClick={() => onChoose(place)}>
-        <strong>{place.name}</strong><span>{place.region}</span>
-      </button>)}
-      {!results.length && <div className="onboard-search-status">{status === 'failed' ? 'Search is unavailable right now. Try again shortly.' : status === 'done' ? 'No places found. Try a nearby city.' : 'Searching…'}</div>}
-    </div>}
+    <div className="onboard-search-wrap">
+      <input id="onboard-place" className="onboard-search" autoFocus value={query} onChange={event => setQuery(event.target.value)}
+        onKeyDown={event => { if (event.key === 'Enter' && results[0]) onChoose(results[0]); }}
+        placeholder="Search city or ZIP code" autoComplete="off" aria-controls="onboard-results" aria-expanded={query.trim().length >= 2} />
+      {query.trim().length >= 2 && <div id="onboard-results" className="onboard-results" aria-live="polite">
+        {results.slice(0, 5).map(place => <button type="button" key={place.id} onClick={() => onChoose(place)}>
+          <strong>{place.name}</strong><span>{place.region}</span>
+        </button>)}
+        {!results.length && <div className="onboard-search-status">{status === 'failed' ? 'Search is unavailable right now. Try again shortly.' : status === 'done' ? 'No places found. Try a nearby city.' : 'Searching…'}</div>}
+      </div>}
+    </div>
     <p className="onboard-location-note">You can add more places later in Settings.</p>
   </OnboardingFrame>;
 }
