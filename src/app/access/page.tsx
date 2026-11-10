@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { CloudSun } from 'lucide-react';
 import { betaGateState } from '@/lib/betaGate';
 import './access.css';
 
@@ -10,7 +11,7 @@ export default async function AccessPage({ searchParams }: { searchParams: Promi
   const unavailable = betaGateState() === 'misconfigured';
   return <main className="access-page">
     <section className="access-card">
-      <div className="access-mark" aria-hidden="true">◉</div>
+      <div className="access-mark" aria-hidden="true"><CloudSun size={30} strokeWidth={1.8} /></div>
       <p className="access-eyebrow">SKY PEEK · PRIVATE BETA</p>
       <h1>Take a look at the sky.</h1>
       {unavailable ? <p className="access-error" role="alert">Beta access is temporarily unavailable.</p> : <>

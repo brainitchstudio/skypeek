@@ -3,7 +3,7 @@ node_modules
 next-env.d.ts
 *.tsbuildinfo
 .DS_Store
-public/maplibre-gl-worker.mjs
+public/maplibre-gl-worker.js
 .superpowers
 .claude
 .venv

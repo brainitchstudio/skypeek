@@ -19,7 +19,8 @@ import type { AlertLevel, Place, WeatherAlert } from '@/lib/types';
 import { loadWarningCounties } from '@/lib/warningCounties';
 
 // Next's bundler can't resolve MapLibre's worker, so `npm run dev` and `build` copy it to public/.
-setWorkerUrl(`${location.origin}/maplibre-gl-worker.mjs`);
+// Hostinger serves .mjs as text/plain; module workers require a JavaScript MIME type.
+setWorkerUrl(`${location.origin}/maplibre-gl-worker.js`);
 addProtocol(FLAT_SCHEME, loadFlatTile);
 addProtocol(IMAGERY_SCHEME, loadImageryTile);
 addProtocol(FORECAST_SCHEME, loadForecastTile);

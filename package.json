@@ -6,7 +6,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "copy-worker": "node -e \"require('fs').copyFileSync('node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs','public/maplibre-gl-worker.mjs')\"",
+    "copy-worker": "node -e \"require('fs').copyFileSync('node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs','public/maplibre-gl-worker.js')\"",
     "predev": "npm run copy-worker",
     "dev": "next dev",
     "prebuild": "npm run copy-worker",

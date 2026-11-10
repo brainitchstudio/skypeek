@@ -17,5 +17,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|icons/|maplibre-gl-worker.mjs).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|icons/|maplibre-gl-worker.js).*)'],
 };

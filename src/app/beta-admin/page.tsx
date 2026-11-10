@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { CloudSun } from 'lucide-react';
 import { cookies } from 'next/headers';
 import { betaAdminCookieName, betaAdminReady, validBetaAdminSession } from '@/lib/betaGate';
 import { CodeGenerator } from './CodeGenerator';
@@ -13,7 +14,7 @@ export default async function BetaAdminPage({ searchParams }: { searchParams: Pr
   const invalid = (await searchParams).invalid === '1';
   return <main className="access-page">
     <section className="access-card access-admin-card">
-      <div className="access-mark" aria-hidden="true">◉</div>
+      <div className="access-mark" aria-hidden="true"><CloudSun size={30} strokeWidth={1.8} /></div>
       <p className="access-eyebrow">SKY PEEK · BETA OWNER</p>
       <h1>Beta codes</h1>
       {!ready ? <p className="access-error" role="alert">Code management is unavailable. Add BETA_ADMIN_CODE in the hosting environment.</p> : signedIn ? <>

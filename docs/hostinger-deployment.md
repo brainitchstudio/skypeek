@@ -6,7 +6,7 @@ Sky Peek is a Next.js app with live API routes and a server-side beta gate. Depl
 
 1. Confirm the hosting plan supports Node.js Web Apps (Hostinger Business/Unlimited or Cloud). A plan limited to PHP/HTML cannot run the API routes or beta gate. Check the exact plan in hPanel before connecting the repository.
 2. Use the official public repository at [brainitchstudio/skypeek](https://github.com/brainitchstudio/skypeek). The beta gate controls app access; public visitors can read the repository source. Keep `.env` files, API keys, `node_modules`, `.next`, the Python virtual environment, and local diagnostics out of Git. The `.gitignore` in this project covers those paths.
-3. The repository root must contain `package.json` and `package-lock.json`. The generated `public/maplibre-gl-worker.mjs` is created automatically before build; it is not checked in.
+3. The repository root must contain `package.json` and `package-lock.json`. The generated `public/maplibre-gl-worker.js` is created automatically before build; it is not checked in. Hostinger serves `.mjs` as `text/plain`, which browsers reject for a module worker.
 
 The repository includes a GitHub Actions verification workflow. It runs `npm ci`, the tests and the production build on Node 22 for every push and pull request. Hostinger still needs its own Node.js Web App deployment; the workflow does not publish the site or carry secrets.
 

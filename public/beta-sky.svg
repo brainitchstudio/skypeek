@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Soft blue sky with sunlit clouds">
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1">
+      <stop stop-color="#afcfee"/>
+      <stop offset=".55" stop-color="#d7e6f3"/>
+      <stop offset="1" stop-color="#eaf0ec"/>
+    </linearGradient>
+    <radialGradient id="glow">
+      <stop stop-color="#fff9d7" stop-opacity=".95"/>
+      <stop offset=".45" stop-color="#fff6dc" stop-opacity=".62"/>
+      <stop offset="1" stop-color="#fff6dc" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cloud" x2="0" y2="1">
+      <stop stop-color="#fff" stop-opacity=".92"/>
+      <stop offset="1" stop-color="#b7d1e1" stop-opacity=".9"/>
+    </linearGradient>
+    <linearGradient id="haze" x2="0" y2="1">
+      <stop stop-color="#d7e9ee" stop-opacity=".1"/>
+      <stop offset="1" stop-color="#91b6c7" stop-opacity=".52"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h1600v1000H0z"/>
+  <circle cx="1245" cy="230" r="450" fill="url(#glow)"/>
+  <circle cx="1245" cy="230" r="78" fill="#fff8db" opacity=".9"/>
+  <g fill="url(#cloud)">
+    <path d="M-120 345c63-64 145-82 230-46 48-74 165-78 222-10 63-31 146-2 168 61 88 9 146 45 160 95H-120z" opacity=".7"/>
+    <path d="M1080 425c43-58 112-73 178-44 35-75 134-99 202-44 68-30 157 8 174 83 92-4 158 38 171 90h-725z" opacity=".74"/>
+    <path d="M-155 700c64-48 152-48 210-4 45-77 161-104 233-46 72-35 162-6 185 60 76-10 154 29 181 85H-155z" opacity=".8"/>
+    <path d="M885 730c75-69 166-73 232-30 50-87 179-112 257-40 94-42 203 0 224 87 86-10 151 29 183 86H885z" opacity=".78"/>
+  </g>
+  <path fill="url(#haze)" d="M0 760c288-43 457-5 697 73 246 79 580-47 903-1v168H0z"/>
+  <g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".32">
+    <path d="m116 509-17 36m78-27-17 36m91-36-17 36m106-33-17 36"/>
+    <path d="m1363 548-15 34m70-28-15 34m70-28-15 34"/>
+  </g>
+</svg>
