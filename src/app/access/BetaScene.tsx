@@ -67,8 +67,8 @@ export function pickScene(time?: string, weather?: string): { time: Time; weathe
   };
 }
 
-export function BetaScene({ time, weather, invalid, unavailable }: {
-  time: Time; weather: Weather; invalid: boolean; unavailable: boolean;
+export function BetaScene({ time, weather, invalid = false, unavailable = false, backdropOnly = false }: {
+  time: Time; weather: Weather; invalid?: boolean; unavailable?: boolean; backdropOnly?: boolean;
 }) {
   const p = PALETTES[time];
   const sky = p.sky[weather];
@@ -139,7 +139,7 @@ export function BetaScene({ time, weather, invalid, unavailable }: {
         <svg className="sp-anim sp-flash sp-bolt" viewBox="0 0 60 140" aria-hidden="true"><path d="M34 0 L6 76 L28 76 L16 140 L56 52 L32 52 L46 0 Z" fill="#FFF3B8" /></svg>
       </>}
     </div>
-    <main className="sp-main">
+    {!backdropOnly && <main className="sp-main">
       <h1 className="sp-logo">Sky Peek</h1>
       {unavailable ? <p className="sp-error" role="alert">Beta access is temporarily unavailable.</p> : <>
         <form action="/api/access" method="post" className="sp-form">
@@ -150,6 +150,6 @@ export function BetaScene({ time, weather, invalid, unavailable }: {
         {invalid && <p id="access-error" className="sp-error" role="alert">That code didn’t work. Check it and try again.</p>}
         <p className="sp-invite">No code yet? Ask the person who invited you.</p>
       </>}
-    </main>
+    </main>}
   </div>;
 }

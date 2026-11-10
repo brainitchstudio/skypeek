@@ -44,7 +44,7 @@ const KEY = 'sky-peek-settings';
 function load(): Settings {
   try {
     const saved = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) ?? '{}') } as Settings;
-    return { ...saved, basemap: saved.basemap === 2 ? 2 : 0 };
+    return { ...saved, screen: 'today', basemap: saved.basemap === 2 ? 2 : 0 };
   } catch {
     return DEFAULTS;
   }

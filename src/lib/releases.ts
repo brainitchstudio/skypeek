@@ -11,7 +11,7 @@ export const RELEASES: Release[] = [
     version: '0.2.0',
     title: 'A new first look',
     changes: [
-      'A guided tour introduces the forecast, radar, alerts, and settings.',
+      'Choose your first forecast location, then tour the forecast, radar, alerts, and settings.',
       'The beta entrance now opens with a changing time of day and weather scene.',
       'The radar map now loads reliably on the hosted app.',
     ],

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { acceptsBetaCode, betaCookieName, betaGateState, BETA_SESSION_SECONDS, issueBetaSession } from '@/lib/betaGate';
+import { acceptsBetaCode, betaCodeIdentity, betaCookieName, betaGateState, BETA_IDENTITY_COOKIE, BETA_SESSION_SECONDS, issueBetaSession } from '@/lib/betaGate';
 
 export const runtime = 'nodejs';
 
@@ -59,6 +59,13 @@ export async function POST(request: NextRequest) {
     path: '/',
     maxAge: BETA_SESSION_SECONDS,
   });
+  response.cookies.set(BETA_IDENTITY_COOKIE, betaCodeIdentity(code), {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: BETA_SESSION_SECONDS,
+  });
   response.headers.set('Cache-Control', 'no-store');
   return response;
 }
@@ -72,5 +79,6 @@ export async function DELETE(_request: NextRequest) {
     path: '/',
     maxAge: 0,
   });
+  response.cookies.set(BETA_IDENTITY_COOKIE, '', { path: '/', maxAge: 0 });
   return response;
 }

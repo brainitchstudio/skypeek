@@ -22,7 +22,7 @@ The main screens keep the everyday forecast simple: **Today**, **Hourly**, and *
 | **Storm SpotCheck** | Select a storm outline and a spot on the map to see a movement based arrival estimate, the spot forecast, and active warnings. You can also check a spot on its own. |
 | **Official alerts and lightning awareness** | Read NWS warnings and advisories in the places they affect. Nearby lightning activity can trigger a prominent shelter notice. |
 | **Places that matter to you** | Search cities, ZIP codes, and US street addresses; save favorites and choose a main location. |
-| **A guided first visit** | New beta visitors can tour the main screens, and returning visitors see release notes when the app version advances. Both can be reopened from Settings. |
+| **A guided first visit** | Each beta code starts by saving a main location, then tours the main screens over changing weather scenes. Returning visitors see release notes when the app version advances. The tour and notes can be reopened from Settings. |
 
 ## Why Sky Peek is different
 
@@ -63,7 +63,7 @@ See the [deployment guide](docs/hostinger-deployment.md) for GitHub and Hostinge
 
 ### Publishing an update
 
-Advance the version in `package.json` and `package-lock.json` with `npm version <next-version> --no-git-tag-version`, then add that version's notes to `src/lib/releases.ts`. A returning visitor sees the notes for versions newer than the last version they opened. The tour and last-seen version are remembered in that browser's local storage, so a new browser or cleared site data starts the tour again.
+Advance the version in `package.json` and `package-lock.json` with `npm version <next-version> --no-git-tag-version`, then add that version's notes to `src/lib/releases.ts`. A returning visitor sees the notes for versions newer than the last version they opened. Tour completion is remembered per access code in that browser's local storage. A new browser or cleared site data starts the location choice and tour again.
 
 ## Data and project notes
 

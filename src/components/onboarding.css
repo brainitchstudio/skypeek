@@ -1,22 +1,43 @@
 .onboard-dialog {
   position: fixed;
-  width: min(440px, calc(100vw - 32px));
-  max-height: min(690px, calc(100dvh - 32px));
+  inset: 0;
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: #c9dfed;
+  color: #142431;
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+}
+.onboard-dialog::backdrop { background: transparent; }
+.onboard-dialog > .sp-gate { position: absolute; inset: 0; min-height: 0; }
+.onboard-dialog .onboard-panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: min(520px, calc(100vw - 32px));
+  height: fit-content;
+  max-height: calc(100dvh - 32px);
   box-sizing: border-box;
   overflow-y: auto;
   margin: auto;
-  padding: 32px;
-  border: 1px solid #dbe5ea;
-  border-radius: 22px;
-  background: #fff;
-  color: #142431;
+  padding: clamp(24px, 4vw, 40px);
+  border: 1px solid #ffffffa8;
+  border-radius: 28px;
+  background: #ffffffeb;
   box-shadow: 0 24px 90px #091d3580;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  backdrop-filter: blur(20px);
 }
-.onboard-dialog::backdrop { background: #09213191; backdrop-filter: blur(3px); }
 .onboard-icon { display: grid; width: 48px; height: 48px; place-items: center; margin-bottom: 24px; border-radius: 15px; background: #e6f3fb; color: #17648e; }
 .onboard-overline { margin-bottom: 10px; color: #3b718f; font-size: 11px; font-weight: 800; letter-spacing: .13em; }
-.onboard-dialog h2 { margin: 0 0 12px; font-size: 30px; font-weight: 600; letter-spacing: -.04em; line-height: 1.1; }
+.onboard-dialog h2 { margin: 0 0 12px; font-size: clamp(27px, 5vw, 36px); font-weight: 700; letter-spacing: -.04em; line-height: 1.1; }
 .onboard-dialog p { margin: 0; color: #506575; font-size: 16px; line-height: 1.5; }
 .onboard-progress { display: flex; gap: 6px; margin: 28px 0 24px; }
 .onboard-progress span { height: 5px; flex: 1; border-radius: 999px; background: #dce6eb; }
@@ -27,15 +48,21 @@
 .onboard-actions .onboard-quiet:hover { background: #edf4f7; }
 .onboard-actions .onboard-primary { background: #163c56; color: #fff; }
 .onboard-actions .onboard-primary:hover { background: #245b7a; }
-.onboard-actions button:focus-visible { outline: 3px solid #82bee0; outline-offset: 2px; }
-.onboard-release { width: min(510px, calc(100vw - 32px)); }
+.onboard-actions button:focus-visible, .onboard-search:focus-visible { outline: 3px solid #82bee0; outline-offset: 2px; }
 .onboard-release-entry + .onboard-release-entry { margin-top: 22px; padding-top: 20px; border-top: 1px solid #e5edf1; }
 .onboard-release-entry h3 { margin: 0 0 12px; font-size: 18px; font-weight: 600; }
 .onboard-release-entry small { color: #6c8493; font-size: 12px; font-weight: 600; }
 .onboard-release-entry ul { margin: 0 0 26px; padding-left: 20px; color: #506575; font-size: 15px; line-height: 1.55; }
 .onboard-release-entry li + li { margin-top: 7px; }
+.onboard-search-label { display: block; margin: 27px 0 8px; font-size: 14px; font-weight: 700; }
+.onboard-search { width: 100%; height: 52px; box-sizing: border-box; padding: 0 16px; border: 1px solid #a7bdca; border-radius: 13px; background: #fff; color: #142431; font: inherit; font-size: 16px; }
+.onboard-results { display: flex; flex-direction: column; gap: 4px; max-height: min(290px, 35dvh); overflow-y: auto; margin-top: 8px; padding: 5px; border: 1px solid #dce6eb; border-radius: 13px; background: #fff; }
+.onboard-results button { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 8px; text-align: left; }
+.onboard-results button:hover, .onboard-results button:focus-visible { background: #e6f3fb; }
+.onboard-results button span, .onboard-search-status { color: #657b88; font-size: 13px; }
+.onboard-search-status { padding: 12px; }
+.onboard-dialog .onboard-location-note { margin-top: 16px; font-size: 13px; }
 @media (max-width: 480px) {
-  .onboard-dialog { padding: 24px; border-radius: 18px; }
-  .onboard-dialog h2 { font-size: 27px; }
+  .onboard-dialog .onboard-panel { padding: 24px; border-radius: 20px; }
   .onboard-actions button { padding: 9px 12px; font-size: 13px; }
 }

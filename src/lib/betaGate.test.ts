@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { scryptSync } from 'node:crypto';
-import { acceptsBetaAdminCode, acceptsBetaCode, betaAdminReady, betaGateState, BETA_SESSION_SECONDS, generateBetaInvite, issueBetaAdminSession, issueBetaSession, validBetaAdminSession, validBetaInvite, validBetaSession } from './betaGate';
+import { acceptsBetaAdminCode, acceptsBetaCode, betaAdminReady, betaCodeIdentity, betaGateState, BETA_SESSION_SECONDS, generateBetaInvite, issueBetaAdminSession, issueBetaSession, validBetaAdminSession, validBetaInvite, validBetaSession } from './betaGate';
 
 const CODE = 'rainy-foxes-visit-2026';
 const SECRET = 'a-long-private-signing-secret-that-stays-on-the-server';
@@ -31,6 +31,13 @@ describe('beta gate', () => {
     expect(validBetaSession(cookie, now + 1000)).toBe(true);
     expect(validBetaSession(cookie, now + BETA_SESSION_SECONDS * 1000)).toBe(false);
     expect(validBetaSession(cookie.slice(0, -1) + (cookie.endsWith('A') ? 'B' : 'A'), now + 1000)).toBe(false);
+  });
+
+  it('gives each valid access code a stable opaque onboarding identity', () => {
+    expect(betaCodeIdentity(CODE)).toMatch(/^[a-f0-9]{32}$/);
+    expect(betaCodeIdentity(CODE)).toBe(betaCodeIdentity(CODE));
+    expect(betaCodeIdentity(CODE)).not.toBe(betaCodeIdentity('another-code'));
+    expect(betaCodeIdentity(CODE)).not.toContain(CODE);
   });
 
   it('invalidates sessions when the code rotates', () => {

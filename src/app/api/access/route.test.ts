@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
-import { BETA_COOKIE, validBetaSession } from '@/lib/betaGate';
+import { BETA_COOKIE, BETA_IDENTITY_COOKIE, validBetaSession } from '@/lib/betaGate';
 import { POST, DELETE } from './route';
 
 describe('access submission', () => {
@@ -30,11 +30,15 @@ describe('access submission', () => {
     expect(setCookie).toContain('Secure');
     expect(setCookie.toLowerCase()).toContain('samesite=lax');
     expect(validBetaSession(correct.cookies.get(BETA_COOKIE)?.value)).toBe(true);
+    const identity = correct.cookies.get(BETA_IDENTITY_COOKIE)?.value;
+    expect(identity).toMatch(/^[a-f0-9]{32}$/);
+    expect(identity).not.toContain('rainy-foxes');
   });
 
   it('clears the cookie on leave', async () => {
     const response = await DELETE(new NextRequest('https://skypeek.brainitch.studio/api/access', { method: 'DELETE' }));
     expect(response.cookies.get(BETA_COOKIE)?.value).toBe('');
+    expect(response.cookies.get(BETA_IDENTITY_COOKIE)?.value).toBe('');
     expect(response.headers.get('set-cookie')).toContain('Max-Age=0');
   });
 });

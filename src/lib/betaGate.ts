@@ -5,6 +5,7 @@ export const BETA_COOKIE_DEV = 'sky-peek-beta-dev';
 export const BETA_ADMIN_COOKIE = '__Host-sky-peek-beta-admin';
 export const BETA_ADMIN_COOKIE_DEV = 'sky-peek-beta-admin-dev';
 export const BETA_SESSION_SECONDS = 7 * 24 * 60 * 60;
+export const BETA_IDENTITY_COOKIE = 'sky-peek-beta-identity';
 export const BETA_ADMIN_SESSION_SECONDS = 12 * 60 * 60;
 export const MAX_INVITE_DAYS = 90;
 
@@ -107,6 +108,13 @@ export function validBetaInvite(value: string, now = Date.now()) {
 export function acceptsBetaCode(input: string, now = Date.now()) {
   const current = config();
   return !!current && input.length <= 128 && (matchesSharedCode(input, current) || validBetaInvite(input, now));
+}
+
+/** Opaque browser-visible identifier for per-code onboarding state; never reveals the code. */
+export function betaCodeIdentity(input: string) {
+  const current = config();
+  if (!current) throw new Error('Beta gate is not configured');
+  return createHmac('sha256', current.secret).update(`onboarding:${input}`).digest('hex').slice(0, 32);
 }
 
 function signature(payload: string, current: GateConfig) {
