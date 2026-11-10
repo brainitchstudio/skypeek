@@ -1,28 +1,18 @@
 import type { Metadata } from 'next';
-import { CloudSun } from 'lucide-react';
 import { betaGateState } from '@/lib/betaGate';
-import './access.css';
+import { BetaScene, pickScene } from './BetaScene';
+import './beta-scene.css';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Sky Peek beta access', robots: { index: false, follow: false } };
 
-export default async function AccessPage({ searchParams }: { searchParams: Promise<{ invalid?: string }> }) {
-  const invalid = (await searchParams).invalid === '1';
-  const unavailable = betaGateState() === 'misconfigured';
-  return <main className="access-page">
-    <section className="access-card">
-      <div className="access-mark" aria-hidden="true"><CloudSun size={30} strokeWidth={1.8} /></div>
-      <p className="access-eyebrow">SKY PEEK · PRIVATE BETA</p>
-      <h1>Take a look at the sky.</h1>
-      {unavailable ? <p className="access-error" role="alert">Beta access is temporarily unavailable.</p> : <>
-        <p>Enter the beta code you were given to explore Sky Peek.</p>
-        <form action="/api/access" method="post">
-          <label htmlFor="beta-code">Beta code</label>
-          <input id="beta-code" name="code" type="password" autoComplete="off" required minLength={12} maxLength={128} aria-invalid={invalid} aria-describedby={invalid ? 'access-error' : undefined} />
-          {invalid && <p id="access-error" className="access-error" role="alert">That code didn’t work. Please try again.</p>}
-          <button type="submit">Enter Sky Peek</button>
-        </form>
-      </>}
-    </section>
-  </main>;
+export default async function AccessPage({ searchParams }: { searchParams: Promise<{ invalid?: string; time?: string; weather?: string }> }) {
+  const params = await searchParams;
+  const { time, weather } = pickScene(params.time, params.weather);
+  return <BetaScene
+    time={time}
+    weather={weather}
+    invalid={params.invalid === '1'}
+    unavailable={betaGateState() === 'misconfigured'}
+  />;
 }

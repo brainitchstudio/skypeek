@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@500&family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap');
+
+.sp-gate {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--sp-sky);
+  color: var(--sp-ink);
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+}
+.sp-scene { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.sp-scene i { display: block; }
+.sp-main {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px clamp(20px, 5vw, 64px) 18vh;
+  box-sizing: border-box;
+  text-align: center;
+}
+.sp-logo {
+  margin: 0;
+  color: inherit;
+  font-family: 'Unbounded', system-ui, sans-serif;
+  font-size: clamp(46px, 13.5vw, 196px);
+  font-weight: 500;
+  letter-spacing: -.04em;
+  line-height: 1;
+  white-space: nowrap;
+}
+.sp-form {
+  display: flex;
+  width: 100%;
+  max-width: 780px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px 20px;
+  margin-top: clamp(28px, 4.5vw, 56px);
+}
+.sp-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.sp-code {
+  flex: 1 1 300px;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 4px 4px 10px;
+  border: 0;
+  border-bottom: 2px solid currentColor;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: clamp(30px, 4.4vw, 56px);
+  font-weight: 500;
+  letter-spacing: -.02em;
+  line-height: 1.15;
+  text-align: left;
+}
+.sp-code::placeholder { color: inherit; opacity: .62; }
+.sp-code:focus { box-shadow: 0 3px 0 0 currentColor; }
+.sp-enter {
+  display: inline-flex;
+  height: 64px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 32px;
+  border: 0;
+  border-radius: 32px;
+  background: var(--sp-ink);
+  color: var(--sp-sky);
+  font: inherit;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: transform .15s ease;
+}
+.sp-enter:hover { transform: translateY(-1px); }
+.sp-enter:focus-visible { outline: 3px solid currentColor; outline-offset: 4px; }
+.sp-error { min-height: 22px; margin: 12px 0 0; font-size: 15px; font-weight: 700; }
+.sp-invite { margin: 12px 0 0; font-size: 15px; font-weight: 500; }
+.sp-star, .sp-flake { position: absolute; border-radius: 50%; background: #fff; }
+.sp-cloud { position: absolute; left: 0; }
+.sp-cloud svg { display: block; width: 100%; height: auto; }
+.sp-orb { position: absolute; width: 0; height: 0; }
+.sp-orb-pulse, .sp-orb-ring, .sp-orb-core, .sp-orb-crescent { position: absolute; border-radius: 50%; }
+.sp-orb-pulse { left: -110px; top: -110px; width: 220px; height: 220px; }
+.sp-orb-ring { left: -84px; top: -84px; width: 168px; height: 168px; opacity: .6; }
+.sp-orb-core { left: -62px; top: -62px; width: 124px; height: 124px; }
+.sp-orb-crescent { left: -34px; top: -78px; width: 124px; height: 124px; }
+.sp-hills { position: absolute; left: 0; bottom: 0; width: 100%; height: 26%; }
+.sp-fog { position: absolute; left: -20%; width: 140%; border-radius: 999px; }
+.sp-drop { position: absolute; top: 0; width: 2px; border-radius: 1px; }
+.sp-flake { top: 0; }
+.sp-flash-screen { position: absolute; inset: 0; background: #fff; opacity: 0; }
+.sp-bolt { position: absolute; left: 20%; top: 16%; width: 54px; height: auto; opacity: 0; }
+.sp-drift { animation: spDrift linear infinite; }
+.sp-fall { animation: spFall linear infinite; }
+.sp-snow { animation: spSnow linear infinite; }
+.sp-twinkle { animation: spTwinkle ease-in-out infinite; }
+.sp-pulse { animation: spPulse 5s ease-out infinite; }
+.sp-sway { animation: spSway ease-in-out infinite alternate; }
+.sp-flash { animation: spFlash 7s linear infinite; }
+@keyframes spDrift { from { transform: translateX(-460px); } to { transform: translateX(calc(100vw + 40px)); } }
+@keyframes spFall { from { transform: translate(0, -20vh) rotate(14deg); } to { transform: translate(-26vh, 120vh) rotate(14deg); } }
+@keyframes spSnow { 0% { transform: translate(0, -10vh); } 25% { transform: translate(14px, 20vh); } 50% { transform: translate(-10px, 50vh); } 75% { transform: translate(12px, 80vh); } 100% { transform: translate(0, 112vh); } }
+@keyframes spTwinkle { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+@keyframes spPulse { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(1.6); opacity: 0; } }
+@keyframes spSway { from { transform: translateX(-6%); } to { transform: translateX(6%); } }
+@keyframes spFlash { 0%, 86%, 89%, 91%, 100% { opacity: 0; } 87% { opacity: .75; } 90% { opacity: .45; } }
+@media (max-width: 540px) {
+  .sp-main { padding: 32px 20px 20vh; }
+  .sp-logo { font-size: clamp(38px, 12vw, 68px); }
+  .sp-form { max-width: 420px; gap: 18px; margin-top: 34px; }
+  .sp-code { flex-basis: 100%; font-size: clamp(28px, 8vw, 42px); }
+  .sp-enter { flex: 1 1 100%; height: 58px; }
+  .sp-invite { max-width: 300px; line-height: 1.4; }
+}
+@media (prefers-reduced-motion: reduce) { .sp-anim { animation-play-state: paused !important; } }
