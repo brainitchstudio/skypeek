@@ -118,7 +118,7 @@ function Shell() {
   const showBrand = ['today', 'hourly', 'days'].includes(s.screen);
 
   return (
-    <main className={`app${showBrand ? ' app-branded' : ''}`} data-direction={direction}>
+    <main className={`app${showBrand ? ' app-branded' : ''}${s.screen === 'today' ? ' app-today' : ''}`} data-direction={direction}>
       {showBrand && <header className="app-brand" aria-label="Sky Peek">
         <span className="app-brand-glyph" aria-hidden="true"><Binoculars size={28} strokeWidth={1.8} /></span>
         <span aria-hidden="true">Sky Peek</span>

@@ -8,6 +8,14 @@ export type Release = { version: string; title: string; changes: string[] };
 // visitor are shown together the next time they open the app.
 export const RELEASES: Release[] = [
   {
+    version: '0.5.0',
+    title: 'Weather all around Today',
+    changes: [
+      'Today now shows an animated scene for your saved location’s current weather and local time of day.',
+      'The scene changes as conditions or the local time change while Sky Peek is open.',
+    ],
+  },
+  {
     version: '0.4.0',
     title: 'A calmer first visit',
     changes: [

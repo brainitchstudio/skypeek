@@ -1,10 +1,12 @@
 import { ChevronRight, TriangleAlert } from 'lucide-react';
-import { Fragment, useMemo } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
+import { TodayBackground } from '@/components/TodayBackground';
 import { Pending, StaleNote, type ScreenProps } from './shared';
 import { Icon } from '@/components/ui';
 import { todaySummary } from '@/lib/forecast';
 import { clock, iconFor, temp, weekdayLong } from '@/lib/format';
 import { useSettings } from '@/lib/settings';
+import { todayScene } from '@/lib/todayScene';
 import type { WeatherAlert } from '@/lib/types';
 import { PROVIDER_NAMES, type NowConditions } from '@/weather/service';
 
@@ -19,17 +21,25 @@ function nowNote(c: NowConditions, tz: string): string {
 export function TodayScreen({ weather, place, nav, banner, onHour }: ScreenProps & { banner?: WeatherAlert; onHour: (i: number) => void }) {
   const { s } = useSettings();
   const { forecast: f, now: current } = weather;
-  const weekday = useMemo(() => f && weekdayLong(new Date(), f.timeZone), [f]);
+  const [clockNow, setClockNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = window.setInterval(() => setClockNow(new Date()), 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
+  const weekday = useMemo(() => f && weekdayLong(clockNow, f.timeZone), [f, clockNow]);
   if (!f || !f.hours.length) return <Pending weather={weather} />;
 
   const now = f.hours[0];
   const today = f.days[0];
   const condition = current?.condition || now.condition;
+  const scene = todayScene(clockNow, f.timeZone, condition, current?.windMph ?? now.windMph, current?.tempF ?? now.tempF,
+    !current || current.kind === 'forecast', now.isDaytime);
   const note = current && nowNote(current, f.timeZone);
   const mixed = now.agreement === 'low' ? 'Forecast sources disagree on the next few hours.' : null;
 
   return (
-    <div className="screen today">
+    <div className={`screen today today-${scene.time}`} data-weather={scene.weather}>
+      <TodayBackground scene={scene} />
       {mixed && <div className="live-note">{mixed}</div>}
       <StaleNote weather={weather} />
       {banner && (

@@ -23,6 +23,7 @@ The main screens keep the everyday forecast simple: **Today**, **Hourly**, and *
 | **Official alerts and lightning awareness** | Read NWS warnings and advisories in the places they affect. Nearby lightning activity can trigger a prominent shelter notice. |
 | **Places that matter to you** | Search cities, ZIP codes, and US street addresses; save favorites and choose a main location. |
 | **A guided first visit** | Each beta code starts by choosing a main location, previewing it on a map, and confirming it. A five-screen tour uses real desktop and mobile previews against the same weather scene shown at the beta entrance. Returning visitors see release notes when the app version advances. The tour and notes can be reopened from Settings. |
+| **Weather in the scene** | Today uses an animated background matched to your active location’s current conditions and local time. Rain, snow, storms, fog, and clear skies each have their own look. |
 
 ## Why Sky Peek is different
 

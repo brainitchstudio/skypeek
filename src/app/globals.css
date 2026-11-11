@@ -79,6 +79,24 @@ button:hover > .tip, button:focus-visible > .tip { display: block; }
 .today-hours button:hover { background: #f3f3f0; }
 .today-hours .t { font-size: 14px; color: #888; }
 .today-hours .v { font-size: 20px; font-weight: 500; }
+.app.app-branded > .today { top: 0; padding-top: 76px; }
+.app-today .app-brand { background: transparent; }
+.today { isolation: isolate; background: #c4d7e7; }
+.today-background { position: absolute; inset: 0; z-index: -2; pointer-events: none; }
+.today::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(180deg, rgb(255 255 255 / .32), rgb(255 255 255 / .1) 42%, rgb(255 255 255 / .37)); }
+.today > :not(.today-background) { position: relative; }
+.today .today-loc, .today .live-note, .today .today-summary, .today .today-hours .t, .today .muted { color: #243747; }
+.today .today-hours { border-radius: 18px; padding: 4px 8px; background: rgb(255 255 255 / .38); backdrop-filter: blur(14px); }
+.today .today-hours button:hover { background: rgb(255 255 255 / .55); }
+.today-night, .today[data-weather="storm"], .today[data-weather="hail"] { color: #fff; }
+.today-night::before, .today[data-weather="storm"]::before, .today[data-weather="hail"]::before { background: linear-gradient(180deg, rgb(0 0 0 / .32), rgb(0 0 0 / .08) 42%, rgb(0 0 0 / .38)); }
+.today-night .today-loc, .today-night .live-note, .today-night .today-summary, .today-night .today-hours .t, .today-night .muted,
+.today[data-weather="storm"] .today-loc, .today[data-weather="storm"] .live-note, .today[data-weather="storm"] .today-summary, .today[data-weather="storm"] .today-hours .t, .today[data-weather="storm"] .muted,
+.today[data-weather="hail"] .today-loc, .today[data-weather="hail"] .live-note, .today[data-weather="hail"] .today-summary, .today[data-weather="hail"] .today-hours .t, .today[data-weather="hail"] .muted { color: #f2f5fa; }
+.today-night .today-hours, .today[data-weather="storm"] .today-hours, .today[data-weather="hail"] .today-hours { background: rgb(0 0 0 / .26); }
+.today-night .today-hours button:hover, .today[data-weather="storm"] .today-hours button:hover, .today[data-weather="hail"] .today-hours button:hover { background: rgb(255 255 255 / .18); }
+.app-today:has(.today-night) .app-brand, .app-today:has(.today[data-weather="storm"]) .app-brand, .app-today:has(.today[data-weather="hail"]) .app-brand { color: #fff; }
+.app-today:has(.today-night) .app-brand-glyph, .app-today:has(.today[data-weather="storm"]) .app-brand-glyph, .app-today:has(.today[data-weather="hail"]) .app-brand-glyph { background: rgb(255 255 255 / .9); color: #1c2834; }
 
 /* Hourly */
 .hourly { display: flex; flex-direction: column; padding: clamp(16px,4vh,56px) 0 84px; }
