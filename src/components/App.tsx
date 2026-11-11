@@ -7,6 +7,7 @@ import { Switcher } from './Switcher';
 import { LocationWelcome, TOUR_STEPS, WelcomeTour, WhatsNew } from './Onboarding';
 import { routeAlert } from '@/lib/alerts';
 import { APP_VERSION, compareVersions, RELEASES, unseenReleases } from '@/lib/releases';
+import { BETA_SCENE_COOKIE, parseScene, pickScene, type Scene } from '@/lib/betaScene';
 import { SettingsProvider, useSettings, type Screen } from '@/lib/settings';
 import type { Place } from '@/lib/types';
 import { useAlertDelivery, useWeather } from '@/lib/useWeather';
@@ -20,6 +21,7 @@ import { TodayScreen } from '@/screens/Today';
 const RadarScreen = dynamic(() => import('@/screens/Radar').then(m => m.RadarScreen), { ssr: false });
 const TOUR_KEY = 'sky-peek-tour-complete-v2';
 const VERSION_KEY = 'sky-peek-last-seen-version';
+const SCENE_KEY = 'sky-peek-onboarding-scene';
 
 function accessIdentity() {
   const match = document.cookie.match(/(?:^|;\s*)sky-peek-beta-identity=([a-f0-9]{32})(?:;|$)/);
@@ -60,16 +62,26 @@ function Shell() {
   const [tourStep, setTourStep] = useState(0);
   const [lastSeenVersion, setLastSeenVersion] = useState<string | null>(null);
   const [tourKey, setTourKey] = useState(`${TOUR_KEY}:local`);
+  const [scene, setScene] = useState<Scene>({ time: 'afternoon', weather: 'clear' });
 
   useEffect(() => {
-    try {
-      const seen = localStorage.getItem(VERSION_KEY);
-      setLastSeenVersion(seen);
-      const key = `${TOUR_KEY}:${accessIdentity()}`;
-      setTourKey(key);
-      if (localStorage.getItem(key) !== 'yes') setIntro('location');
-      else if (!seen || compareVersions(APP_VERSION, seen) > 0) setIntro('release');
-    } catch { setIntro('tour'); }
+    const key = `${TOUR_KEY}:${accessIdentity()}`;
+    setTourKey(key);
+    const sceneCookie = document.cookie.split('; ').find(cookie => cookie.startsWith(`${BETA_SCENE_COOKIE}=`))?.split('=')[1];
+    const [cookieTime, cookieWeather] = sceneCookie?.split('.') ?? [];
+    let savedScene: string | null = null;
+    try { savedScene = sessionStorage.getItem(SCENE_KEY); } catch { /* storage may be disabled */ }
+    const [savedTime, savedWeather] = savedScene?.split('.') ?? [];
+    const chosenScene = parseScene(cookieTime, cookieWeather) ?? parseScene(savedTime, savedWeather) ?? pickScene();
+    try { sessionStorage.setItem(SCENE_KEY, `${chosenScene.time}.${chosenScene.weather}`); } catch { /* storage may be disabled */ }
+    setScene(chosenScene);
+
+    let seen: string | null = null;
+    let tourComplete = false;
+    try { seen = localStorage.getItem(VERSION_KEY); tourComplete = localStorage.getItem(key) === 'yes'; } catch { /* start the tour */ }
+    setLastSeenVersion(seen);
+    if (!tourComplete) setIntro('location');
+    else if (!seen || compareVersions(APP_VERSION, seen) > 0) setIntro('release');
   }, []);
 
   const [direction, setDirection] = useState(1);
@@ -91,7 +103,7 @@ function Shell() {
   const moveTour = (next: number) => {
     if (next >= TOUR_STEPS.length) { finishTour(); return; }
     setTourStep(next);
-    nav(TOUR_STEPS[next].screen, next === TOUR_STEPS.length - 1 ? { setTab: 'general' } : undefined);
+    nav(TOUR_STEPS[next].screen);
   };
   const startTour = () => { setTourStep(0); nav('today'); setIntro('tour'); };
   const chooseFirstPlace = (chosen: Place) => {
@@ -127,9 +139,9 @@ function Shell() {
           onSelect={k => { if (k === 'settings') nav(k, { setTab: 'alerts' }); else nav(k); }}
         />
       </div>
-      {intro === 'location' && <LocationWelcome onChoose={chooseFirstPlace} />}
-      {intro === 'tour' && <WelcomeTour step={tourStep} onBack={() => moveTour(tourStep - 1)} onNext={() => moveTour(tourStep + 1)} onSkip={finishTour} />}
-      {intro === 'release' && <WhatsNew releases={unseenReleases(lastSeenVersion).length ? unseenReleases(lastSeenVersion) : RELEASES.slice(0, 1)} onClose={closeRelease} />}
+      {intro === 'location' && <LocationWelcome scene={scene} onChoose={chooseFirstPlace} />}
+      {intro === 'tour' && <WelcomeTour scene={scene} step={tourStep} onBack={() => moveTour(tourStep - 1)} onNext={() => moveTour(tourStep + 1)} onSkip={finishTour} />}
+      {intro === 'release' && <WhatsNew scene={scene} releases={unseenReleases(lastSeenVersion).length ? unseenReleases(lastSeenVersion) : RELEASES.slice(0, 1)} onClose={closeRelease} />}
     </main>
   );
 }

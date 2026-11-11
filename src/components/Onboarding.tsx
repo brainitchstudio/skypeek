@@ -1,13 +1,15 @@
 'use client';
 
-import { CalendarDays, ChartNoAxesColumn, Radar, Settings, Sun, TriangleAlert, type LucideIcon } from 'lucide-react';
+import { CalendarDays, ChartNoAxesColumn, Radar, Sun, TriangleAlert, type LucideIcon } from 'lucide-react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Screen } from '@/lib/settings';
 import type { Release } from '@/lib/releases';
 import { APP_VERSION } from '@/lib/releases';
 import { BetaScene } from '@/app/access/BetaScene';
+import type { Scene } from '@/lib/betaScene';
 import type { Place } from '@/lib/types';
 import { usePlaceSearch } from '@/lib/usePlaceSearch';
+import { LocationMapPreview } from './LocationMapPreview';
 import '@/app/access/beta-scene.css';
 import './onboarding.css';
 
@@ -18,7 +20,6 @@ export const TOUR_STEPS: TourStep[] = [
   { screen: 'days', title: 'Plan farther ahead', description: 'Compare the next ten days and open a day for a closer look.', icon: CalendarDays, preview: 'days', previewAlt: '10 Day screen comparing daily temperatures and rain chances' },
   { screen: 'radar', title: 'Explore the radar', description: 'Watch recent rain, switch map layers, and use SpotCheck to inspect a place or storm.', icon: Radar, preview: 'radar', previewAlt: 'Radar screen showing the map, timeline, and map layer controls' },
   { screen: 'alerts', title: 'Know when weather matters', description: 'Read official warnings and advisories that affect your area.', icon: TriangleAlert, preview: 'alerts', previewAlt: 'Alerts screen showing the no active alerts state for Brooklyn, New York' },
-  { screen: 'settings', title: 'Make Sky Peek yours', description: 'Save places, choose your units, and set alert and radar preferences.', icon: Settings, preview: 'settings', previewAlt: 'Settings screen showing saved locations and the main location' },
 ];
 
 function useModal() {
@@ -32,52 +33,59 @@ function useModal() {
   return ref;
 }
 
-const SCENES = [
-  ['morning', 'clear'], ['afternoon', 'clear'], ['afternoon', 'cloudy'],
-  ['evening', 'rain'], ['night', 'storm'], ['morning', 'fog'], ['night', 'clear'],
-] as const;
-
-function OnboardingFrame({ children, scene = 0, titleId, onCancel, location = false, tour = false }: {
-  children: ReactNode; scene?: number; titleId: string; onCancel: () => void; location?: boolean; tour?: boolean;
+function OnboardingFrame({ children, scene, titleId, onCancel, location = false, locationSelected = false, tour = false }: {
+  children: ReactNode; scene: Scene; titleId: string; onCancel: () => void; location?: boolean; locationSelected?: boolean; tour?: boolean;
 }) {
   const ref = useModal();
-  const [time, weather] = SCENES[scene];
   return <dialog ref={ref} className="onboard-dialog" aria-labelledby={titleId}
     onCancel={event => { event.preventDefault(); onCancel(); }}>
-    <BetaScene time={time} weather={weather} backdropOnly />
-    <div className={`onboard-panel${location ? ' onboard-location-panel' : ''}${tour ? ' onboard-tour-panel' : ''}`}>{children}</div>
+    <BetaScene time={scene.time} weather={scene.weather} backdropOnly />
+    <div className={`onboard-panel${location ? ' onboard-location-panel' : ''}${locationSelected ? ' onboard-location-selected-panel' : ''}${tour ? ' onboard-tour-panel' : ''}`}>{children}</div>
   </dialog>;
 }
 
-export function LocationWelcome({ onChoose }: { onChoose: (place: Place) => void }) {
+export function LocationWelcome({ scene, onChoose }: { scene: Scene; onChoose: (place: Place) => void }) {
   const [query, setQuery] = useState('');
+  const [selected, setSelected] = useState<Place | null>(null);
+  const input = useRef<HTMLInputElement>(null);
   const { results, status } = usePlaceSearch(query);
-  return <OnboardingFrame titleId="location-title" onCancel={() => {}} location>
+  const showResults = query.trim().length >= 2 && !selected;
+  const select = (place: Place) => { setSelected(place); setQuery(place.name); };
+  return <OnboardingFrame scene={scene} titleId="location-title" onCancel={() => {}} location locationSelected={!!selected}>
     <div className="onboard-overline">WELCOME TO SKY PEEK</div>
     <h2 id="location-title">Where should we look first?</h2>
     <p>Choose a city or ZIP code to build your forecast, center the radar, and show nearby alerts.</p>
     <label className="onboard-search-label" htmlFor="onboard-place">Your first location</label>
     <div className="onboard-search-wrap">
-      <input id="onboard-place" className="onboard-search" autoFocus value={query} onChange={event => setQuery(event.target.value)}
-        onKeyDown={event => { if (event.key === 'Enter' && results[0]) onChoose(results[0]); }}
-        placeholder="Search city or ZIP code" autoComplete="off" aria-controls="onboard-results" aria-expanded={query.trim().length >= 2} />
-      {query.trim().length >= 2 && <div id="onboard-results" className="onboard-results" aria-live="polite">
-        {results.slice(0, 5).map(place => <button type="button" key={place.id} onClick={() => onChoose(place)}>
+      <input ref={input} id="onboard-place" className="onboard-search" autoFocus value={query}
+        onChange={event => { setQuery(event.target.value); setSelected(null); }}
+        onKeyDown={event => { if (event.key === 'Enter' && showResults && results[0]) select(results[0]); }}
+        placeholder="Search city or ZIP code" autoComplete="off" aria-controls={showResults ? 'onboard-results' : undefined} aria-expanded={showResults} />
+      {showResults && <div id="onboard-results" className="onboard-results" aria-live="polite">
+        {results.slice(0, 5).map(place => <button type="button" key={place.id} onClick={() => select(place)}>
           <strong>{place.name}</strong><span>{place.region}</span>
         </button>)}
         {!results.length && <div className="onboard-search-status">{status === 'failed' ? 'Search is unavailable right now. Try again shortly.' : status === 'done' ? 'No places found. Try a nearby city.' : 'Searching…'}</div>}
       </div>}
     </div>
+    {selected && <div className="onboard-selected">
+      <div className="onboard-selected-head"><strong>{selected.name}</strong><span>{selected.region}</span></div>
+      <LocationMapPreview place={selected} />
+      <div className="onboard-actions onboard-location-actions">
+        <button type="button" className="onboard-quiet" onClick={() => { setSelected(null); input.current?.focus(); }}>Choose another</button>
+        <button type="button" className="onboard-primary" onClick={() => onChoose(selected)}>Confirm location <span aria-hidden>→</span></button>
+      </div>
+    </div>}
     <p className="onboard-location-note">You can add more places later in Settings.</p>
   </OnboardingFrame>;
 }
 
-export function WelcomeTour({ step, onBack, onNext, onSkip }: {
-  step: number; onBack: () => void; onNext: () => void; onSkip: () => void;
+export function WelcomeTour({ scene, step, onBack, onNext, onSkip }: {
+  scene: Scene; step: number; onBack: () => void; onNext: () => void; onSkip: () => void;
 }) {
   const current = TOUR_STEPS[step];
   const Icon = current.icon;
-  return <OnboardingFrame scene={step + 1} titleId="tour-title" onCancel={onSkip} tour>
+  return <OnboardingFrame scene={scene} titleId="tour-title" onCancel={onSkip} tour>
     <div className="onboard-preview" data-screen={current.screen}>
       <picture>
         <source media="(max-width: 600px)" srcSet={`/onboarding/${current.preview}-mobile.jpg`} />
@@ -101,8 +109,8 @@ export function WelcomeTour({ step, onBack, onNext, onSkip }: {
   </OnboardingFrame>;
 }
 
-export function WhatsNew({ releases, onClose }: { releases: Release[]; onClose: () => void }) {
-  return <OnboardingFrame scene={2} titleId="release-title" onCancel={onClose}>
+export function WhatsNew({ scene, releases, onClose }: { scene: Scene; releases: Release[]; onClose: () => void }) {
+  return <OnboardingFrame scene={scene} titleId="release-title" onCancel={onClose}>
     <div className="onboard-icon"><Sun size={24} strokeWidth={1.8} aria-hidden /></div>
     <div className="onboard-overline">SKY PEEK · VERSION {APP_VERSION}</div>
     <h2 id="release-title">What’s new</h2>

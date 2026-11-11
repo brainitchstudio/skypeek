@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { BETA_COOKIE, BETA_IDENTITY_COOKIE, validBetaSession } from '@/lib/betaGate';
+import { BETA_SCENE_COOKIE } from '@/lib/betaScene';
 import { POST, DELETE } from './route';
 
 describe('access submission', () => {
@@ -39,6 +40,19 @@ describe('access submission', () => {
     const response = await DELETE(new NextRequest('https://skypeek.brainitch.studio/api/access', { method: 'DELETE' }));
     expect(response.cookies.get(BETA_COOKIE)?.value).toBe('');
     expect(response.cookies.get(BETA_IDENTITY_COOKIE)?.value).toBe('');
+    expect(response.cookies.get(BETA_SCENE_COOKIE)?.value).toBe('');
     expect(response.headers.get('set-cookie')).toContain('Max-Age=0');
+  });
+
+  it('carries the beta gate scene through login and failed attempts', async () => {
+    const make = (code: string) => new NextRequest('https://skypeek.brainitch.studio/api/access', {
+      method: 'POST',
+      body: new URLSearchParams({ code, sceneTime: 'evening', sceneWeather: 'rain' }),
+      headers: { 'x-real-ip': 'test-scene-code' },
+    });
+    const invalid = await POST(make('incorrect-guess'));
+    expect(invalid.headers.get('location')).toBe('/access?invalid=1&time=evening&weather=rain');
+    const accepted = await POST(make('rainy-foxes-visit-2026'));
+    expect(accepted.cookies.get(BETA_SCENE_COOKIE)?.value).toBe('evening.rain');
   });
 });

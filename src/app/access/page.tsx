@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { betaGateState } from '@/lib/betaGate';
-import { BetaScene, pickScene } from './BetaScene';
+import { BetaScene } from './BetaScene';
+import { pickScene } from '@/lib/betaScene';
 import './beta-scene.css';
 
 export const dynamic = 'force-dynamic';

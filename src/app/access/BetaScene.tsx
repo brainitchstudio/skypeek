@@ -1,7 +1,8 @@
 import type { CSSProperties } from 'react';
+import { type Scene } from '@/lib/betaScene';
 
-type Time = 'morning' | 'afternoon' | 'evening' | 'night';
-type Weather = 'clear' | 'cloudy' | 'rain' | 'snow' | 'storm' | 'fog';
+type Time = Scene['time'];
+type Weather = Scene['weather'];
 const TIMES: Time[] = ['morning', 'afternoon', 'evening', 'night'];
 const WEATHERS: Weather[] = ['clear', 'cloudy', 'rain', 'snow', 'storm', 'fog'];
 
@@ -57,13 +58,6 @@ function random(seed: number) {
     let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-export function pickScene(time?: string, weather?: string): { time: Time; weather: Weather } {
-  return {
-    time: TIMES.includes(time as Time) ? time as Time : TIMES[Math.floor(Math.random() * TIMES.length)],
-    weather: WEATHERS.includes(weather as Weather) ? weather as Weather : WEATHERS[Math.floor(Math.random() * WEATHERS.length)],
   };
 }
 
@@ -143,6 +137,8 @@ export function BetaScene({ time, weather, invalid = false, unavailable = false,
       <h1 className="sp-logo">Sky Peek</h1>
       {unavailable ? <p className="sp-error" role="alert">Beta access is temporarily unavailable.</p> : <>
         <form action="/api/access" method="post" className="sp-form">
+          <input type="hidden" name="sceneTime" value={time} />
+          <input type="hidden" name="sceneWeather" value={weather} />
           <label htmlFor="beta-code" className="sp-sr-only">Beta code</label>
           <input id="beta-code" className="sp-code" name="code" type="password" autoComplete="off" placeholder="Enter code" required maxLength={128} aria-invalid={invalid} aria-describedby={invalid ? 'access-error' : undefined} />
           <button type="submit" className="sp-enter">Enter <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg></button>

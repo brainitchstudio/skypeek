@@ -8,6 +8,14 @@ export type Release = { version: string; title: string; changes: string[] };
 // visitor are shown together the next time they open the app.
 export const RELEASES: Release[] = [
   {
+    version: '0.4.0',
+    title: 'A calmer first visit',
+    changes: [
+      'Preview your first location on a map and confirm it before the tour begins.',
+      'The five-screen tour keeps the weather scene from your beta entrance throughout.',
+    ],
+  },
+  {
     version: '0.3.0',
     title: 'See Sky Peek before you explore',
     changes: [

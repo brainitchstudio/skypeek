@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { acceptsBetaCode, betaCodeIdentity, betaCookieName, betaGateState, BETA_IDENTITY_COOKIE, BETA_SESSION_SECONDS, issueBetaSession } from '@/lib/betaGate';
+import { BETA_SCENE_COOKIE, parseScene } from '@/lib/betaScene';
 
 export const runtime = 'nodejs';
 
@@ -40,15 +41,20 @@ export async function POST(request: NextRequest) {
   const length = Number(request.headers.get('content-length') ?? 0);
   if (length > 1024) return new NextResponse('Invalid request.', { status: 400 });
   let code = '';
+  let scene: ReturnType<typeof parseScene> = null;
   try {
     const form = await request.formData();
     const input = form.get('code');
     if (typeof input === 'string') code = input.trim();
+    const time = form.get('sceneTime');
+    const weather = form.get('sceneWeather');
+    scene = parseScene(typeof time === 'string' ? time : undefined, typeof weather === 'string' ? weather : undefined);
   } catch {
     return new NextResponse('Invalid request.', { status: 400 });
   }
   if (!acceptsBetaCode(code)) {
-    return failed(redirect('/access?invalid=1'), visitor, now);
+    const suffix = scene ? `&time=${scene.time}&weather=${scene.weather}` : '';
+    return failed(redirect(`/access?invalid=1${suffix}`), visitor, now);
   }
   attempts.delete(visitor);
   const response = redirect('/');
@@ -60,6 +66,13 @@ export async function POST(request: NextRequest) {
     maxAge: BETA_SESSION_SECONDS,
   });
   response.cookies.set(BETA_IDENTITY_COOKIE, betaCodeIdentity(code), {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: BETA_SESSION_SECONDS,
+  });
+  if (scene) response.cookies.set(BETA_SCENE_COOKIE, `${scene.time}.${scene.weather}`, {
     httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -80,5 +93,6 @@ export async function DELETE(_request: NextRequest) {
     maxAge: 0,
   });
   response.cookies.set(BETA_IDENTITY_COOKIE, '', { path: '/', maxAge: 0 });
+  response.cookies.set(BETA_SCENE_COOKIE, '', { path: '/', maxAge: 0 });
   return response;
 }
