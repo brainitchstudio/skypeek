@@ -17,6 +17,7 @@ import type { RadarFrame } from '@/api/weather';
 import { temp, type Units } from '@/lib/format';
 import type { AlertLevel, Place, WeatherAlert } from '@/lib/types';
 import { loadWarningCounties } from '@/lib/warningCounties';
+import stations from './stations.json';
 
 // Next's bundler can't resolve MapLibre's worker, so `npm run dev` and `build` copy it to public/.
 // Hostinger serves .mjs as text/plain; module workers require a JavaScript MIME type.
@@ -119,6 +120,7 @@ export type RadarState = {
   rulerPoints?: MapPoint[];
   pointCheck?: { from: MapPoint | null; spot: MapPoint } | null;
   showCoverage?: boolean;
+  showRadarSites?: boolean;
   coverageExtent?: RadarExtent | null;
   coverageTiles?: string | null;
   frame: number;
@@ -174,7 +176,7 @@ export class RadarController {
   private tempUrl = '';
   private drawn: unknown[] = [];
 
-  constructor(el: HTMLElement, basemap: number, onView: (b: Bounds) => void, onPick: (p: MapPick) => void, onRadarError?: () => void, onMapPoint?: (p: MapPoint) => void, onFrameReady?: (ready: boolean, clean: boolean) => void, onStormObject?: (id: string) => void) {
+  constructor(el: HTMLElement, basemap: number, onView: (b: Bounds) => void, onPick: (p: MapPick) => void, onRadarError?: () => void, onMapPoint?: (p: MapPoint) => void, onFrameReady?: (ready: boolean, clean: boolean) => void, onStormObject?: (id: string) => void, onRadarSite?: (id: string) => void) {
     this.pickStorm = onPick;
     this.mapPoint = onMapPoint;
     this.frameReadyCallback = onFrameReady;
@@ -221,6 +223,10 @@ export class RadarController {
         return;
       }
       if (this.last?.mapPicking) { const w = e.lngLat.wrap(); onMapPoint?.({ lat: w.lat, lon: w.lng }); return; }
+      if (this.last?.showRadarSites) {
+        const site = this.map.queryRenderedFeatures(e.point, { layers: ['radar-site-hit'] })[0];
+        if (site) { onRadarSite?.(String(site.properties.id)); return; }
+      }
       if (this.last?.simulated) return; // nothing real to report on the demo
       const { x, y } = e.point, { lat, lng: lon } = e.lngLat;
       const storm = this.map.queryRenderedFeatures([[x - HIT_PX, y - HIT_PX], [x + HIT_PX, y + HIT_PX]], { layers: ['storm-cells'] })[0];
@@ -229,6 +235,8 @@ export class RadarController {
       this.clickTimer = setTimeout(() => onPick({ lat, lon, stormId, alertIds }), DOUBLE_CLICK_MS);
     });
     this.map.on('dblclick', () => clearTimeout(this.clickTimer));
+    this.map.on('mouseenter', 'radar-site-hit', () => { this.map.getCanvas().style.cursor = 'pointer'; });
+    this.map.on('mouseleave', 'radar-site-hit', () => { this.map.getCanvas().style.cursor = ''; });
     this.ro = new ResizeObserver(() => this.map.resize());
     this.ro.observe(el);
   }
@@ -307,6 +315,7 @@ export class RadarController {
     const m = this.map;
     SOURCES.forEach(s => m.addSource(s, { type: 'geojson', data: collection([]) }));
     m.addSource('counties', { type: 'geojson', data: collection([]) });
+    m.addSource('radar-sites', { type: 'geojson', data: collection(stations.map(site => point([site.lat, site.lon], { id: site.id }))) });
     m.addLayer({ id: 'counties-low', type: 'line', source: 'counties', minzoom: 6, maxzoom: COUNTY_LOW_MAX_ZOOM, paint: {
       'line-color': countyColor(this.basemap), 'line-width': 0.6,
     } }, 'boundary-state');
@@ -359,6 +368,15 @@ export class RadarController {
     m.addLayer({ id: 'warning-county-glyph', type: 'symbol', source: 'warning-county-icons', layout: {
       'text-field': '!', 'text-font': ['Noto Sans Bold'], 'text-size': 16, 'text-allow-overlap': true, 'text-ignore-placement': true,
     }, paint: { 'text-color': ['get', 'fg'] } });
+    m.addLayer({ id: 'radar-site-dot', type: 'circle', source: 'radar-sites', minzoom: 6, paint: {
+      'circle-radius': 7, 'circle-color': '#253b61', 'circle-stroke-color': '#fff', 'circle-stroke-width': 2.5,
+    } });
+    m.addLayer({ id: 'radar-site-label', type: 'symbol', source: 'radar-sites', minzoom: 7.5, layout: {
+      'text-field': ['get', 'id'], 'text-font': ['Noto Sans Bold'], 'text-size': 11, 'text-offset': [0, -1.5],
+    }, paint: { 'text-color': '#253b61', 'text-halo-color': '#fff', 'text-halo-width': 2 } });
+    m.addLayer({ id: 'radar-site-hit', type: 'circle', source: 'radar-sites', minzoom: 6, paint: {
+      'circle-radius': 18, 'circle-color': '#253b61', 'circle-opacity': 0.01,
+    } });
     this.ready = true;
     if (this.last) this.update(this.last);
   };
@@ -378,6 +396,10 @@ export class RadarController {
       this.lastDraw = '';
     }
     if (!this.ready) return;
+    const siteVisibility = s.showRadarSites ? 'visible' : 'none';
+    this.map.setLayoutProperty('radar-site-dot', 'visibility', siteVisibility);
+    this.map.setLayoutProperty('radar-site-label', 'visibility', siteVisibility);
+    this.map.setLayoutProperty('radar-site-hit', 'visibility', siteVisibility);
     this.drawLive(s);
     this.drawTools(s);
     this.drawLightning(s);

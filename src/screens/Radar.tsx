@@ -63,6 +63,11 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
   const [coverage, setCoverage] = useState(false);
   const [extent, setExtent] = useState<RadarExtent | null>(null);
   const [stationHealth, setStationHealth] = useState<{ id: string; value: StationStatus | null; failed: boolean } | null>(null);
+  const [showRadarSites, setShowRadarSites] = useState(true);
+  const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
+  const [siteHealth, setSiteHealth] = useState<{ id: string; value: StationStatus | null; failed: boolean } | null>(null);
+  const onRadarSite = useRef((_: string) => {});
+  onRadarSite.current = id => { setSelectedSiteId(id); setPick(null); setDockMenu(null); };
   const [mapWarnings, setMapWarnings] = useState<WeatherAlert[]>([]);
   const [placeCounty, setPlaceCounty] = useState<string | null>(null);
   const [showAlerts, setShowAlerts] = useState(false);
@@ -161,7 +166,7 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
         const next = new Set(failed); next.delete(url); return next;
       });
     };
-    const c = new RadarController(el.current!, basemap, setBounds, setPick, () => { setTileError(true); setPlaying(false); const url = forecastUrl.current; if (url) setFailedForecast(failed => new Set(failed).add(url)); }, p => onMapPoint.current(p), onFrameReady, id => onStormObject.current(id));
+    const c = new RadarController(el.current!, basemap, setBounds, setPick, () => { setTileError(true); setPlaying(false); const url = forecastUrl.current; if (url) setFailedForecast(failed => new Set(failed).add(url)); }, p => onMapPoint.current(p), onFrameReady, id => onStormObject.current(id), id => onRadarSite.current(id));
     ctrl.current = c;
     return () => { ctrl.current = null; c.destroy(); };
     // The controller handles style changes without recreating the map.
@@ -220,6 +225,15 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
       .catch(() => { if (!stale) setStationHealth({ id: station.id, value: null, failed: true }); });
     return () => { stale = true; };
   }, [coverage, src, station.id, tick]);
+  useEffect(() => {
+    if (!selectedSiteId) return;
+    let stale = false;
+    setSiteHealth({ id: selectedSiteId, value: null, failed: false });
+    getStationStatus(selectedSiteId).then(value => { if (!stale) setSiteHealth({ id: selectedSiteId, value, failed: false }); })
+      .catch(() => { if (!stale) setSiteHealth({ id: selectedSiteId, value: null, failed: true }); });
+    return () => { stale = true; };
+  }, [selectedSiteId]);
+  const selectedSite = NOAA_STATIONS.find(site => site.id === selectedSiteId);
   const coverageTiles = src === 1 ? imageryTiles('rainviewer', 'https://tilecache.rainviewer.com/v2/coverage/0/256/{z}/{x}/{y}/0/0_0.png') : null;
 
   const wantGrid = !simulated && (active[3] || active[4]);
@@ -347,8 +361,8 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
     return [...byId.values()];
   }, [mapWarnings, alerts, bounds, place.lat, place.lon, placeCounty]);
   useEffect(() => {
-    ctrl.current?.update({ place, active, simulated, frame, playing, liveFrames: timeline, alerts: showAlerts ? mapAlerts : [], lightning, lightningStrikes, storms: pickingStorm ? [] : alignedStorms, grid, units: s.units, selectedStormId: pick?.stormId, selectedLightningId: pick?.lightningId, mapPicking: ruler || (check !== null && !pickingStorm), pickingStorm, stormOutlines, selectedOutlineId: check?.source.kind === 'storm' ? check.source.id : null, rulerPoints: ruler ? rulerPoints : [], pointCheck: check?.spot ? { from: checkFrom, spot: check.spot } : null, showCoverage: coverage, coverageExtent: noaa ? extent : null, coverageTiles });
-  }, [place, active, simulated, frame, playing, timeline, mapAlerts, showAlerts, lightning, lightningStrikes, alignedStorms, grid, s.units, pick?.stormId, pick?.lightningId, ruler, rulerPoints, check, checkFrom, pickingStorm, stormOutlines, coverage, noaa, extent, coverageTiles]);
+    ctrl.current?.update({ place, active, simulated, frame, playing, liveFrames: timeline, alerts: showAlerts ? mapAlerts : [], lightning, lightningStrikes, storms: pickingStorm ? [] : alignedStorms, grid, units: s.units, selectedStormId: pick?.stormId, selectedLightningId: pick?.lightningId, mapPicking: ruler || (check !== null && !pickingStorm), pickingStorm, stormOutlines, selectedOutlineId: check?.source.kind === 'storm' ? check.source.id : null, rulerPoints: ruler ? rulerPoints : [], pointCheck: check?.spot ? { from: checkFrom, spot: check.spot } : null, showCoverage: coverage, coverageExtent: noaa ? extent : null, coverageTiles, showRadarSites });
+  }, [place, active, simulated, frame, playing, timeline, mapAlerts, showAlerts, lightning, lightningStrikes, alignedStorms, grid, s.units, pick?.stormId, pick?.lightningId, ruler, rulerPoints, check, checkFrom, pickingStorm, stormOutlines, coverage, noaa, extent, coverageTiles, showRadarSites]);
 
   const labels = simulated ? DEMO_LABELS : timeline.map(f => f.label);
   const n = labels.length;
@@ -446,6 +460,15 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
               <div key={value}><i style={{ background: color }} /><span>{value}</span></div>)}
           </div>}
         </div>}
+        {selectedSite && <section className="radar-site-card" aria-label={`${selectedSite.id} radar site`}>
+          <div className="radar-site-head"><div><strong>{selectedSite.id} · {selectedSite.name}</strong><small>NOAA radar station</small></div>
+            <button type="button" aria-label="Close radar site" onClick={() => setSelectedSiteId(null)}><X size={18} aria-hidden /></button></div>
+          <p>{siteHealth?.id !== selectedSite.id || !siteHealth.value && !siteHealth.failed ? 'Checking station status…' : siteHealth.failed ? 'Station status unavailable.' : `${siteHealth.value?.status} · ${siteHealth.value?.mode}`}</p>
+          {siteHealth?.id === selectedSite.id && siteHealth.value?.at && <small>Report: {new Date(siteHealth.value.at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</small>}
+          <button type="button" className="radar-site-open" onClick={() => { set({ radarSrc: 5, radarStation: selectedSite.id, radarProduct: 'sr_bref' }); setSelectedSiteId(null); }}>
+            View {selectedSite.id} radar
+          </button>
+        </section>}
         {dockMenu === 'layers' && <DockMenu kicker="MAP OVERLAYS" title="Layers" onClose={() => showMenu(null)}>
           {LAYERS.map((name, i) => <DockCheck key={name} label={name} checked={active[i]} onToggle={() => setActive(current => current.map((value, index) => index === i ? !value : value))} />)}
           <DockCheck label={`Alerts${alerts.length ? ` · ${alerts.length} at ${place.name}` : ''}`} checked={showAlerts} onToggle={() => { setShowAlerts(value => !value); setPick(null); }} />
@@ -470,6 +493,9 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
             <option value={1}>RainViewer</option><option value={0}>Demo</option>
             {owKey && <option value={2}>OpenWeather</option>}{tmKey && <option value={3}>Tomorrow.io</option>}
           </select></label>
+          <div className="dock-menu-divider" />
+          <DockCheck label="Radar sites on map" checked={showRadarSites} onToggle={() => { setShowRadarSites(value => !value); setSelectedSiteId(null); }} />
+          <small>Tap a site marker to view its radar. Markers appear when zoomed into a region.</small>
           <div className="dock-menu-divider" />
           <DockCheck label="Show radar coverage" checked={coverage} onToggle={() => setCoverage(v => !v)} />
           {coverage && <div className="dock-coverage-details">
