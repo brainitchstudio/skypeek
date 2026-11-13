@@ -64,7 +64,7 @@ See the [deployment guide](docs/hostinger-deployment.md) for GitHub and Hostinge
 
 ### Publishing an update
 
-Advance the version in `package.json` and `package-lock.json` with `npm version <next-version> --no-git-tag-version`, then add that version's notes to `src/lib/releases.ts`. A returning visitor sees the notes for versions newer than the last version they opened. Tour completion, saved places, and settings remain in that browser's local storage across updates and beta code changes on the same domain. A new browser or cleared site data starts the location choice and tour again.
+Advance the version in `package.json` and `package-lock.json` with `npm version <next-version> --no-git-tag-version`, then add that version's notes to `src/lib/releases.ts`. A returning visitor sees the notes for versions newer than the last version they opened. Tour completion uses a stable marker, and saved places and settings are written immediately with a recoverable previous copy of nonsecret preferences. They remain in that browser's local storage across deployments and beta code changes on the same domain. A new browser or cleared site data starts the location choice and tour again.
 
 ## Data and project notes
 

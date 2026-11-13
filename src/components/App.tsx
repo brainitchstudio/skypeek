@@ -7,9 +7,10 @@ import { MobileNav } from './MobileNav';
 import { LocationWelcome, TOUR_STEPS, WelcomeTour, WhatsNew } from './Onboarding';
 import { routeAlert } from '@/lib/alerts';
 import { APP_VERSION, compareVersions, RELEASES, unseenReleases } from '@/lib/releases';
-import { hasChosenLocation, hasCompletedTour, markLocationChosen, markTourComplete } from '@/lib/onboardingState';
+import { hasChosenLocation, hasCompletedTour, markLocationChosen, markTourComplete, VERSION_KEY } from '@/lib/onboardingState';
 import { BETA_SCENE_COOKIE, parseScene, pickScene, type Scene } from '@/lib/betaScene';
-import { SETTINGS_KEY, SettingsProvider, useSettings, type Screen } from '@/lib/settings';
+import { SettingsProvider, useSettings, type Screen } from '@/lib/settings';
+import { saveSettings } from '@/lib/settingsPersistence';
 import type { Place } from '@/lib/types';
 import { useAlertDelivery, useWeather } from '@/lib/useWeather';
 import { AlertDetailScreen, AlertsScreen } from '@/screens/Alerts';
@@ -20,7 +21,6 @@ import { TodayScreen } from '@/screens/Today';
 
 // MapLibre is about 1 MB, so only the Radar screen loads it.
 const RadarScreen = dynamic(() => import('@/screens/Radar').then(m => m.RadarScreen), { ssr: false });
-const VERSION_KEY = 'sky-peek-last-seen-version';
 const SCENE_KEY = 'sky-peek-onboarding-scene';
 
 function useActivePlace(): { place: Place; gpsError: string | null } {
@@ -77,7 +77,7 @@ function Shell() {
       locationChosen = hasChosenLocation(localStorage);
     } catch { /* start onboarding if storage is unavailable */ }
     setLastSeenVersion(seen);
-    if (!tourComplete) setIntro(locationChosen ? 'tour' : 'location');
+    if (!tourComplete) setIntro(locationChosen || s.places.length === 1 ? 'tour' : 'location');
     else if (!seen || compareVersions(APP_VERSION, seen) > 0) setIntro('release');
   }, []);
 
@@ -106,7 +106,7 @@ function Shell() {
   const chooseFirstPlace = (chosen: Place) => {
     const next = { ...s, places: [chosen], defaultPlace: chosen.id, gps: false, screen: 'today' as const };
     try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(next));
+      saveSettings(localStorage, next);
       markLocationChosen(localStorage);
     } catch { /* the app still works for this visit if storage is unavailable */ }
     set(next);

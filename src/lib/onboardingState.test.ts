@@ -12,8 +12,20 @@ function storage(initial: Record<string, string> = {}) {
 }
 
 describe('onboarding completion', () => {
+  it('migrates the latest versioned marker to the stable key', () => {
+    const saved = storage({ 'sky-peek-tour-complete-v3': 'yes' });
+    expect(hasCompletedTour(saved)).toBe(true);
+    expect(saved.getItem(TOUR_KEY)).toBe('yes');
+  });
+
   it('keeps the original completed tour after an app update', () => {
     const saved = storage({ 'sky-peek-tour-complete-v1': 'yes' });
+    expect(hasCompletedTour(saved)).toBe(true);
+    expect(saved.getItem(TOUR_KEY)).toBe('yes');
+  });
+
+  it('uses a previously seen release as proof the tour was completed', () => {
+    const saved = storage({ 'sky-peek-last-seen-version': '1.5.0' });
     expect(hasCompletedTour(saved)).toBe(true);
     expect(saved.getItem(TOUR_KEY)).toBe('yes');
   });

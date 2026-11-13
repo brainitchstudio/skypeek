@@ -1,13 +1,14 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { Units } from './format';
 import type { Place } from './types';
+import { loadSettings, saveSettings } from './settingsPersistence';
 
 export type Screen = 'today' | 'hourly' | 'days' | 'radar' | 'alerts' | 'alertDetail' | 'settings';
 export type SettingsTab = 'general' | 'alerts' | 'locations' | 'radar' | 'data';
 
-const DEFAULTS = {
+export const DEFAULTS = {
   screen: 'today' as Screen,
   day: 0,
   alertId: null as string | null,
@@ -39,25 +40,23 @@ const DEFAULTS = {
 export type Settings = typeof DEFAULTS;
 export type SetSettings = (patch: Partial<Settings> | ((s: Settings) => Partial<Settings>)) => void;
 
-export const SETTINGS_KEY = 'sky-peek-settings';
-
 function load(): Settings {
-  try {
-    const saved = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? '{}') } as Settings;
-    return { ...saved, screen: 'today', basemap: saved.basemap === 2 ? 2 : 0 };
-  } catch {
-    return DEFAULTS;
-  }
+  try { return loadSettings(localStorage, DEFAULTS); } catch { return DEFAULTS; }
 }
 
 const Ctx = createContext<{ s: Settings; set: SetSettings } | null>(null);
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [s, setState] = useState(load);
+  const latest = useRef(s);
   const set = useCallback<SetSettings>(patch => {
-    setState(cur => ({ ...cur, ...(typeof patch === 'function' ? patch(cur) : patch) }));
+    const current = latest.current;
+    const next = { ...current, ...(typeof patch === 'function' ? patch(current) : patch) };
+    latest.current = next;
+    try { saveSettings(localStorage, next); } catch { /* browser storage may be unavailable */ }
+    setState(next);
   }, []);
-  useEffect(() => { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch { /* browser storage may be unavailable */ } }, [s]);
+  useEffect(() => { try { saveSettings(localStorage, latest.current); } catch { /* browser storage may be unavailable */ } }, []);
   const value = useMemo(() => ({ s, set }), [s, set]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
