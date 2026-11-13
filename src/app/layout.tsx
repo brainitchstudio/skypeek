@@ -4,7 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Sky Peek',
+  title: 'SkyPeek',
   description: 'Forecasts, radar and severe weather alerts.',
 };
 

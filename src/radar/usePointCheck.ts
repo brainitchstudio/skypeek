@@ -35,9 +35,11 @@ const LOADING = { state: 'loading' } as const;
  */
 export function resolveStormObject(id: string, last: StormObject, feed: StormFeed | null, fresh: boolean, seenAt: number, goneAt: number | null, alerts: WeatherAlert[] | null, spot: MapPoint | null, now: number, answer: { spot: MapPoint; arrival: Arrival } | null = null): StormTrack {
   const found = feed?.storms.find(s => s.id === id);
+  // Only a successful lookup can reverse a confirmed loss. A retained feed may
+  // still contain the ID while the current refresh has failed.
+  if (goneAt !== null && (!fresh || !feed || !found || feed.at <= goneAt)) return { state: 'gone', storm: last, asOf: goneAt };
   if (!found) {
     if (fresh && feed && feed.at > seenAt) return { state: 'gone', storm: last, asOf: feed.at };
-    if (goneAt !== null) return { state: 'gone', storm: last, asOf: goneAt };
   }
   const storm = found && found.at >= last.at ? found : last;
   // A failed fetch keeps the last answer. Recalculating would slide an old outline on with nothing to confirm it.

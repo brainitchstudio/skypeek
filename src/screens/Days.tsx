@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { Pending, StaleNote } from './shared';
 import { Icon } from '@/components/ui';
 import { dailyOutlook } from '@/lib/forecast';
@@ -39,6 +40,7 @@ export function DaysScreen({ weather }: { weather: Weather }) {
   const f = weather.forecast;
   const days = f?.days ?? [];
   const sel = Math.min(s.day, Math.max(0, days.length - 1));
+  const [expandedDay, setExpandedDay] = useState<number | null>(sel);
   const { p, pick } = useDayPanes(sel);
   const range = useMemo(() => {
     const v = days.flatMap(d => [d.hiF, d.loF]).filter((x): x is number => x != null);
@@ -62,14 +64,37 @@ export function DaysScreen({ weather }: { weather: Weather }) {
       <div className="days-body">
         <div className="day-list">
           {days.map((d, i) => (
-            <button type="button" key={d.date} className={`day-row${i === sel ? ' sel' : ''}`} onClick={() => { pick(i); set({ day: i }); }}>
+            <div key={d.date} className={`day-card${i === expandedDay ? ' open' : ''}`}>
+            <button type="button" className={`day-row${i === sel ? ' sel' : ''}`}
+              aria-expanded={i === expandedDay} aria-controls={`day-detail-${d.date}`}
+              onClick={() => {
+                const next = window.matchMedia('(max-width: 700px)').matches && expandedDay === i ? null : i;
+                setExpandedDay(next);
+                if (next !== null) { pick(i); set({ day: i }); }
+              }}>
               <div className="d">{d.short}</div>
               <Icon kind={d.icon} />
-              <div className="pop">{d.pop == null ? '–' : d.pop ? `${d.pop}%` : ''}</div>
+              <div className="pop">{d.pop == null ? '–' : `${d.pop}%`}</div>
               <div className="lo">{temp(d.loF, s.units)}</div>
               <div className="range"><div style={row(d)} /></div>
               <div className="hi">{d.hiEstimated ? '~' : ''}{temp(d.hiF, s.units)}</div>
+              <ChevronDown className="day-chevron" size={18} aria-hidden="true" />
             </button>
+            <div id={`day-detail-${d.date}`} className="day-card-detail" aria-hidden={i !== expandedDay}>
+              <div className="day-card-detail-inner">
+                <div className="day-card-detail-content">
+                  <div className="day-card-date">{d.dateLabel}</div>
+                  <div className="day-card-name">{d.name}</div>
+                  <p className="day-card-summary">{d.summary}</p>
+                  <div className="day-card-stats">
+                    <div><span>Rain</span><strong>{d.pop == null ? '–' : `${d.pop}%`}</strong></div>
+                    <div><span>Wind</span><strong>{d.windMph == null ? '–' : `${d.windMph} mph`}</strong></div>
+                  </div>
+                  {d.source && <div className="provenance">{d.highFrom ? `Text from ${d.source}. High from ${d.highFrom}.` : `From ${d.source}.`}</div>}
+                </div>
+              </div>
+            </div>
+            </div>
           ))}
         </div>
         <div className="day-panel">

@@ -1,9 +1,9 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Binoculars } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Switcher } from './Switcher';
+import { MobileNav } from './MobileNav';
 import { LocationWelcome, TOUR_STEPS, WelcomeTour, WhatsNew } from './Onboarding';
 import { routeAlert } from '@/lib/alerts';
 import { APP_VERSION, compareVersions, RELEASES, unseenReleases } from '@/lib/releases';
@@ -111,9 +111,8 @@ function Shell() {
 
   return (
     <main className={`app${showBrand ? ' app-branded' : ''}${s.screen === 'today' ? ' app-today' : ''}`} data-direction={direction}>
-      {showBrand && <header className="app-brand" aria-label="Sky Peek">
-        <span className="app-brand-glyph" aria-hidden="true"><Binoculars size={28} strokeWidth={1.8} /></span>
-        <span aria-hidden="true">Sky Peek</span>
+      {showBrand && <header className="app-brand" aria-label="SkyPeek">
+        <span aria-hidden="true">SkyPeek</span>
       </header>}
       {s.screen === 'today' && <TodayScreen {...common} banner={banner} onHour={i => { setHour(i); nav('hourly'); }} />}
       {s.screen === 'hourly' && <HourlyScreen weather={weather} selected={hour} onSelect={setHour} />}
@@ -131,6 +130,13 @@ function Shell() {
           onSelect={k => { if (k === 'settings') nav(k, { setTab: 'alerts' }); else nav(k); }}
         />
       </div>
+      <MobileNav
+        active={s.screen}
+        badge={weather.alerts.length > 0}
+        place={place}
+        onManagePlaces={() => nav('settings', { setTab: 'locations' })}
+        onSelect={k => { if (k === 'settings') nav(k, { setTab: 'alerts' }); else nav(k); }}
+      />
       {intro === 'location' && <LocationWelcome scene={scene} onChoose={chooseFirstPlace} />}
       {intro === 'tour' && <WelcomeTour scene={scene} step={tourStep} onBack={() => moveTour(tourStep - 1)} onNext={() => moveTour(tourStep + 1)} onSkip={finishTour} />}
       {intro === 'release' && <WhatsNew scene={scene} releases={unseenReleases(lastSeenVersion).length ? unseenReleases(lastSeenVersion) : RELEASES.slice(0, 1)} onClose={closeRelease} />}

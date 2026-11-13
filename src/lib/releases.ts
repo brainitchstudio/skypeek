@@ -8,6 +8,15 @@ export type Release = { version: string; title: string; changes: string[] };
 // visitor are shown together the next time they open the app.
 export const RELEASES: Release[] = [
   {
+    version: '1.5.0',
+    title: 'Forecasts that fit your phone',
+    changes: [
+      'Hourly is now a touch-friendly list. Tap an hour to see its conditions and forecast sources right there.',
+      '10 Day forecasts now expand inside each day’s card, with a smooth open and close animation.',
+      'Radar controls are easier to use on a phone, and you can select NOAA radar sites directly on the map.',
+    ],
+  },
+  {
     version: '0.5.0',
     title: 'Weather all around Today',
     changes: [

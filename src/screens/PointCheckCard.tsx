@@ -14,7 +14,7 @@ const clock = (ms: number) => new Date(ms).toLocaleTimeString([], { hour: 'numer
 const NA = 'Unavailable';
 const ago = (check: PointCheck, at: number) => Math.max(0, Math.round((check.asOf - at) / 60_000));
 const CENTER = 'Distance is to the storm\'s center. The feed gives no storm size.';
-const RULE = "This level is Sky Peek's own rule from reported and observed storm motion, not a forecast. Storms can turn, split or weaken.";
+const RULE = "This level is SkyPeek's own rule from reported and observed storm motion, not a forecast. Storms can turn, split or weaken.";
 const percent = (n: number | null) => (n === null ? NA : `${n}%`);
 /** "3:45 PM", with the day first when it isn't today. */
 const until = (ms: number) => {

@@ -10,6 +10,7 @@ describe('beta onboarding versions', () => {
 
   it('shows release notes only for newer versions', () => {
     expect(unseenReleases('0.1.0').map(release => release.version)).toContain(APP_VERSION);
+    expect(unseenReleases('0.5.0')[0]).toMatchObject({ version: '1.5.0', title: 'Forecasts that fit your phone' });
     expect(unseenReleases(APP_VERSION)).toEqual([]);
     expect(unseenReleases('9.0.0')).toEqual([]);
   });

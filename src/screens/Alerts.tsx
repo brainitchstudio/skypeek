@@ -14,8 +14,8 @@ function useCurrent(alerts: WeatherAlert[]) {
 function Empty({ place, weather }: Pick<ScreenProps, 'place' | 'weather'>) {
   const { status } = weather.alertFeed;
   const [h, p] = status === 'fresh' ? ['No active alerts', `The National Weather Service has nothing active for ${place.name}.`]
-    : status === 'stale' ? ['Alert status is out of date', `Sky Peek can’t reach the National Weather Service, so there may be alerts for ${place.name} that aren’t shown.`]
-    : status === 'unsupported' ? ['Alerts aren’t available here', `National Weather Service alerts cover the US. Sky Peek has no alert source for ${place.name}.`]
+    : status === 'stale' ? ['Alert status is out of date', `SkyPeek can’t reach the National Weather Service, so there may be alerts for ${place.name} that aren’t shown.`]
+    : status === 'unsupported' ? ['Alerts aren’t available here', `National Weather Service alerts cover the US. SkyPeek has no alert source for ${place.name}.`]
     : ['Checking for alerts', `Waiting on the National Weather Service for ${place.name}.`];
   return (
     <div className="alert-empty">

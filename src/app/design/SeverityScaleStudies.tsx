@@ -20,7 +20,7 @@ const scales: Record<Mode, Scale> = {
       { name: 'Heavy', detail: 'Heavy downpour', color: PRECIP_HEX[2] },
       { name: 'Very heavy', detail: 'Intense downpour', color: PRECIP_HEX[3] },
     ],
-    note: 'Uses Sky Peek’s existing four flat rain bands.',
+    note: 'Uses SkyPeek’s existing four flat rain bands.',
   },
   snow: {
     label: 'Snow intensity', icon: CloudSnow,

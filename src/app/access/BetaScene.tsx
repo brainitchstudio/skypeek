@@ -134,7 +134,7 @@ export function BetaScene({ time, weather, invalid = false, unavailable = false,
       </>}
     </div>
     {!backdropOnly && <main className="sp-main">
-      <h1 className="sp-logo">Sky Peek</h1>
+      <h1 className="sp-logo">SkyPeek</h1>
       {unavailable ? <p className="sp-error" role="alert">Beta access is temporarily unavailable.</p> : <>
         <form action="/api/access" method="post" className="sp-form">
           <input type="hidden" name="sceneTime" value={time} />

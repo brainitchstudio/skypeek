@@ -1,4 +1,4 @@
-import { Layers3, LocateFixed, Map, MapPin, Minus, Pause, Play, Plus, Ruler, RadioTower, Search, SkipBack, SkipForward, FastForward, X, Zap } from 'lucide-react';
+import { Layers3, LocateFixed, Map, MapPin, Minus, Pause, Play, Plus, RadioTower, Search, SkipBack, SkipForward, FastForward, X, Zap } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PointCheckCard } from './PointCheckCard';
 import { LightningCard, PointCard, StormCard, WarningCard } from './RadarInfo';
@@ -11,19 +11,19 @@ import { getRadarFrames, radarSourceFor, restoredSource, type RadarFrame } from 
 import { PRECIP_HEX } from '@/radar/flat';
 import { noaaFetch } from '@/radar/noaaTransport';
 import { getNoaaFrames, nearestStation, NOAA_PRODUCTS, NOAA_STATIONS } from '@/radar/noaa';
-import { alignedCells, contains, forecastBanner, frameAfterRefresh, isForecast, measure, mergeTimeline, type MapPoint, type RadarExtent } from '@/radar/tools';
+import { alignedCells, forecastBanner, frameAfterRefresh, isForecast, mergeTimeline, type MapPoint } from '@/radar/tools';
 import { prefetchForecast } from '@/radar/forecastTiles';
 import { frameUnavailable, timelineState } from '@/radar/forecastTimeline';
 import { FORECAST_HOURS } from '@/radar/hrrr';
 import { useForecastFrames } from '@/radar/useForecastFrames';
 import { getStationStatus, type StationStatus } from '@/radar/status';
-import { imageryTiles, RAINVIEWER_SCALE } from '@/radar/imagery';
+import { RAINVIEWER_SCALE } from '@/radar/imagery';
 import { useSettings } from '@/lib/settings';
 import type { WeatherAlert } from '@/lib/types';
 import { countyFipsAt } from '@/lib/warningCounties';
 import { usePointCheck, useStormObjects, type CheckSource } from '@/radar/usePointCheck';
 import { checkPrompt, outlineAt } from '@/radar/checkMode';
-import { RadarController, type MapPick } from '@/radar/controller';
+import { RadarController, type MapPick, type RadarMapView } from '@/radar/controller';
 import { arrivalPhrase, stormArrival } from '@/radar/proximity';
 import { getLightningStrikes, getOpenWeatherLightning, LIGHTNING_SAFETY_MI, nearestStrike, type LightningStrike } from '@/radar/lightning';
 import './radarDock.css';
@@ -53,18 +53,17 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
   const selectedTime = useRef<number | undefined>(undefined);
   const forecastUrl = useRef<string | null>(null);
   const [failedForecast, setFailedForecast] = useState<ReadonlySet<string>>(new Set());
-  const [ruler, setRuler] = useState(false);
-  const [rulerPoints, setRulerPoints] = useState<MapPoint[]>([]);
   const [check, setCheck] = useState<{ source: CheckSource; warning?: WeatherAlert; spot: MapPoint | null; noOutline?: boolean } | null>(null);
   const onMapPoint = useRef((_: MapPoint) => {});
   const onStormObject = useRef((_: string) => {});
   onStormObject.current = id => setCheck({ source: { kind: 'storm', id }, spot: null });
-  onMapPoint.current = p => { if (check) setCheck({ ...check, spot: { ...p } }); else setRulerPoints(points => points.length < 2 ? [...points, p] : [p]); };
-  const [coverage, setCoverage] = useState(false);
-  const [extent, setExtent] = useState<RadarExtent | null>(null);
-  const [stationHealth, setStationHealth] = useState<{ id: string; value: StationStatus | null; failed: boolean } | null>(null);
-  const [showRadarSites, setShowRadarSites] = useState(true);
+  onMapPoint.current = p => { if (check) setCheck({ ...check, spot: { ...p } }); };
+  const [showRadarSites, setShowRadarSites] = useState(false);
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
+  const [activeStationId, setActiveStationId] = useState<string | null>(() => s.radarSrc === 5 ? s.radarStation || nearestStation(place.lat, place.lon).id : null);
+  const stationReturn = useRef<{ radarSrc: number; radarStation: string; radarProduct: string; view: RadarMapView | null } | null>(
+    s.radarSrc === 5 ? { radarSrc: 4, radarStation: '', radarProduct: 'sr_bref', view: null } : null,
+  );
   const [siteHealth, setSiteHealth] = useState<{ id: string; value: StationStatus | null; failed: boolean } | null>(null);
   const onRadarSite = useRef((_: string) => {});
   onRadarSite.current = id => { setSelectedSiteId(id); setPick(null); setDockMenu(null); };
@@ -126,7 +125,7 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
     let stale = false;
     const abort = new AbortController();
     if (previousSource.current !== sourceKey) {
-      setLiveFrames([]); setLegend(''); setExtent(null); setPlaying(false); setFailedForecast(new Set()); followLatest.current = true;
+      setLiveFrames([]); setLegend(''); setPlaying(false); setFailedForecast(new Set()); followLatest.current = true;
       previousSource.current = sourceKey;
     }
     setRadarError(false); setTileError(false); setLoading(true); setLegendError(false);
@@ -135,7 +134,6 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
       if (stale) return;
       setLiveFrames(r.frames);
       if (!r.frames.length) setFrame(r.now);
-      setExtent('extent' in r ? r.extent as RadarExtent | null : null);
       setLegend('legend' in r ? r.legend as string : '');
       setLegendKey(sourceKey);
     }).catch(() => { if (!stale) setRadarError(true); })
@@ -166,7 +164,7 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
         const next = new Set(failed); next.delete(url); return next;
       });
     };
-    const c = new RadarController(el.current!, basemap, setBounds, setPick, () => { setTileError(true); setPlaying(false); const url = forecastUrl.current; if (url) setFailedForecast(failed => new Set(failed).add(url)); }, p => onMapPoint.current(p), onFrameReady, id => onStormObject.current(id), id => onRadarSite.current(id));
+    const c = new RadarController(el.current!, basemap, setBounds, p => { setPick(p); setDockMenu(null); }, () => { setTileError(true); setPlaying(false); const url = forecastUrl.current; if (url) setFailedForecast(failed => new Set(failed).add(url)); }, p => onMapPoint.current(p), onFrameReady, id => onStormObject.current(id), id => onRadarSite.current(id));
     ctrl.current = c;
     return () => { ctrl.current = null; c.destroy(); };
     // The controller handles style changes without recreating the map.
@@ -218,14 +216,6 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
   const alignedStorms = useMemo(() => view.forecast ? [] : selectedAt === undefined ? storms : history?.at === selectedAt && history.phase === 'ready' ? history.cells : [], [view.forecast, selectedAt, storms, history]);
 
   useEffect(() => {
-    if (!coverage || src !== 5) return;
-    let stale = false;
-    setStationHealth({ id: station.id, value: null, failed: false });
-    getStationStatus(station.id).then(value => { if (!stale) setStationHealth({ id: station.id, value, failed: false }); })
-      .catch(() => { if (!stale) setStationHealth({ id: station.id, value: null, failed: true }); });
-    return () => { stale = true; };
-  }, [coverage, src, station.id, tick]);
-  useEffect(() => {
     if (!selectedSiteId) return;
     let stale = false;
     setSiteHealth({ id: selectedSiteId, value: null, failed: false });
@@ -234,7 +224,26 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
     return () => { stale = true; };
   }, [selectedSiteId]);
   const selectedSite = NOAA_STATIONS.find(site => site.id === selectedSiteId);
-  const coverageTiles = src === 1 ? imageryTiles('rainviewer', 'https://tilecache.rainviewer.com/v2/coverage/0/256/{z}/{x}/{y}/0/0_0.png') : null;
+  const activeStation = NOAA_STATIONS.find(site => site.id === activeStationId);
+  const viewStation = () => {
+    if (!selectedSite) return;
+    if (!activeStationId) stationReturn.current = {
+      radarSrc: s.radarSrc, radarStation: s.radarStation, radarProduct: s.radarProduct,
+      view: ctrl.current?.getView() ?? null,
+    };
+    set({ radarSrc: 5, radarStation: selectedSite.id, radarProduct: 'sr_bref' });
+    setActiveStationId(selectedSite.id);
+    ctrl.current?.focusStation(selectedSite);
+    setSelectedSiteId(null);
+  };
+  const exitStation = () => {
+    const previous = stationReturn.current;
+    stationReturn.current = null;
+    setActiveStationId(null);
+    if (!previous) return;
+    set({ radarSrc: previous.radarSrc, radarStation: previous.radarStation, radarProduct: previous.radarProduct });
+    if (previous.view) ctrl.current?.restoreView(previous.view);
+  };
 
   const wantGrid = !simulated && (active[3] || active[4]);
 
@@ -328,7 +337,8 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
   }, [fromCell, feed]);
   const prompt = stormMode ? checkPrompt({ picking: pickingStorm, hasSpot: !!check?.spot, failed: stormObjects.failed, loaded: !!feed || stormObjects.failed, count: feed?.storms.length ?? 0, noOutline: !!check?.noOutline, track: pointCheck.storm }) : null;
   const canCheck = !simulated && !view.historical && !view.forecast && view.latest >= 0;
-  const startCheck = (source: CheckSource, found?: { warning?: WeatherAlert }) => { setPick(null); setRuler(false); setCheck({ source, ...found, spot: null }); };
+  useEffect(() => { if (!canCheck) setCheck(null); }, [canCheck]);
+  const startCheck = (source: CheckSource, found?: { warning?: WeatherAlert }) => { setPick(null); setCheck({ source, ...found, spot: null }); };
   const pickAgain = () => setCheck({ source: { kind: 'pick-storm' }, spot: null });
   useEffect(() => {
     if (!check) return;
@@ -361,8 +371,8 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
     return [...byId.values()];
   }, [mapWarnings, alerts, bounds, place.lat, place.lon, placeCounty]);
   useEffect(() => {
-    ctrl.current?.update({ place, active, simulated, frame, playing, liveFrames: timeline, alerts: showAlerts ? mapAlerts : [], lightning, lightningStrikes, storms: pickingStorm ? [] : alignedStorms, grid, units: s.units, selectedStormId: pick?.stormId, selectedLightningId: pick?.lightningId, mapPicking: ruler || (check !== null && !pickingStorm), pickingStorm, stormOutlines, selectedOutlineId: check?.source.kind === 'storm' ? check.source.id : null, rulerPoints: ruler ? rulerPoints : [], pointCheck: check?.spot ? { from: checkFrom, spot: check.spot } : null, showCoverage: coverage, coverageExtent: noaa ? extent : null, coverageTiles, showRadarSites });
-  }, [place, active, simulated, frame, playing, timeline, mapAlerts, showAlerts, lightning, lightningStrikes, alignedStorms, grid, s.units, pick?.stormId, pick?.lightningId, ruler, rulerPoints, check, checkFrom, pickingStorm, stormOutlines, coverage, noaa, extent, coverageTiles, showRadarSites]);
+    ctrl.current?.update({ place, active, simulated, frame, playing, liveFrames: timeline, alerts: showAlerts ? mapAlerts : [], lightning, lightningStrikes, storms: pickingStorm ? [] : alignedStorms, grid, units: s.units, selectedStormId: pick?.stormId, selectedLightningId: pick?.lightningId, mapPicking: check !== null && !pickingStorm, pickingStorm, stormOutlines, selectedOutlineId: check?.source.kind === 'storm' ? check.source.id : null, rulerPoints: [], pointCheck: check?.spot ? { from: checkFrom, spot: check.spot } : null, showRadarSites });
+  }, [place, active, simulated, frame, playing, timeline, mapAlerts, showAlerts, lightning, lightningStrikes, alignedStorms, grid, s.units, pick?.stormId, pick?.lightningId, check, checkFrom, pickingStorm, stormOutlines, showRadarSites]);
 
   const labels = simulated ? DEMO_LABELS : timeline.map(f => f.label);
   const n = labels.length;
@@ -379,7 +389,6 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
 
   const selectFrame = (next: number) => { setPlaying(false); followLatest.current = false; setFrame(Math.max(0, Math.min(n - 1, next))); setPick(null); };
   const jumpLatest = () => { setPlaying(false); followLatest.current = true; setFrame(Math.max(0, simulated ? n - 1 : view.latest)); setPick(null); };
-  const measurement = rulerPoints.length === 2 ? measure(rulerPoints[0], rulerPoints[1]) : null;
   const nearLightning = wantLightning && lightningMi?.place === place.id ? lightningMi : null;
   const closestStrike = nearestStrike(lightningStrikes, place.lat, place.lon);
   const lightningDistance = [closestStrike?.miles, nearLightning?.miles].filter((m): m is number => m !== null && m !== undefined).reduce<number | null>((best, miles) => best === null ? miles : Math.min(best, miles), null);
@@ -435,12 +444,8 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
           <DockTool label="Layers" ariaLabel={`Layers menu${alerts.length ? `, ${alerts.length} active alert${alerts.length === 1 ? '' : 's'} at ${place.name}` : ''}`} icon={Layers3} tone="tool-source" open={dockMenu === 'layers'} onClick={() => toggleMenu('layers')}>
             {alerts.length > 0 && <span className="count">{alerts.length}</span>}
           </DockTool>
-          <DockTool label="Radar source" icon={RadioTower} tone="tool-source" open={dockMenu === 'source'} onClick={() => toggleMenu('source')} />
+          <DockTool label="Map radar imagery" icon={RadioTower} tone="tool-source" open={dockMenu === 'source'} onClick={() => toggleMenu('source')} />
           {canCheck && <DockTool label="SpotCheck" icon={MapPin} tone="tool-ruler" toggle on={check !== null} onClick={() => { showMenu(null); if (check) setCheck(null); else startCheck({ kind: 'pick-storm' }); }} />}
-          <DockTool label="Measure" icon={Ruler} tone="tool-ruler" toggle on={ruler} open={dockMenu === 'ruler'} onClick={() => {
-            if (ruler) { setRuler(false); showMenu(null); }
-            else { setRuler(true); setPick(null); setCheck(null); showMenu('ruler'); }
-          }} />
           <button type="button" className="dock-control dock-map-style" aria-label={basemap === 2 ? 'Show flat map' : 'Show satellite imagery'}
             title={basemap === 2 ? 'Show flat map' : 'Show satellite imagery'} onClick={() => set({ basemap: basemap === 2 ? 0 : 2 })}>
             <Map size={21} aria-hidden />
@@ -463,15 +468,16 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
         {selectedSite && <section className="radar-site-card" aria-label={`${selectedSite.id} radar site`}>
           <div className="radar-site-head"><div><strong>{selectedSite.id} · {selectedSite.name}</strong><small>NOAA radar station</small></div>
             <button type="button" aria-label="Close radar site" onClick={() => setSelectedSiteId(null)}><X size={18} aria-hidden /></button></div>
+          <p>View weather radar data from this station?</p>
           <p>{siteHealth?.id !== selectedSite.id || !siteHealth.value && !siteHealth.failed ? 'Checking station status…' : siteHealth.failed ? 'Station status unavailable.' : `${siteHealth.value?.status} · ${siteHealth.value?.mode}`}</p>
           {siteHealth?.id === selectedSite.id && siteHealth.value?.at && <small>Report: {new Date(siteHealth.value.at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</small>}
-          <button type="button" className="radar-site-open" onClick={() => { set({ radarSrc: 5, radarStation: selectedSite.id, radarProduct: 'sr_bref' }); setSelectedSiteId(null); }}>
-            View {selectedSite.id} radar
-          </button>
+          <div className="radar-site-actions"><button type="button" className="radar-site-open" onClick={viewStation}>View radar</button><button type="button" onClick={() => setSelectedSiteId(null)}>Cancel</button></div>
         </section>}
         {dockMenu === 'layers' && <DockMenu kicker="MAP OVERLAYS" title="Layers" onClose={() => showMenu(null)}>
           {LAYERS.map((name, i) => <DockCheck key={name} label={name} checked={active[i]} onToggle={() => setActive(current => current.map((value, index) => index === i ? !value : value))} />)}
           <DockCheck label={`Alerts${alerts.length ? ` · ${alerts.length} at ${place.name}` : ''}`} checked={showAlerts} onToggle={() => { setShowAlerts(value => !value); setPick(null); }} />
+          <DockCheck label="Weather stations" checked={showRadarSites} onToggle={() => { setShowRadarSites(value => !value); setSelectedSiteId(null); }} />
+          <small>Show NOAA radar stations on the map. Tap a station icon to view its radar.</small>
           <small>{showAlerts ? warningsState === 'loading' && !mapAlerts.length ? 'Loading NWS alerts…' : warningsState === 'failed' && !mapAlerts.length ? 'NWS alerts unavailable.' : mapAlerts.length ? `${mapAlerts.length} alert${mapAlerts.length === 1 ? '' : 's'} in this map view. Highlighted counties have alert icons; tap one for the NWS text. County shading can extend beyond a published polygon.` : 'No NWS alerts in this map view.' : 'Turn on Alerts to highlight affected counties and show NWS alert polygons where available.'}</small>
           {alerts.length > 0 && <div className="dock-layer-alerts"><strong>Active at {place.name}</strong>{alerts.map(a => (
             <button type="button" key={a.id} className="dock-alert" onClick={() => nav('alertDetail', { alertId: a.id })}>
@@ -481,42 +487,17 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
             </button>
           ))}</div>}
         </DockMenu>}
-        {dockMenu === 'ruler' && <DockMenu kicker="RADAR TOOL" title="Measure" onClose={() => showMenu(null)}>
-          <DockCheck label="Measure on map" checked={ruler} onToggle={() => { setRuler(v => !v); setPick(null); setCheck(null); }} />
-          {ruler && measurement && <div className="ruler-value">{(s.units === 'F' ? measurement.miles : measurement.km).toFixed(1)} {s.units === 'F' ? 'mi' : 'km'} · {Math.round(measurement.bearing)}°</div>}
-          <small>{!ruler ? 'Measure the distance and bearing between two points.' : measurement ? 'Initial bearing from the first point. Click again to start a new line.' : rulerPoints.length ? 'Click the second point on the map.' : 'Click two points on the map to measure.'}</small>
-          {ruler && <button type="button" onClick={() => setRulerPoints([])} disabled={!rulerPoints.length}>Clear measurement</button>}
-        </DockMenu>}
-        {dockMenu === 'source' && <DockMenu kicker="RADAR TOOL" title="Radar source" onClose={() => showMenu(null)}>
-          <label>Source<select value={s.radarSrc} onChange={e => set({ radarSrc: Number(e.target.value) })}>
-            <option value={4}>NOAA · National radar</option><option value={5}>NOAA · Radar station</option>
+        {dockMenu === 'source' && <DockMenu kicker="MAP RADAR" title="Radar imagery" onClose={() => showMenu(null)}>
+          <small>Choose the radar shown on the map. To view a specific station, turn on Weather stations in Layers and tap its icon.</small>
+          <label>Map imagery source<select value={s.radarSrc} onChange={e => { stationReturn.current = null; setActiveStationId(null); set({ radarSrc: Number(e.target.value) }); }}>
+            <option value={4}>NOAA · National radar</option>{src === 5 && <option value={5}>Station · {station.id} radar</option>}
             <option value={1}>RainViewer</option><option value={0}>Demo</option>
             {owKey && <option value={2}>OpenWeather</option>}{tmKey && <option value={3}>Tomorrow.io</option>}
           </select></label>
-          <div className="dock-menu-divider" />
-          <DockCheck label="Radar sites on map" checked={showRadarSites} onToggle={() => { setShowRadarSites(value => !value); setSelectedSiteId(null); }} />
-          <small>Tap a site marker to view its radar. Markers appear when zoomed into a region.</small>
-          <div className="dock-menu-divider" />
-          <DockCheck label="Show radar coverage" checked={coverage} onToggle={() => setCoverage(v => !v)} />
-          {coverage && <div className="dock-coverage-details">
-          <span>{loading ? 'Checking imagery…' : radarError ? 'Imagery update unavailable' : tileError ? 'Some imagery tiles failed' : liveFrames.length ? 'Imagery metadata available' : simulated ? 'Demo imagery' : 'No imagery available'}</span>
-          <small>{liveFrames.at(-1)?.at ? `Latest frame: ${new Date(liveFrames.at(-1)!.at!).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})} · ${Math.max(0, Math.floor((Date.now()-liveFrames.at(-1)!.at!)/60000))} min old` : 'Image acquisition time unavailable'}</small>
-          <small>{src === 1 ? 'Shaded areas are outside RainViewer’s published coverage mask.' : noaa ? 'Shaded areas are outside the published product extent. Unshaded areas do not guarantee a usable radar return.' : 'No verified coverage mask for this source.'}</small>
-          {noaa && extent && bounds && <span>{contains(extent, {lat:(bounds.south+bounds.north)/2,lon:(bounds.west+bounds.east)/2}) ? 'Map center inside product extent' : 'Map center outside product extent'}</span>}
-          </div>}
           {src === 5 && <>
-            <span>NWS {station.id}: {stationHealth?.id === station.id ? stationHealth.failed ? 'Status unavailable' : stationHealth.value ? `${stationHealth.value.status} · ${stationHealth.value.mode}` : 'Checking…' : 'Checking…'}</span>
-            {stationHealth?.id === station.id && stationHealth.value && <small>{stationHealth.value.at ? `Status report ${new Date(stationHealth.value.at).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}${Date.now()-stationHealth.value.at > 20*60000 || stationHealth.value.at > Date.now()+60000 ? ' · timing uncertain or stale' : ''}` : 'Status report time unavailable'}{stationHealth.value.alarm ? ` · Reported alarm: ${stationHealth.value.alarm}` : ''}</small>}
-          </>}
-          {src === 5 && <>
-            <label>Station<select value={s.radarStation} onChange={e => set({ radarStation: e.target.value })}>
-              <option value="">Nearest to {place.name} · {nearestStation(place.lat, place.lon).id}</option>
-              {NOAA_STATIONS.map(r => <option key={r.id} value={r.id}>{r.id} · {r.name}</option>)}
-            </select></label>
             <label>Product<select value={product.id} onChange={e => set({ radarProduct: e.target.value })}>
               {NOAA_PRODUCTS.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select></label>
-            <button type="button" className="station-view" onClick={() => ctrl.current?.showPlace({ ...station, region: 'NOAA radar station' })}>View {station.id} on map</button>
           </>}
           <small>{src === 5 && product.id === 'sr_bvel' ? 'Velocity toward or away from the radar, not surface wind.' : noaa ? 'Original NOAA imagery. Blank areas can be outside coverage.' : 'Original provider imagery.'}</small>
         </DockMenu>}
@@ -557,6 +538,10 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
           {noaa ? 'NOAA / NWS' : src === 1 ? 'RainViewer' : ''}
         </small>}
       </div>
+      {activeStation && <div className="radar-station-banner" role="status">
+        <span>Radar: <strong>{activeStation.id} · {activeStation.name}</strong></span>
+        <button type="button" aria-label={`Exit ${activeStation.id} radar and restore previous view`} onClick={exitStation}><X size={18} aria-hidden /></button>
+      </div>}
       {historical && <div className="radar-playback-context" role="status">
         <strong>Historical radar frame</strong>
         {active[1] && <span>{selectedAt === undefined ? 'Storm tracks use latest reports because this frame has no scan time.' : 'Storm tracks use reports within five minutes of this frame, when available.'}</span>}
@@ -570,12 +555,19 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
 
       {n > 1 && (
         <div className="scrub">
-          <button type="button" className="play" aria-label="Previous radar frame" disabled={frame <= 0} onClick={() => selectFrame(frame - 1)}><SkipBack size={14} aria-hidden /></button>
-          <button type="button" className="play" aria-label={playing ? 'Pause' : 'Play'} onClick={() => setPlaying(p => !p)}>{playing ? <Pause size={14} fill="currentColor" aria-hidden /> : <Play size={14} fill="currentColor" aria-hidden />}</button>
-          <button type="button" className="play" aria-label="Next radar frame" disabled={frame >= n - 1} onClick={() => selectFrame(frame + 1)}><SkipForward size={14} aria-hidden /></button>
-          <label className="playback-speed"><select aria-label="Playback speed" value={speed} onChange={e => setSpeed(Number(e.target.value))}><option value={0.5}>½×</option><option value={1}>1×</option><option value={2}>2×</option></select></label>
-          {forecast.frames.length > 0 && <label className="playback-speed"><select aria-label="Forecast range" value={forecastHours} onChange={e => set({ radarForecastHours: Number(e.target.value) })}>{FORECAST_HOURS.map(h => <option key={h} value={h}>{h} h</option>)}</select></label>}
-          {playing && !simulated && !frameReady && <span className="frame-loading" role="status">Loading</span>}
+          <div className="scrub-controls">
+            <div className="scrub-transport">
+              <button type="button" className="play" aria-label="Previous radar frame" disabled={frame <= 0} onClick={() => selectFrame(frame - 1)}><SkipBack size={14} aria-hidden /></button>
+              <button type="button" className="play" aria-label={playing ? 'Pause' : 'Play'} onClick={() => setPlaying(p => !p)}>{playing ? <Pause size={14} fill="currentColor" aria-hidden /> : <Play size={14} fill="currentColor" aria-hidden />}</button>
+              <button type="button" className="play" aria-label="Next radar frame" disabled={frame >= n - 1} onClick={() => selectFrame(frame + 1)}><SkipForward size={14} aria-hidden /></button>
+            </div>
+            <div className="scrub-options">
+              <label className="playback-speed"><select aria-label="Playback speed" value={speed} onChange={e => setSpeed(Number(e.target.value))}><option value={0.5}>½×</option><option value={1}>1×</option><option value={2}>2×</option></select></label>
+              {forecast.frames.length > 0 && <label className="playback-speed"><select aria-label="Forecast range" value={forecastHours} onChange={e => set({ radarForecastHours: Number(e.target.value) })}>{FORECAST_HOURS.map(h => <option key={h} value={h}>{h} h</option>)}</select></label>}
+            </div>
+            {playing && !simulated && !frameReady && <span className="frame-loading" role="status">Loading</span>}
+            <button type="button" className="latest-frame" aria-label="Jump to latest radar scan" onClick={jumpLatest}><FastForward size={14} aria-hidden /><span>Latest</span></button>
+          </div>
           <div className="rail">
             <div className="line" />
             {view.nowPct !== null && <div className="forecast-line" style={{ left: `${view.nowPct}%` }} />}
@@ -583,15 +575,15 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
             {view.forecast && view.nowPct !== null && <div className="forecast-fill" style={{ left: `${view.nowPct}%`, width: `calc(${pct} - ${view.nowPct}%)` }} />}
             {view.nowPct !== null && <div className="now-mark" style={{ left: `${view.nowPct}%` }}>Now</div>}
             <div className="knob" style={{ left: pct }} />
-            <div className="stamp" style={{ left: pct }}>{labels[frame]}</div>
+            <div className="stamp" style={{ left: pct, transform: frame === 0 ? 'translateX(0)' : frame === n - 1 ? 'translateX(-100%)' : 'translateX(-50%)' }}>{labels[frame]}</div>
             <div className="hit" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
               {labels.map((l, i) => {
                 const unavailable = frameUnavailable(timeline[i], failedForecast);
                 return <button type="button" key={i} title={l} className={unavailable ? 'unavailable' : undefined} aria-label={unavailable ? `Forecast frame unavailable, ${l}` : `Show ${l}`} aria-pressed={frame === i} onClick={() => selectFrame(i)} />;
               })}
             </div>
+            <input className="scrub-mobile-range" type="range" min={0} max={n - 1} value={frame} aria-label="Radar frame" aria-valuetext={labels[frame]} onChange={e => selectFrame(Number(e.target.value))} />
           </div>
-          <button type="button" className="latest-frame" aria-label="Jump to latest radar scan" onClick={jumpLatest}><FastForward size={14} aria-hidden />Latest</button>
         </div>
       )}
     </div>

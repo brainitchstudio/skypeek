@@ -1,4 +1,4 @@
-import { ArrowUpRight, Binoculars, Sun, CloudSun, Wind, Droplets, Sunrise, Radar, CalendarDays, SlidersHorizontal, ChartNoAxesColumn } from 'lucide-react';
+import { ArrowUpRight, Sun, CloudSun, Wind, Droplets, Sunrise, Radar, CalendarDays, SlidersHorizontal, ChartNoAxesColumn } from 'lucide-react';
 import './design.css';
 import { FlatLibrary } from './FlatLibrary';
 
@@ -12,14 +12,14 @@ const concepts = [
 
 export default function DesignPage() {
   return <main className="design-page">
-    <header className="design-heading"><a href="/">Sky Peek <ArrowUpRight size={15} /></a><span>THE MOBILE EDITION · DESIGN STUDIES</span></header>
+    <header className="design-heading"><a href="/">SkyPeek <ArrowUpRight size={15} /></a><span>THE MOBILE EDITION · DESIGN STUDIES</span></header>
     <FlatLibrary />
     <section className="design-intro" id="concepts"><p>FIVE WAYS TO MEET THE DAY</p><h1>A forecast.<br />A feeling.</h1><div>Two quiet essentials. Three with a mid-century soul. Exploring Today on mobile, with the same sample forecast in every direction.</div></section>
     <div className="design-grid">{concepts.map((concept, index) => <article className="design-study" key={concept.theme}>
       <div className="design-caption"><span>{concept.category}</span><h2>{concept.name}</h2><p>{concept.description}</p></div>
       <div className={`phone ${concept.theme}`} aria-label={`${concept.name} mobile Today mockup`}>
         <div className="phone-status"><b>9:41</b><span aria-label="Full signal and battery">▮▮▮ &nbsp; ▰</span></div>
-        <header className="phone-brand"><Binoculars size={22} strokeWidth={1.6} /><span>Sky Peek</span><span className="edition">{index > 1 ? 'DAILY / 05' : 'Today'}</span></header>
+        <header className="phone-brand"><span>SkyPeek</span><span className="edition">{index > 1 ? 'DAILY / 05' : 'Today'}</span></header>
         <div className="phone-place"><span>Bentonville, AR</span><span>Thursday, November 5</span></div>
         <div className="phone-hero"><div className="sun-art" aria-hidden="true"><Sun strokeWidth={1} /></div><div className="phone-temp">67<span>°</span></div><div className="phone-condition">Sunny <span>H 69° &nbsp; L 44°</span></div></div>
         <div className="phone-summary"><span className="tiny-label">THE OUTLOOK</span><p>{concept.tagline}</p><small>Clear skies through the afternoon.<br />A cool, comfortable evening ahead.</small></div>
@@ -29,6 +29,6 @@ export default function DesignPage() {
         <div className="home-indicator" />
       </div>
     </article>)}</div>
-    <footer className="design-footer">SKY PEEK / MOBILE EXPLORATIONS<span>Concept mockups · Sample weather</span></footer>
+    <footer className="design-footer">SKYPEEK / MOBILE EXPLORATIONS<span>Concept mockups · Sample weather</span></footer>
   </main>;
 }

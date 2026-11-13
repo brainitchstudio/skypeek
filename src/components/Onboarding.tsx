@@ -117,7 +117,7 @@ export function WhatsNew({ scene, releases, onClose }: { scene: Scene; releases:
     {releases.length ? releases.map(release => <section key={release.version} className="onboard-release-entry">
       <h3>{release.title} <small>v{release.version}</small></h3>
       <ul>{release.changes.map(change => <li key={change}>{change}</li>)}</ul>
-    </section>) : <p>Sky Peek has been updated. Take a look around to see what’s new.</p>}
-    <div className="onboard-actions"><span /><button type="button" className="onboard-primary" onClick={onClose} autoFocus>Explore Sky Peek <span aria-hidden>→</span></button></div>
+    </section>) : <p>SkyPeek has been updated. Take a look around to see what’s new.</p>}
+    <div className="onboard-actions"><span /><button type="button" className="onboard-primary" onClick={onClose} autoFocus>Explore SkyPeek <span aria-hidden>→</span></button></div>
   </OnboardingFrame>;
 }

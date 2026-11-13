@@ -30,9 +30,9 @@ function shown<T>(r: Lookup<T>, text: (v: T) => ReactNode) {
   return r.state === 'loading' ? 'Checking…' : r.state === 'failed' ? 'Unavailable' : text(r.value);
 }
 
-function Card({ kicker, title, onClose, children }: { kicker: string; title: string; onClose: () => void; children: ReactNode }) {
+function Card({ kicker, title, onClose, children, className = '' }: { kicker: string; title: string; onClose: () => void; children: ReactNode; className?: string }) {
   return (
-    <section className="radar-card" aria-label={title}>
+    <section className={`radar-card ${className}`} aria-label={title}>
       <div className="top">
         <div>
           <div className="kicker">{kicker}</div>
@@ -64,7 +64,7 @@ export function PointCard({ pick, storms, alerts, units, stamp, nav, onClose, hi
   const title = weather.state === 'done' ? `${temp(weather.value.tempF, units)} · ${wmoText(weather.value.code)}` : 'This spot';
 
   return (
-    <Card kicker={`Live spot conditions · ${Math.abs(lat).toFixed(2)}° ${lat >= 0 ? 'N' : 'S'}, ${Math.abs(lon).toFixed(2)}° ${lon >= 0 ? 'E' : 'W'}`} title={title} onClose={onClose}>
+    <Card className="live-spot-card" kicker={`Live spot conditions · ${Math.abs(lat).toFixed(2)}° ${lat >= 0 ? 'N' : 'S'}, ${Math.abs(lon).toFixed(2)}° ${lon >= 0 ? 'E' : 'W'}`} title={title} onClose={onClose}>
       <dl>
         <Row label="Feels like">{shown(weather, w => temp(w.feelsF, units))}</Row>
         <Row label="Wind">{shown(weather, w => `${Math.round(w.windMph)} mph from ${degToCompass(w.windFrom)}`)}</Row>

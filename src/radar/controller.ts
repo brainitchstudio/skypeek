@@ -3,7 +3,7 @@ import { addProtocol, AttributionControl, Map as GlMap, Marker, Popup, setWorker
 import { mesh } from 'topojson-client';
 import type { GeometryCollection, Topology } from 'topojson-specification';
 import { FLAT_SCHEME, loadFlatTile, PRECIP_HEX, temperatureImage } from './flat';
-import type { MapPoint, RadarExtent } from './tools';
+import type { MapPoint } from './tools';
 import { IMAGERY_SCHEME, loadImageryTile } from './imagery';
 import { loadForecastTile } from './forecastTiles';
 import { FORECAST_SCHEME } from './hrrr';
@@ -104,8 +104,21 @@ function arrowImage() {
   return g.getImageData(0, 0, size, size);
 }
 
+/** A compact radar tower icon for the optional station layer. */
+function stationImage() {
+  const size = 32, c = document.createElement('canvas');
+  c.width = c.height = size;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#fff'; g.strokeStyle = '#253b61'; g.lineWidth = 2;
+  g.beginPath(); g.arc(16, 16, 14, 0, Math.PI * 2); g.fill(); g.stroke();
+  g.beginPath(); g.moveTo(16, 13); g.lineTo(11, 23); g.moveTo(16, 13); g.lineTo(21, 23); g.moveTo(12, 21); g.lineTo(20, 21); g.stroke();
+  g.fillStyle = '#253b61'; g.beginPath(); g.arc(16, 11, 2.5, 0, Math.PI * 2); g.fill();
+  return g.getImageData(0, 0, size, size);
+}
+
 /** A click on the map: a storm if one was hit, otherwise a spot and any alerts drawn there. */
 export type MapPick = { lat: number; lon: number; stormId: string | null; alertIds: string[]; lightningId?: string | null };
+export type RadarMapView = { center: [number, number]; zoom: number };
 
 export type RadarState = {
   place: Place;
@@ -119,10 +132,7 @@ export type RadarState = {
   selectedOutlineId?: string | null;
   rulerPoints?: MapPoint[];
   pointCheck?: { from: MapPoint | null; spot: MapPoint } | null;
-  showCoverage?: boolean;
   showRadarSites?: boolean;
-  coverageExtent?: RadarExtent | null;
-  coverageTiles?: string | null;
   frame: number;
   playing?: boolean;
   liveFrames: RadarFrame[];
@@ -134,7 +144,7 @@ export type RadarState = {
   units: Units;
 };
 
-const SOURCES = ['temp', 'precip', 'watch', 'alerts', 'warning-counties', 'warning-county-icons', 'tracks', 'track-dots', 'wind', 'storm-lines', 'storm-dots', 'grid', 'ruler', 'storm-outlines', 'point-check', 'coverage-area'] as const;
+const SOURCES = ['temp', 'precip', 'watch', 'alerts', 'warning-counties', 'warning-county-icons', 'tracks', 'track-dots', 'wind', 'storm-lines', 'storm-dots', 'grid', 'ruler', 'storm-outlines', 'point-check'] as const;
 type SourceName = (typeof SOURCES)[number];
 
 /** Owns the MapLibre map; React only pushes state into it. */
@@ -153,7 +163,6 @@ export class RadarController {
   private visitedForecasts: string[] = []; // oldest first
   private readyReported = false;
   private mapPoint?: (p: MapPoint) => void;
-  private coverageUrl: string | null = null;
   private toolKey = '';
   private pickStorm: (p: MapPick) => void;
   private me: Marker;
@@ -243,6 +252,17 @@ export class RadarController {
 
   zoom(dir: number) { if (dir > 0) this.map.zoomIn(); else this.map.zoomOut(); }
 
+  getView(): RadarMapView {
+    const center = this.map.getCenter();
+    return { center: [center.lng, center.lat], zoom: this.map.getZoom() };
+  }
+
+  restoreView(view: RadarMapView) { this.map.flyTo(view); }
+
+  focusStation(site: { lat: number; lon: number }) {
+    this.map.flyTo({ center: [site.lon, site.lat], zoom: Math.max(this.map.getZoom(), 7) });
+  }
+
   /** Switch base imagery while preserving the current view and search pin. */
   setBasemap(basemap: number) {
     if (basemap === this.basemap) return;
@@ -260,7 +280,6 @@ export class RadarController {
     this.alertKey = '';
     this.alertPopup?.remove();
     this.alertPopup = null;
-    this.coverageUrl = null;
     this.lightningUrl = null;
     this.tempUrl = '';
     this.drawn = [];
@@ -321,6 +340,7 @@ export class RadarController {
     } }, 'boundary-state');
     void loadCountyLines().then(f => (m.getSource('counties') as GeoJSONSource | undefined)?.setData(f));
     m.addImage('wind-arrow', arrowImage());
+    m.addImage('radar-station', stationImage());
     const under = (l: LayerSpecification) => m.addLayer(l, SLOT);
     under({ id: 'temp', type: 'fill', source: 'temp', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': ['get', 'opacity'] } });
     under({ id: 'precip', type: 'fill', source: 'precip', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.78 } });
@@ -347,8 +367,6 @@ export class RadarController {
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 3, 8, 6], 'circle-color': '#fff', 'circle-stroke-color': ['get', 'color'],
       'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 5, 1.5, 8, 2],
     } });
-    under({ id: 'coverage-outside', type: 'fill', source: 'coverage-area', filter: ['==', ['geometry-type'], 'Polygon'], paint: { 'fill-color': '#374151', 'fill-opacity': 0.18 } });
-    m.addLayer({ id: 'coverage-edge', type: 'line', source: 'coverage-area', paint: { 'line-color': '#555', 'line-width': 1.5, 'line-dasharray': [4, 3] } });
     m.addLayer({ id: 'ruler-line', type: 'line', source: 'ruler', filter: ['==', ['geometry-type'], 'LineString'], paint: { 'line-color': '#111', 'line-width': 3, 'line-dasharray': [3, 2] } });
     m.addLayer({ id: 'ruler-points', type: 'circle', source: 'ruler', filter: ['==', ['geometry-type'], 'Point'], paint: { 'circle-radius': 6, 'circle-color': '#fff', 'circle-stroke-color': '#111', 'circle-stroke-width': 3 } });
     m.addLayer({ id: 'storm-outlines-fill', type: 'fill', source: 'storm-outlines', paint: { 'fill-color': '#111', 'fill-opacity': 0.15 } });
@@ -368,13 +386,14 @@ export class RadarController {
     m.addLayer({ id: 'warning-county-glyph', type: 'symbol', source: 'warning-county-icons', layout: {
       'text-field': '!', 'text-font': ['Noto Sans Bold'], 'text-size': 16, 'text-allow-overlap': true, 'text-ignore-placement': true,
     }, paint: { 'text-color': ['get', 'fg'] } });
-    m.addLayer({ id: 'radar-site-dot', type: 'circle', source: 'radar-sites', minzoom: 6, paint: {
-      'circle-radius': 7, 'circle-color': '#253b61', 'circle-stroke-color': '#fff', 'circle-stroke-width': 2.5,
+    m.addLayer({ id: 'radar-site-dot', type: 'symbol', source: 'radar-sites', minzoom: 4, layout: {
+      'icon-image': 'radar-station', 'icon-size': ['interpolate', ['linear'], ['zoom'], 4, 0.7, 8, 1],
+      'icon-allow-overlap': true, 'icon-ignore-placement': true,
     } });
     m.addLayer({ id: 'radar-site-label', type: 'symbol', source: 'radar-sites', minzoom: 7.5, layout: {
       'text-field': ['get', 'id'], 'text-font': ['Noto Sans Bold'], 'text-size': 11, 'text-offset': [0, -1.5],
     }, paint: { 'text-color': '#253b61', 'text-halo-color': '#fff', 'text-halo-width': 2 } });
-    m.addLayer({ id: 'radar-site-hit', type: 'circle', source: 'radar-sites', minzoom: 6, paint: {
+    m.addLayer({ id: 'radar-site-hit', type: 'circle', source: 'radar-sites', minzoom: 4, paint: {
       'circle-radius': 18, 'circle-color': '#253b61', 'circle-opacity': 0.01,
     } });
     this.ready = true;
@@ -530,7 +549,7 @@ export class RadarController {
     const m = this.map;
     const picking = s.mapPicking || s.pickingStorm;
     if (picking) m.doubleClickZoom.disable(); else m.doubleClickZoom.enable();
-    const key = JSON.stringify([s.rulerPoints, s.pointCheck, s.showCoverage, s.coverageExtent, s.stormOutlines?.map(o => [o.id, o.at]), s.selectedOutlineId]);
+    const key = JSON.stringify([s.rulerPoints, s.pointCheck, s.stormOutlines?.map(o => [o.id, o.at]), s.selectedOutlineId]);
     if (key !== this.toolKey) {
       this.toolKey = key;
       const pts = s.rulerPoints ?? [];
@@ -540,19 +559,6 @@ export class RadarController {
       this.data('storm-outlines', outlineFeatures(s.stormOutlines ?? [], s.selectedOutlineId ?? null));
       const pc = s.pointCheck;
       this.data('point-check', pc ? [point([pc.spot.lat, pc.spot.lon]), ...(pc.from ? [line([[pc.from.lat, pc.from.lon], [pc.spot.lat, pc.spot.lon]])] : [])] : []);
-      const e = s.showCoverage ? s.coverageExtent : null;
-      this.data('coverage-area', e ? [{ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [
-        [[-180,-85],[180,-85],[180,85],[-180,85],[-180,-85]],
-        [[e.west,e.south],[e.west,e.north],[e.east,e.north],[e.east,e.south],[e.west,e.south]],
-      ] } }] : []);
-    }
-    const url = s.showCoverage ? s.coverageTiles ?? null : null, id = 'coverage-mask';
-    if (url === this.coverageUrl) return;
-    if (m.getLayer(id)) { m.removeLayer(id); m.removeSource(id); }
-    this.coverageUrl = url;
-    if (url) {
-      m.addSource(id, { type: 'raster', tiles: [url], tileSize: 256, maxzoom: 7 });
-      m.addLayer({ id, type: 'raster', source: id, paint: { 'raster-opacity': 0.3, 'raster-fade-duration': 0, 'raster-resampling': 'nearest' } }, 'watch-fill');
     }
   }
 

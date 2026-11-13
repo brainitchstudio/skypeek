@@ -46,7 +46,7 @@ export function SettingsScreen({ weather, place, gpsError, onReplayTour, onShowW
           <h1 className="title small">Settings</h1>
 
         </div>
-        <p className="settings-intro">Make Sky Peek feel at home. Your preferences are saved automatically on this device.</p>
+        <p className="settings-intro">Make SkyPeek feel at home. Your preferences are saved automatically on this device.</p>
         <div className="tabs" aria-label="Settings sections">
           {TABS.map(([k, label]) => (
             <button type="button" key={k} aria-current={s.setTab === k ? 'page' : undefined} className={s.setTab === k ? 'on' : ''} onClick={() => set({ setTab: k })}>{label}</button>
@@ -64,7 +64,7 @@ export function SettingsScreen({ weather, place, gpsError, onReplayTour, onShowW
           <Segmented<Units> value={s.units} onChange={units => set({ units })} options={[['F', '°F'], ['C', '°C']]} className="start" />
         </div>
         <div className="field">
-          <Label>Sky Peek guide</Label>
+          <Label>SkyPeek guide</Label>
           <button type="button" className="link" onClick={onReplayTour}>Replay welcome tour</button>
           <button type="button" className="link quiet" onClick={onShowWhatsNew}>What’s new</button>
         </div>
@@ -225,7 +225,7 @@ function Usage() {
   );
 }
 
-const sourceName = (x: ReportSource) => (x === 'blend' ? 'Sky Peek blend' : x === 'equal' ? 'Equal blend' : PROVIDER_NAMES[x]);
+const sourceName = (x: ReportSource) => (x === 'blend' ? 'SkyPeek blend' : x === 'equal' ? 'Equal blend' : PROVIDER_NAMES[x]);
 
 /** Temperature error in the user's units; degrees of difference, so no 32 offset. */
 function errorText(s: Stat | undefined, units: Units) {
@@ -282,7 +282,7 @@ function AccuracyPanel({ place }: { place: Place }) {
         </div>
       )}
       <div className="help">
-        Last {r.days} days. Of {cov.expected} hours since logging began, {cov.withForecast} had a saved forecast, {cov.withTruth} had a station reading and {cov.paired} could be scored{cov.pending ? `, with ${cov.pending} still waiting on readings` : ''}. Forecasts are only saved while Sky Peek is open and on screen. This doesn’t change the blend.
+        Last {r.days} days. Of {cov.expected} hours since logging began, {cov.withForecast} had a saved forecast, {cov.withTruth} had a station reading and {cov.paired} could be scored{cov.pending ? `, with ${cov.pending} still waiting on readings` : ''}. Forecasts are only saved while SkyPeek is open and on screen. This doesn’t change the blend.
       </div>
       <div><button type="button" className="link" disabled={saving} onClick={() => void save()}>Export data</button></div>
     </div>

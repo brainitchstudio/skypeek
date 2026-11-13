@@ -6,7 +6,7 @@ import { CodeGenerator } from './CodeGenerator';
 import '../access/access.css';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Sky Peek beta code manager', robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: 'SkyPeek beta code manager', robots: { index: false, follow: false } };
 
 export default async function BetaAdminPage({ searchParams }: { searchParams: Promise<{ invalid?: string }> }) {
   const ready = betaAdminReady();

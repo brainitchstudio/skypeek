@@ -56,9 +56,11 @@ describe('resolveStormObject', () => {
   });
   it('stays gone when a later fetch fails', () => {
     expect(run(at(NOW), false, NOW - MIN)).toMatchObject({ state: 'gone', asOf: NOW - MIN, storm: last });
+    expect(run({ at: NOW, storms: [newest] }, false, NOW - MIN)).toMatchObject({ state: 'gone', asOf: NOW - MIN, storm: last });
   });
   it('tracks again when a good feed lists the ID', () => {
     expect(run({ at: NOW, storms: [newest] }, true, NOW - MIN)).toMatchObject({ state: 'tracking', storm: newest });
+    expect(run({ at: NOW - MIN, storms: [last] }, true, NOW - MIN)).toMatchObject({ state: 'gone', asOf: NOW - MIN });
   });
   it('is not gone before a newer feed arrives', () => {
     expect(run(at(seen), true).state).toBe('tracking');

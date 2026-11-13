@@ -5,7 +5,7 @@ import { pickScene } from '@/lib/betaScene';
 import './beta-scene.css';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Sky Peek beta access', robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: 'SkyPeek beta access', robots: { index: false, follow: false } };
 
 export default async function AccessPage({ searchParams }: { searchParams: Promise<{ invalid?: string; time?: string; weather?: string }> }) {
   const params = await searchParams;

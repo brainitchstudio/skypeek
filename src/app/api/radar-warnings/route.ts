@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
   }
   try {
     const response = await fetch('https://api.weather.gov/alerts/active', {
-      headers: { accept: 'application/geo+json', 'user-agent': 'Sky Peek radar (weather app)' },
+      headers: { accept: 'application/geo+json', 'user-agent': 'SkyPeek radar (weather app)' },
       next: { revalidate: 60 }, signal: AbortSignal.timeout(15000),
     });
     if (!response.ok) throw new Error(`NWS alerts: ${response.status}`);
