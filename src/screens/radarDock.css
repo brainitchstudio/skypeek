@@ -65,11 +65,13 @@
 .dock-menu-divider { border-top: 1px solid #e6e6e2; }
 
 .radar-search { border: 1px solid #dcdcdc; border-radius: 7px; }
-@media (max-width: 1200px) { .radar .radar-left { top: 110px; width: min(650px, calc(100% - 32px)); } }
+@media (max-width: 1200px) { .radar .radar-left { top: 16px; width: min(650px, calc(100% - 32px)); } }
 @media (max-width: 700px) {
-  .radar .radar-left { left: 16px; top: 110px; width: calc(100% - 32px); }
-  .radar-dock { width: 100%; flex-wrap: wrap; justify-content: space-between; }
-  .dock-search-trigger { width: 100%; }
+  .radar .radar-left { left: 16px; top: 16px; width: calc(100% - 32px); }
+  .radar-dock { width: 100%; gap: 1px; padding: 4px; justify-content: space-between; }
+  .dock-search-trigger { width: 36px; height: 36px; padding: 0; border: 0; justify-content: center; }
+  .dock-search-trigger span { display: none; }
   .dock-zoom { border-left: 0; padding-left: 0; }
+  .dock-zoom button, .dock-control, .tool > button { width: 36px; height: 36px; }
 }
-@media (max-width: 520px) { .radar .radar-left { top: 142px; } .radar:has(.radar-right .noaa-key) .radar-left { top: 166px; } }
+@media (max-width: 380px) { .radar-dock { flex-wrap: wrap; } }

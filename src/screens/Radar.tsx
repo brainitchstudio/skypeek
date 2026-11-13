@@ -427,7 +427,25 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
             if (ruler) { setRuler(false); showMenu(null); }
             else { setRuler(true); setPick(null); setCheck(null); showMenu('ruler'); }
           }} />
+          <button type="button" className="dock-control dock-map-style" aria-label={basemap === 2 ? 'Show flat map' : 'Show satellite imagery'}
+            title={basemap === 2 ? 'Show flat map' : 'Show satellite imagery'} onClick={() => set({ basemap: basemap === 2 ? 0 : 2 })}>
+            <Map size={21} aria-hidden />
+          </button>
         </div>
+        {active[0] && (noaa || src === 1 || simulated) && <div
+          className={`legend radar-legend${noaa ? ' noaa-key' : ''}`}
+          aria-label={noaa ? `${src === 4 ? 'Reflectivity' : product.name} scale from NOAA` : src === 1 ? 'RainViewer rain reflectivity in dBZ' : 'Demo intensity bands'}
+          title={noaa ? `${src === 4 ? 'Reflectivity' : product.name} · NOAA` : src === 1 ? 'RainViewer rain reflectivity · dBZ; snow uses separate colors' : 'Demo intensity bands'}
+          aria-busy={noaa && !legendError && !(legendKey === sourceKey && legendImageKey === legend && legendImage)}>
+          {noaa ? <>
+            {legendKey === sourceKey && legendImageKey === legend && legendImage && !legendError
+              ? <img className="noaa-legend" src={legendImage} alt={`${src === 4 ? 'Reflectivity' : product.name} color scale from NOAA`} onError={() => setLegendError(true)} />
+              : <span className="legend-placeholder" role="status" aria-label={legendError ? 'Legend unavailable' : 'Loading matching legend'} />}
+          </> : <div className="radar-color-key">
+            {(src === 1 ? RAINVIEWER_SCALE : PRECIP_HEX.map((color, i) => ({ value: i + 1, color }))).slice().reverse().map(({ value, color }) =>
+              <div key={value}><i style={{ background: color }} /><span>{value}</span></div>)}
+          </div>}
+        </div>}
         {dockMenu === 'layers' && <DockMenu kicker="MAP OVERLAYS" title="Layers" onClose={() => showMenu(null)}>
           {LAYERS.map((name, i) => <DockCheck key={name} label={name} checked={active[i]} onToggle={() => setActive(current => current.map((value, index) => index === i ? !value : value))} />)}
           <DockCheck label={`Alerts${alerts.length ? ` · ${alerts.length} at ${place.name}` : ''}`} checked={showAlerts} onToggle={() => { setShowAlerts(value => !value); setPick(null); }} />
@@ -523,27 +541,6 @@ export function RadarScreen({ weather, place, nav }: ScreenProps) {
         <strong>{forecastBanner(timeline[frame])}</strong>
         <span>{active[1] && 'Storm tracks are hidden. '}{liveOverlayNames.join(', ')} are live.</span>
       </div>}
-
-      <div className="radar-right">
-        <button type="button" className="radar-map-style" aria-label={basemap === 2 ? 'Show flat map' : 'Show satellite imagery'}
-          title={basemap === 2 ? 'Show flat map' : 'Show satellite imagery'} onClick={() => set({ basemap: basemap === 2 ? 0 : 2 })}>
-          <Map size={20} aria-hidden />{basemap === 2 ? 'Flat' : 'Satellite'}
-        </button>
-        {active[0] && (noaa || src === 1 || simulated) && <div
-          className={`legend radar-legend${noaa ? ' noaa-key' : ''}`}
-          aria-label={noaa ? `${src === 4 ? 'Reflectivity' : product.name} scale from NOAA` : src === 1 ? 'RainViewer rain reflectivity in dBZ' : 'Demo intensity bands'}
-          title={noaa ? `${src === 4 ? 'Reflectivity' : product.name} · NOAA` : src === 1 ? 'RainViewer rain reflectivity · dBZ; snow uses separate colors' : 'Demo intensity bands'}
-          aria-busy={noaa && !legendError && !(legendKey === sourceKey && legendImageKey === legend && legendImage)}>
-          {noaa ? <>
-            {legendKey === sourceKey && legendImageKey === legend && legendImage && !legendError
-              ? <img className="noaa-legend" src={legendImage} alt={`${src === 4 ? 'Reflectivity' : product.name} color scale from NOAA`} onError={() => setLegendError(true)} />
-              : <span className="legend-placeholder" role="status" aria-label={legendError ? 'Legend unavailable' : 'Loading matching legend'} />}
-          </> : <div className="radar-color-key">
-            {(src === 1 ? RAINVIEWER_SCALE : PRECIP_HEX.map((color, i) => ({ value: i + 1, color }))).slice().reverse().map(({ value, color }) =>
-              <div key={value}><i style={{ background: color }} /><span>{value}</span></div>)}
-          </div>}
-        </div>}
-      </div>
 
       {n > 1 && (
         <div className="scrub">
