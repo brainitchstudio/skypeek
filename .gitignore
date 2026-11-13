@@ -12,4 +12,4 @@ public/maplibre-gl-worker.js
 !.env.example
 *.log
 /ChatGPT Image*.png
-/githubready/
+/.git-root-backup/

@@ -7,9 +7,9 @@ import { MobileNav } from './MobileNav';
 import { LocationWelcome, TOUR_STEPS, WelcomeTour, WhatsNew } from './Onboarding';
 import { routeAlert } from '@/lib/alerts';
 import { APP_VERSION, compareVersions, RELEASES, unseenReleases } from '@/lib/releases';
-import { hasCompletedTour, markTourComplete } from '@/lib/onboardingState';
+import { hasChosenLocation, hasCompletedTour, markLocationChosen, markTourComplete } from '@/lib/onboardingState';
 import { BETA_SCENE_COOKIE, parseScene, pickScene, type Scene } from '@/lib/betaScene';
-import { SettingsProvider, useSettings, type Screen } from '@/lib/settings';
+import { SETTINGS_KEY, SettingsProvider, useSettings, type Screen } from '@/lib/settings';
 import type { Place } from '@/lib/types';
 import { useAlertDelivery, useWeather } from '@/lib/useWeather';
 import { AlertDetailScreen, AlertsScreen } from '@/screens/Alerts';
@@ -70,9 +70,14 @@ function Shell() {
 
     let seen: string | null = null;
     let tourComplete = false;
-    try { seen = localStorage.getItem(VERSION_KEY); tourComplete = hasCompletedTour(localStorage); } catch { /* start the tour */ }
+    let locationChosen = false;
+    try {
+      seen = localStorage.getItem(VERSION_KEY);
+      tourComplete = hasCompletedTour(localStorage);
+      locationChosen = hasChosenLocation(localStorage);
+    } catch { /* start onboarding if storage is unavailable */ }
     setLastSeenVersion(seen);
-    if (!tourComplete) setIntro('location');
+    if (!tourComplete) setIntro(locationChosen ? 'tour' : 'location');
     else if (!seen || compareVersions(APP_VERSION, seen) > 0) setIntro('release');
   }, []);
 
@@ -99,7 +104,12 @@ function Shell() {
   };
   const startTour = () => { setTourStep(0); nav('today'); setIntro('tour'); };
   const chooseFirstPlace = (chosen: Place) => {
-    set({ places: [chosen], defaultPlace: chosen.id, gps: false, screen: 'today' });
+    const next = { ...s, places: [chosen], defaultPlace: chosen.id, gps: false, screen: 'today' as const };
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(next));
+      markLocationChosen(localStorage);
+    } catch { /* the app still works for this visit if storage is unavailable */ }
+    set(next);
     setTourStep(0);
     setIntro('tour');
   };

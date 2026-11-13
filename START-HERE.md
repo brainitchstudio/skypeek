@@ -9,4 +9,4 @@ This folder contains the source for the official public [Sky Peek repository](ht
 
 See [the deployment guide](docs/hostinger-deployment.md) for details. A PHP-only or static Git hosting flow cannot run the app's server routes. Generated codes can be reused until expiry; there is no per-code revocation or tester list. Rotating the signing secret invalidates all generated codes and active tester sessions.
 
-This standalone folder passed 888 tests and a production build on November 10, 2026. The beta access flow was also checked against a local production server. It has not been deployed to Hostinger from this folder.
+This project root is the checkout connected to the official GitHub repository. Commit and push from here to update the hosted app.

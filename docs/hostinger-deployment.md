@@ -19,7 +19,7 @@ git commit -m "Prepare Sky Peek for Hostinger deployment"
 git push -u origin main
 ```
 
-The `githubready` folder is a standalone source copy linked to the official repository. Include hidden files such as `.github`, `.gitignore`, `.nvmrc`, and `.env.example`; `.env.example` contains no secret values. The parent workspace ignores `githubready`, so a push from the parent repository will not update the official repository.
+The project root is the checkout linked to the official repository. Commit and push from this directory. Include hidden files such as `.github`, `.gitignore`, `.nvmrc`, and `.env.example`; `.env.example` contains no secret values.
 
 ## Set up the subdomain
 

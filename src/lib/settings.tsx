@@ -39,11 +39,11 @@ const DEFAULTS = {
 export type Settings = typeof DEFAULTS;
 export type SetSettings = (patch: Partial<Settings> | ((s: Settings) => Partial<Settings>)) => void;
 
-const KEY = 'sky-peek-settings';
+export const SETTINGS_KEY = 'sky-peek-settings';
 
 function load(): Settings {
   try {
-    const saved = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) ?? '{}') } as Settings;
+    const saved = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? '{}') } as Settings;
     return { ...saved, screen: 'today', basemap: saved.basemap === 2 ? 2 : 0 };
   } catch {
     return DEFAULTS;
@@ -57,7 +57,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const set = useCallback<SetSettings>(patch => {
     setState(cur => ({ ...cur, ...(typeof patch === 'function' ? patch(cur) : patch) }));
   }, []);
-  useEffect(() => { localStorage.setItem(KEY, JSON.stringify(s)); }, [s]);
+  useEffect(() => { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch { /* browser storage may be unavailable */ } }, [s]);
   const value = useMemo(() => ({ s, set }), [s, set]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

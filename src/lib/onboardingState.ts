@@ -1,8 +1,15 @@
 export const TOUR_KEY = 'sky-peek-tour-complete-v3';
+export const LOCATION_KEY = 'sky-peek-onboarding-location-chosen';
+const LEGACY_TOUR_KEY = 'sky-peek-tour-complete-v1';
 const LEGACY_TOUR_PREFIX = 'sky-peek-tour-complete-v2:';
 
 export function hasCompletedTour(storage: Pick<Storage, 'getItem' | 'setItem' | 'length' | 'key'>): boolean {
   if (storage.getItem(TOUR_KEY) === 'yes') return true;
+
+  if (storage.getItem(LEGACY_TOUR_KEY) === 'yes') {
+    try { storage.setItem(TOUR_KEY, 'yes'); } catch { /* still honor the old completion */ }
+    return true;
+  }
 
   // Earlier releases tied completion to the beta code. Carry any completed
   // tour forward when a tester renews access or the identity cookie expires.
@@ -18,4 +25,12 @@ export function hasCompletedTour(storage: Pick<Storage, 'getItem' | 'setItem' | 
 
 export function markTourComplete(storage: Pick<Storage, 'setItem'>) {
   storage.setItem(TOUR_KEY, 'yes');
+}
+
+export function hasChosenLocation(storage: Pick<Storage, 'getItem'>): boolean {
+  return storage.getItem(LOCATION_KEY) === 'yes';
+}
+
+export function markLocationChosen(storage: Pick<Storage, 'setItem'>) {
+  storage.setItem(LOCATION_KEY, 'yes');
 }

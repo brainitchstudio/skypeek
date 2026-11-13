@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hasCompletedTour, markTourComplete, TOUR_KEY } from './onboardingState';
+import { hasChosenLocation, hasCompletedTour, markLocationChosen, markTourComplete, TOUR_KEY } from './onboardingState';
 
 function storage(initial: Record<string, string> = {}) {
   const values = new Map(Object.entries(initial));
@@ -12,6 +12,12 @@ function storage(initial: Record<string, string> = {}) {
 }
 
 describe('onboarding completion', () => {
+  it('keeps the original completed tour after an app update', () => {
+    const saved = storage({ 'sky-peek-tour-complete-v1': 'yes' });
+    expect(hasCompletedTour(saved)).toBe(true);
+    expect(saved.getItem(TOUR_KEY)).toBe('yes');
+  });
+
   it('stays complete when a beta identity changes or expires', () => {
     const saved = storage({ 'sky-peek-tour-complete-v2:old-identity': 'yes' });
     expect(hasCompletedTour(saved)).toBe(true);
@@ -24,5 +30,12 @@ describe('onboarding completion', () => {
     expect(hasCompletedTour(saved)).toBe(false);
     markTourComplete(saved);
     expect(hasCompletedTour(saved)).toBe(true);
+  });
+
+  it('remembers a confirmed location separately from tour completion', () => {
+    const saved = storage();
+    markLocationChosen(saved);
+    expect(hasChosenLocation(saved)).toBe(true);
+    expect(hasCompletedTour(saved)).toBe(false);
   });
 });
