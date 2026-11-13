@@ -7,6 +7,7 @@ import { Switcher } from './Switcher';
 import { LocationWelcome, TOUR_STEPS, WelcomeTour, WhatsNew } from './Onboarding';
 import { routeAlert } from '@/lib/alerts';
 import { APP_VERSION, compareVersions, RELEASES, unseenReleases } from '@/lib/releases';
+import { hasCompletedTour, markTourComplete } from '@/lib/onboardingState';
 import { BETA_SCENE_COOKIE, parseScene, pickScene, type Scene } from '@/lib/betaScene';
 import { SettingsProvider, useSettings, type Screen } from '@/lib/settings';
 import type { Place } from '@/lib/types';
@@ -19,14 +20,8 @@ import { TodayScreen } from '@/screens/Today';
 
 // MapLibre is about 1 MB, so only the Radar screen loads it.
 const RadarScreen = dynamic(() => import('@/screens/Radar').then(m => m.RadarScreen), { ssr: false });
-const TOUR_KEY = 'sky-peek-tour-complete-v2';
 const VERSION_KEY = 'sky-peek-last-seen-version';
 const SCENE_KEY = 'sky-peek-onboarding-scene';
-
-function accessIdentity() {
-  const match = document.cookie.match(/(?:^|;\s*)sky-peek-beta-identity=([a-f0-9]{32})(?:;|$)/);
-  return match?.[1] ?? 'local';
-}
 
 function useActivePlace(): { place: Place; gpsError: string | null } {
   const { s, set } = useSettings();
@@ -61,12 +56,9 @@ function Shell() {
   const [intro, setIntro] = useState<'location' | 'tour' | 'release' | null>(null);
   const [tourStep, setTourStep] = useState(0);
   const [lastSeenVersion, setLastSeenVersion] = useState<string | null>(null);
-  const [tourKey, setTourKey] = useState(`${TOUR_KEY}:local`);
   const [scene, setScene] = useState<Scene>({ time: 'afternoon', weather: 'clear' });
 
   useEffect(() => {
-    const key = `${TOUR_KEY}:${accessIdentity()}`;
-    setTourKey(key);
     const sceneCookie = document.cookie.split('; ').find(cookie => cookie.startsWith(`${BETA_SCENE_COOKIE}=`))?.split('=')[1];
     const [cookieTime, cookieWeather] = sceneCookie?.split('.') ?? [];
     let savedScene: string | null = null;
@@ -78,7 +70,7 @@ function Shell() {
 
     let seen: string | null = null;
     let tourComplete = false;
-    try { seen = localStorage.getItem(VERSION_KEY); tourComplete = localStorage.getItem(key) === 'yes'; } catch { /* start the tour */ }
+    try { seen = localStorage.getItem(VERSION_KEY); tourComplete = hasCompletedTour(localStorage); } catch { /* start the tour */ }
     setLastSeenVersion(seen);
     if (!tourComplete) setIntro('location');
     else if (!seen || compareVersions(APP_VERSION, seen) > 0) setIntro('release');
@@ -95,7 +87,7 @@ function Shell() {
     setLastSeenVersion(APP_VERSION);
   };
   const finishTour = () => {
-    try { localStorage.setItem(tourKey, 'yes'); } catch { /* private browsing may block storage */ }
+    try { markTourComplete(localStorage); } catch { /* private browsing may block storage */ }
     rememberVersion();
     setIntro(null);
     nav('today');

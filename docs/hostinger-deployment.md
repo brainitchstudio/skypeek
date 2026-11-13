@@ -52,6 +52,8 @@ Before starting the production app, add these **runtime** variables in Hostinger
 
 Do not prefix these names with `NEXT_PUBLIC_` or commit the values to GitHub. The tracked `.env.example` contains names only. Set either valid hashes or a plaintext fallback code, plus the signing secret. A malformed nonempty hash list fails closed even if a plaintext code remains. If the shared codes or signing secret are missing or invalid, the production app returns a temporary-unavailable message instead of opening the beta. If the owner code is missing, normal beta access still works but `/beta-admin` cannot generate codes. Local `npm run dev` remains open when no gate variables are set. A tester session lasts seven days. Changing the shared codes or signing secret invalidates existing tester sessions; changing the signing secret also invalidates generated codes. Changing the owner code invalidates owner sessions. [Restart the Node.js app](https://www.hostinger.com/support/how-to-edit-or-add-environment-variables-after-deployment/) after changing runtime variables.
 
+Keep the same public domain and `BETA_SESSION_SECRET` when deploying ordinary GitHub updates. Browser storage is scoped to the domain, and replacing the signing secret ends active beta sessions. Updating application code does not require new gate variables.
+
 ### Generate codes after deployment
 
 1. Visit `https://skypeek.brainitch.studio/beta-admin` over HTTPS and sign in with `BETA_ADMIN_CODE`.
