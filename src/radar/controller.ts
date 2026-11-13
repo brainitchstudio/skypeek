@@ -109,7 +109,7 @@ function stationImage() {
   const size = 32, c = document.createElement('canvas');
   c.width = c.height = size;
   const g = c.getContext('2d')!;
-  g.fillStyle = '#fff'; g.strokeStyle = '#253b61'; g.lineWidth = 2;
+  g.fillStyle = '#ffcc4d'; g.strokeStyle = '#253b61'; g.lineWidth = 2;
   g.beginPath(); g.arc(16, 16, 14, 0, Math.PI * 2); g.fill(); g.stroke();
   g.beginPath(); g.moveTo(16, 13); g.lineTo(11, 23); g.moveTo(16, 13); g.lineTo(21, 23); g.moveTo(12, 21); g.lineTo(20, 21); g.stroke();
   g.fillStyle = '#253b61'; g.beginPath(); g.arc(16, 11, 2.5, 0, Math.PI * 2); g.fill();
