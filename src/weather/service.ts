@@ -12,7 +12,7 @@ import { dateKey, iconFor } from '@/lib/format';
 import type { Forecast, Hour, Place, WeatherAlert } from '@/lib/types';
 import { ADAPTERS, fingerprint, type FetchPlan } from './adapters';
 import { buildReport, forecastRows, MATCHING, toJsonl, truthRows, type AccuracyReport, type StationRef } from './accuracy';
-import { accuracyStore, pruneCutoff } from './accuracyStore';
+import { accuracyStore, maintainAccuracyStore } from './accuracyStore';
 import { activeRecords, applyPoll, notifyKey, type AlertState } from './alertState';
 import { audit, resolve, sanitize, toEvent, type Draft, type SafeguardEvent } from './safeguards';
 import { ALERT_POLL_MS, ALERT_STALE_MS, COMMERCIAL, ENABLED, FUSION_VERSION, INITIAL_CHANGE_P, key, MAPPING_VERSION, OBS_LIMITS, POINT_TTL_MS, TIMEOUT_MS, TRIGGERS } from './config';
@@ -464,6 +464,7 @@ function truthStations(grid: Scope): StationRef[] {
 async function archive(req: WeatherRequest, scope: string, geo: Scope, grid: Scope | null, event: boolean, notes: Draft[], shown: WeatherSnapshot) {
   const store = accuracyStore();
   const now = Date.now();
+  await maintainAccuracyStore(store, now);
   const live = new Set<Provider>(['nws', ...connected(req.keys)]);
   const batches = [...Object.values(grid?.batches ?? {}), ...Object.values(geo.batches)].filter(b => ENABLED[b.provider] && live.has(b.provider));
   const c: FuseContext = { now, nwsCovers: geo.nwsCovers !== false, event };
@@ -471,6 +472,7 @@ async function archive(req: WeatherRequest, scope: string, geo: Scope, grid: Sco
   const drafts = notes.map(d => resolve(d, batches, c, name, shown.forecast?.hours ?? []));
   const prior = await store.meta(scope);
   const meta = prior ?? { scope, trackingStart: now, truthThrough: now, lastCapture: '' };
+  meta.lastActive = now;
 
   // New data, or a new hour opening new slots, is worth a write. Other ticks aren't.
   const stamp = `${Math.floor(now / HOUR)}|${batches.map(b => b.fingerprint).sort().join('.')}`;
@@ -479,7 +481,6 @@ async function archive(req: WeatherRequest, scope: string, geo: Scope, grid: Sco
     const rows = forecastRows(scope, batches, c);
     if (rows.length) await store.putForecasts(rows);
     meta.lastCapture = stamp;
-    if (!prior) await store.prune(pruneCutoff(now));
   }
 
   // Removed values are logged as they happen; the review of what's shown runs once per change or hour.

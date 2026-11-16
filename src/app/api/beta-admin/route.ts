@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   acceptsBetaAdminCode, betaAdminCookieName, betaAdminReady, BETA_ADMIN_SESSION_SECONDS,
-  generateBetaInvite, MAX_INVITE_DAYS, issueBetaAdminSession, validBetaAdminSession,
+  generateBetaInvite, MAX_INVITE_DAYS, issueBetaAdminSession, validBetaAdminSession, freshBetaAdminSession, revokeBetaAdminSession,
 } from '@/lib/betaGate';
+import { boundedForm, boundedJson, bodyErrorStatus } from '@/lib/requestBody';
+import { admitLogin } from '@/lib/loginLimit';
 
 export const runtime = 'nodejs';
-
-type Attempt = { count: number; until: number };
-const attempts = new Map<string, Attempt>();
-const WINDOW_MS = 15 * 60 * 1000;
-const MAX_ATTEMPTS = 8;
-
-function visitorKey(request: NextRequest) {
-  return request.headers.get('x-real-ip') ?? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
-}
 
 function noStore(response: NextResponse) {
   response.headers.set('Cache-Control', 'no-store');
@@ -38,21 +31,21 @@ function sameOrigin(request: NextRequest) {
 export async function POST(request: NextRequest) {
   if (!betaAdminReady()) return noStore(new NextResponse('Beta code manager is unavailable.', { status: 503 }));
   if (!sameOrigin(request)) return noStore(new NextResponse('Invalid origin.', { status: 403 }));
-  if (Number(request.headers.get('content-length') ?? 0) > 2048) {
-    return noStore(new NextResponse('Invalid request.', { status: 400 }));
-  }
 
   const type = request.headers.get('content-type') ?? '';
   if (type.includes('application/json')) {
     if (!validBetaAdminSession(request.cookies.get(betaAdminCookieName())?.value)) {
       return noStore(NextResponse.json({ error: 'Owner sign-in required.' }, { status: 401 }));
     }
+    if (!freshBetaAdminSession(request.cookies.get(betaAdminCookieName())?.value)) {
+      return noStore(NextResponse.json({ error: 'Sign in again before generating an invite.', reauthenticate: true }, { status: 401 }));
+    }
     let days: number;
     try {
-      const body: unknown = await request.json();
+      const body = await boundedJson(request, 2048);
       days = typeof body === 'object' && body !== null && 'days' in body ? Number(body.days) : NaN;
-    } catch {
-      return noStore(NextResponse.json({ error: 'Invalid request.' }, { status: 400 }));
+    } catch (error) {
+      return noStore(NextResponse.json({ error: 'Invalid request.' }, { status: bodyErrorStatus(error) }));
     }
     if (!Number.isInteger(days) || days < 1 || days > MAX_INVITE_DAYS) {
       return noStore(NextResponse.json({ error: 'Choose 1 to 90 days.' }, { status: 400 }));
@@ -66,34 +59,34 @@ export async function POST(request: NextRequest) {
   }
   let intent = '', code = '';
   try {
-    const form = await request.formData();
+    const form = await boundedForm(request, 2048);
     intent = String(form.get('intent') ?? '');
     code = String(form.get('code') ?? '').trim();
-  } catch {
-    return noStore(new NextResponse('Invalid request.', { status: 400 }));
+  } catch (error) {
+    return noStore(new NextResponse('Invalid request.', { status: bodyErrorStatus(error) }));
   }
-  if (intent === 'logout') {
+  if (intent === 'logout' || intent === 'logout-all') {
+    try { revokeBetaAdminSession(request.cookies.get(betaAdminCookieName())?.value, intent === 'logout-all'); }
+    catch { return noStore(new NextResponse('Could not sign out. Try again.', { status: 503 })); }
     const response = redirect('/beta-admin');
     response.cookies.set(betaAdminCookieName(), '', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict', path: '/', maxAge: 0 });
     return noStore(response);
   }
   if (intent !== 'login' || code.length > 128) return noStore(new NextResponse('Invalid request.', { status: 400 }));
 
-  const visitor = visitorKey(request);
   const now = Date.now();
-  const previous = attempts.get(visitor);
-  if (previous && previous.until > now && previous.count >= MAX_ATTEMPTS) {
-    return noStore(new NextResponse('Too many attempts. Try again later.', { status: 429 }));
-  }
+  const admission = admitLogin(request, 'owner', now);
+  if (admission !== 200) return noStore(new NextResponse('Owner sign-in is temporarily limited. Try again later.', { status: admission, headers: { 'Retry-After': '900' } }));
   if (!acceptsBetaAdminCode(code)) {
-    const count = previous && previous.until > now ? previous.count + 1 : 1;
-    if (!attempts.has(visitor) && attempts.size >= 500) attempts.delete(attempts.keys().next().value!);
-    attempts.set(visitor, { count, until: now + WINDOW_MS });
     return noStore(redirect('/beta-admin?invalid=1'));
   }
-  attempts.delete(visitor);
   const response = redirect('/beta-admin');
-  response.cookies.set(betaAdminCookieName(), issueBetaAdminSession(now), {
+  let session: string;
+  try {
+    session = issueBetaAdminSession(now);
+    revokeBetaAdminSession(request.cookies.get(betaAdminCookieName())?.value);
+  } catch { return noStore(new NextResponse('Owner sign-in is temporarily unavailable.', { status: 503 })); }
+  response.cookies.set(betaAdminCookieName(), session, {
     httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict', path: '/', maxAge: BETA_ADMIN_SESSION_SECONDS,
   });
   return noStore(response);

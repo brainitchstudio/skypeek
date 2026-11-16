@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getPointHour, restoredSource } from './weather';
+import { getPoint, getPointHour, restoredSource } from './weather';
+import { POINT_CACHE_KEY, POINT_CACHE_TTL } from './pointCache';
 
 vi.mock('./budget', async orig => ({ ...await orig<typeof import('./budget')>(), spend: vi.fn() }));
 
@@ -57,4 +58,20 @@ describe('getPointHour', () => {
     stubNws({ temperature: 400, windSpeed: '12 mph', shortForecast: 'Clear' });
     await expect(getPointHour(41.3, -88.4)).rejects.toThrow();
   });
+});
+
+it('does not extend persisted coordinate retention when promoting a cached point to memory', async () => {
+  const now = Date.now();
+  vi.useFakeTimers({ now, toFake: ['Date'] });
+  const point = { observationStations: 'https://api.weather.gov/stations' };
+  const values = new Map([[POINT_CACHE_KEY, JSON.stringify({ '30.1234,-90.1234': { at: now - POINT_CACHE_TTL + 1000, point } })]]);
+  vi.stubGlobal('localStorage', { getItem: (id: string) => values.get(id) ?? null, setItem: (id: string, value: string) => values.set(id, value) });
+  vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ properties: point }))));
+  try {
+    await getPoint(30.1234, -90.1234);
+    expect(fetch).not.toHaveBeenCalled();
+    vi.setSystemTime(now + 1001);
+    await getPoint(30.1234, -90.1234);
+    expect(fetch).toHaveBeenCalledTimes(1);
+  } finally { vi.useRealTimers(); vi.unstubAllGlobals(); }
 });

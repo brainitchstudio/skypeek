@@ -4,7 +4,7 @@
 import type { ForecastRow, TruthRow } from './accuracy';
 import { mergeEvent, type SafeguardEvent } from './safeguards';
 
-export type AccuracyMeta = { scope: string; trackingStart: number; truthThrough: number; lastCapture: string; noStation?: boolean };
+export type AccuracyMeta = { scope: string; trackingStart: number; truthThrough: number; lastCapture: string; lastActive?: number; noStation?: boolean };
 
 export type AccuracyStore = {
   putForecasts(rows: ForecastRow[]): Promise<void>;
@@ -35,6 +35,7 @@ export function memoryStore(): AccuracyStore {
       for (const [k, r] of f) if (r.target < before) f.delete(k);
       for (const [k, r] of t) if (r.target < before) t.delete(k);
       for (const [k, e] of g) if (e.lastAt < before) g.delete(k);
+      for (const [k, meta] of m) if ((meta.lastActive ?? Math.max(meta.truthThrough, meta.trackingStart)) < before) m.delete(k);
     },
   };
 }
@@ -104,7 +105,7 @@ function idbStore(): AccuracyStore {
       return all.filter(e => e.lastAt >= from);
     },
     async prune(before) {
-      const tx = (await conn()).transaction(['forecasts', 'truth'], 'readwrite');
+      const tx = (await conn()).transaction(['forecasts', 'truth', 'meta'], 'readwrite');
       for (const name of ['forecasts', 'truth']) {
         const cur = tx.objectStore(name).openCursor();
         cur.onsuccess = () => {
@@ -114,6 +115,14 @@ function idbStore(): AccuracyStore {
           c.continue();
         };
       }
+      const metadata = tx.objectStore('meta').openCursor();
+      metadata.onsuccess = () => {
+        const cursor = metadata.result;
+        if (!cursor) return;
+        const meta = cursor.value as AccuracyMeta;
+        if ((meta.lastActive ?? Math.max(meta.truthThrough, meta.trackingStart)) < before) cursor.delete();
+        cursor.continue();
+      };
       await done(tx);
       const gt = (await (guards ??= openSafeguards())).transaction('events', 'readwrite');
       const cursor = gt.objectStore('events').openCursor();
@@ -130,3 +139,15 @@ export function accuracyStore(): AccuracyStore {
 }
 
 export const pruneCutoff = (now: number) => now - RETAIN_MS;
+
+const maintenance = new WeakMap<AccuracyStore, { at: number; pending?: Promise<void> }>();
+/** Startup and daily cleanup, independent of whether a location already has metadata. */
+export async function maintainAccuracyStore(store: AccuracyStore, now: number) {
+  const previous = maintenance.get(store);
+  if (previous?.pending) return previous.pending;
+  if (previous && now >= previous.at && now - previous.at < 86_400_000) return;
+  const pending = store.prune(pruneCutoff(now));
+  maintenance.set(store, { at: now, pending });
+  try { await pending; maintenance.set(store, { at: now }); }
+  catch (error) { maintenance.delete(store); throw error; }
+}

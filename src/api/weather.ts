@@ -5,6 +5,7 @@ import { admit, bench, cooldownFor429, remaining, spend, type SourceId } from '.
 import { imageryTiles } from '@/radar/imagery';
 import { TOMORROW_CODES } from '@/weather/adapters';
 import { inLimits } from '@/weather/safeguards';
+import { POINT_CACHE_KEY, POINT_CACHE_MAX, POINT_CACHE_TTL, prunePointCache, type PointCache } from './pointCache';
 
 const NWS = 'https://api.weather.gov';
 
@@ -36,15 +37,20 @@ export type NwsPoint = {
   forecast: string; forecastHourly: string; observationStations: string; timeZone: string;
   gridId: string; gridX: number; gridY: number;
 };
-const POINTS_KEY = 'sky-peek-points';
-const POINT_TTL = 7 * 24 * 3_600_000;
-const points = new Map<string, Promise<NwsPoint>>();
+const points = new Map<string, { at: number; value: Promise<NwsPoint> }>();
 
-function savedPoints(): Record<string, { at: number; point: NwsPoint }> {
-  try { return JSON.parse(globalThis.localStorage?.getItem(POINTS_KEY) ?? '{}'); } catch { return {}; }
+function savedPoints(): PointCache {
+  try {
+    const storage = globalThis.localStorage;
+    const raw = storage?.getItem(POINT_CACHE_KEY);
+    const pruned = prunePointCache(JSON.parse(raw ?? '{}'), Date.now());
+    const next = JSON.stringify(pruned);
+    if (raw && next !== raw) storage?.setItem(POINT_CACHE_KEY, next);
+    return pruned;
+  } catch { return {}; }
 }
 
-/** The last known grid for a place, however old: enough to show cached data offline. */
+/** Last grid within the disclosed seven-day coordinate-cache retention period. */
 export function savedPoint(lat: number, lon: number): NwsPoint | null {
   return savedPoints()[`${lat.toFixed(4)},${lon.toFixed(4)}`]?.point ?? null;
 }
@@ -52,22 +58,26 @@ export function savedPoint(lat: number, lon: number): NwsPoint | null {
 /** A place's NWS grid and links. They rarely change, so they're kept for a week. */
 export function getPoint(lat: number, lon: number): Promise<NwsPoint> {
   const key = `${lat.toFixed(4)},${lon.toFixed(4)}`;
-  let p = points.get(key);
-  if (p) return p;
+  const now = Date.now();
+  for (const [id, entry] of points) if (now - entry.at >= POINT_CACHE_TTL || entry.at > now) points.delete(id);
+  const hit = points.get(key);
+  if (hit) return hit.value;
+  let p: Promise<NwsPoint>;
   const saved = savedPoints()[key];
-  if (saved && Date.now() - saved.at < POINT_TTL && saved.point.observationStations) {
+  if (saved && saved.point.observationStations) {
     p = Promise.resolve(saved.point);
   } else {
     spend('nws');
     p = json<{ properties: NwsPoint }>(`${NWS}/points/${key}`).then(j => {
       const all = savedPoints();
       all[key] = { at: Date.now(), point: j.properties };
-      try { globalThis.localStorage?.setItem(POINTS_KEY, JSON.stringify(all)); } catch { /* re-resolved next time */ }
+      try { globalThis.localStorage?.setItem(POINT_CACHE_KEY, JSON.stringify(prunePointCache(all, Date.now()))); } catch { /* re-resolved next time */ }
       return j.properties;
     });
     p.catch(() => points.delete(key));
   }
-  points.set(key, p);
+  if (points.size >= POINT_CACHE_MAX) points.delete(points.keys().next().value!);
+  points.set(key, { at: saved?.point.observationStations ? saved.at : now, value: p });
   return p;
 }
 

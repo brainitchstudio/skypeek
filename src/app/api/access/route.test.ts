@@ -12,6 +12,26 @@ describe('access submission', () => {
   });
   afterEach(() => vi.unstubAllEnvs());
 
+  it('redirects an old login form into the app when local development access is open', async () => {
+    vi.stubEnv('NODE_ENV', 'development');
+    vi.stubEnv('BETA_ACCESS_CODE', '');
+    vi.stubEnv('BETA_ACCESS_CODE_HASHES', '');
+    vi.stubEnv('BETA_SESSION_SECRET', '');
+    const response = await POST(new NextRequest('http://localhost:3000/api/access', { method: 'POST' }));
+    expect(response.status).toBe(303);
+    expect(response.headers.get('location')).toBe('/app');
+    expect(response.headers.get('set-cookie')).toBeNull();
+  });
+
+  it('keeps incomplete production configuration unavailable', async () => {
+    vi.stubEnv('BETA_ACCESS_CODE', '');
+    vi.stubEnv('BETA_ACCESS_CODE_HASHES', '');
+    vi.stubEnv('BETA_SESSION_SECRET', '');
+    const response = await POST(new NextRequest('https://skypeek.brainitch.studio/api/access', { method: 'POST' }));
+    expect(response.status).toBe(503);
+    expect(response.headers.get('set-cookie')).toBeNull();
+  });
+
   it('sets a secure cookie only for the right code', async () => {
     const make = (code: string) => new NextRequest('https://skypeek.brainitch.studio/api/access', {
       method: 'POST', body: new URLSearchParams({ code }), headers: { 'x-real-ip': 'test-good-code' },
@@ -24,7 +44,7 @@ describe('access submission', () => {
 
     const correct = await POST(make('rainy-foxes-visit-2026'));
     expect(correct.status).toBe(303);
-    expect(correct.headers.get('location')).toBe('/');
+    expect(correct.headers.get('location')).toBe('/app');
     const setCookie = correct.headers.get('set-cookie')!;
     expect(setCookie).toContain(`${BETA_COOKIE}=`);
     expect(setCookie).toContain('HttpOnly');
@@ -37,7 +57,7 @@ describe('access submission', () => {
   });
 
   it('clears the cookie on leave', async () => {
-    const response = await DELETE(new NextRequest('https://skypeek.brainitch.studio/api/access', { method: 'DELETE' }));
+    const response = await DELETE(new NextRequest('https://skypeek.brainitch.studio/api/access', { method: 'DELETE', headers: { 'x-sky-peek-action': 'logout' } }));
     expect(response.cookies.get(BETA_COOKIE)?.value).toBe('');
     expect(response.cookies.get(BETA_IDENTITY_COOKIE)?.value).toBe('');
     expect(response.cookies.get(BETA_SCENE_COOKIE)?.value).toBe('');

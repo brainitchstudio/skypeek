@@ -49,6 +49,10 @@ Open [localhost:3000](http://localhost:3000). Run `npm test` for the test suite 
 
 ## Deploy a private beta
 
+For a folder upload on Node capable shared hosting, run `npm run package:shared` on a machine matching the host's OS and CPU architecture and follow [the upload installer guide](docs/shared-hosting-install.md). The package opens a one time browser setup at `/install` after the host starts its Node app. A plain PHP or static hosting folder cannot run this Next.js app.
+
+The public homepage is at `/`; **Log in** opens the beta gate at `/access`, and a valid code opens the weather app at `/app`. The owner can edit homepage text at `/beta-admin/homepage` without a new build. App code changes still require a Next.js build; connect the repository to Hostinger for automatic deploys on push, so there is no need to upload every changed file manually. Hostinger replaces its build folders on deploy, so installer settings and homepage edits live in a private data folder outside those folders.
+
 This public repository contains the source. The app itself uses a server side beta access gate, so deploy it as a **Node.js Web App** with HTTPS and runtime environment variables. A static site upload cannot run its API routes or access gate.
 
 | Server only variable | Purpose |

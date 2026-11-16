@@ -8,10 +8,11 @@ import '../access/access.css';
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'SkyPeek beta code manager', robots: { index: false, follow: false } };
 
-export default async function BetaAdminPage({ searchParams }: { searchParams: Promise<{ invalid?: string }> }) {
+export default async function BetaAdminPage({ searchParams }: { searchParams: Promise<{ invalid?: string; reauthenticate?: string }> }) {
+  const params = await searchParams;
   const ready = betaAdminReady();
-  const signedIn = ready && validBetaAdminSession((await cookies()).get(betaAdminCookieName())?.value);
-  const invalid = (await searchParams).invalid === '1';
+  const signedIn = ready && params.reauthenticate !== '1' && validBetaAdminSession((await cookies()).get(betaAdminCookieName())?.value);
+  const invalid = params.invalid === '1';
   return <main className="access-page">
     <section className="access-card access-admin-card">
       <div className="access-mark" aria-hidden="true"><CloudSun size={30} strokeWidth={1.8} /></div>
@@ -20,7 +21,9 @@ export default async function BetaAdminPage({ searchParams }: { searchParams: Pr
       {!ready ? <p className="access-error" role="alert">Code management is unavailable. Add BETA_ADMIN_CODE in the hosting environment.</p> : signedIn ? <>
         <p>Generate a new code to share with a tester. Codes work until their expiry date.</p>
         <CodeGenerator />
+        <a className="access-secondary" href="/beta-admin/homepage">Edit public homepage →</a>
         <form action="/api/beta-admin" method="post"><input type="hidden" name="intent" value="logout" /><button type="submit" className="access-secondary">Sign out of code manager</button></form>
+        <form action="/api/beta-admin" method="post"><input type="hidden" name="intent" value="logout-all" /><button type="submit" className="access-secondary">Sign out all owner sessions</button></form>
       </> : <>
         <p>Sign in with your private owner code. Keep it separate from the codes you share.</p>
         <form action="/api/beta-admin" method="post">

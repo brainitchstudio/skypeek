@@ -113,6 +113,7 @@
 .access-generated small { color: #526574; line-height: 1.4; }
 .access-card button.access-secondary { background: #e8eff3; color: #163c56; }
 .access-card button.access-secondary:hover { background: #d7e5ed; }
+.access-admin-card a.access-secondary { display: inline-block; margin: 16px 0; color: #163c56; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 480px) {
   .access-page { padding: 16px; }
   .access-card { border-radius: 20px; }

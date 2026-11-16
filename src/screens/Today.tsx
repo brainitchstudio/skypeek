@@ -1,5 +1,6 @@
 import { ChevronRight, TriangleAlert } from 'lucide-react';
 import { Fragment, useEffect, useMemo, useState } from 'react';
+import { TodayLocation } from '@/components/LocationPicker';
 import { TodayBackground } from '@/components/TodayBackground';
 import { Pending, StaleNote, type ScreenProps } from './shared';
 import { Icon } from '@/components/ui';
@@ -18,7 +19,7 @@ function nowNote(c: NowConditions, tz: string): string {
   return 'Forecast for this hour';
 }
 
-export function TodayScreen({ weather, place, nav, banner, onHour }: ScreenProps & { banner?: WeatherAlert; onHour: (i: number) => void }) {
+export function TodayScreen({ weather, nav, banner, onHour }: ScreenProps & { banner?: WeatherAlert; onHour: (i: number) => void }) {
   const { s } = useSettings();
   const { forecast: f, now: current } = weather;
   const [clockNow, setClockNow] = useState(() => new Date());
@@ -27,7 +28,7 @@ export function TodayScreen({ weather, place, nav, banner, onHour }: ScreenProps
     return () => window.clearInterval(timer);
   }, []);
   const weekday = useMemo(() => f && weekdayLong(clockNow, f.timeZone), [f, clockNow]);
-  if (!f || !f.hours.length) return <Pending weather={weather} />;
+  if (!f || !f.hours.length) return <div className="today-loading"><TodayLocation /><Pending weather={weather} /></div>;
 
   const now = f.hours[0];
   const today = f.days[0];
@@ -49,10 +50,8 @@ export function TodayScreen({ weather, place, nav, banner, onHour }: ScreenProps
       )}
       <div className="today-hero">
         <div className="today-temp">{temp(current?.tempF ?? now.tempF, s.units)}</div>
-        <div className="today-location">
-          <div className="today-loc">{place.name} · {weekday}</div>
-          {note && <div className="live-note">{current?.kind === 'observation' && <i />}{note}</div>}
-        </div>
+        <TodayLocation weekday={weekday} />
+        {note && <div className="live-note">{current?.kind === 'observation' && <i />}{note}</div>}
         <div className="today-cond">
           <Icon kind={current && current.kind !== 'forecast' ? iconFor(current.condition, now.isDaytime) : now.icon} />
           <div className="capitalize">{condition}</div>

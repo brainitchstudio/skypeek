@@ -38,25 +38,32 @@ export function useWeather(place: Place, s: Settings): Weather {
   const req = useMemo<WeatherRequest>(() => ({
     place: { lat: place.lat, lon: place.lon }, keys: JSON.parse(keysId), userMinutes: minutes,
   }), [place.lat, place.lon, keysId, minutes]);
+  const requestKey = JSON.stringify(req);
+  const [snapshotKey, setSnapshotKey] = useState(requestKey);
+  const latestKey = useRef(requestKey);
+  latestKey.current = requestKey;
 
   const update = useCallback(async (manual: boolean) => {
+    const key = JSON.stringify(req);
     const id = ++run.current;
     const background = typeof document !== 'undefined' && document.hidden;
     if (manual) setLoading(true);
     try {
-      const out = await tick({ ...req, manual, background, onUpdate: x => { if (id === run.current) setSnap(x); } });
-      if (id !== run.current) return;
+      const out = await tick({ ...req, manual, background, onUpdate: x => { if (id === run.current && key === latestKey.current) { setSnapshotKey(key); setSnap(x); } } });
+      if (id !== run.current || key !== latestKey.current) return;
+      setSnapshotKey(key);
       setSnap(out);
       setError(out.error);
     } catch {
-      if (id === run.current) setError('Could not refresh the forecast. Check your connection and try again.');
+      if (id === run.current && key === latestKey.current) setError('Could not refresh the forecast. Check your connection and try again.');
     } finally {
-      if (id === run.current) setLoading(false);
+      if (id === run.current && key === latestKey.current) setLoading(false);
     }
   }, [req]);
 
   useEffect(() => {
     setSnap(readSnapshot(req));
+    setSnapshotKey(requestKey);
     setError(null);
     setLoading(true);
     void update(false);
@@ -68,15 +75,17 @@ export function useWeather(place: Place, s: Settings): Weather {
   }, [req, update]);
 
   const refresh = useCallback(() => void update(true), [update]);
+  // Hide the prior place synchronously, before effects can fetch the next one.
+  const visible = snapshotKey === requestKey ? snap : null;
   return {
-    forecast: snap?.forecast ?? null,
-    alerts: snap?.alerts ?? [],
-    alertFeed: snap?.alertFeed ?? { status: 'unknown', checkedAt: null },
-    now: snap?.now ?? null,
-    sources: snap?.sources ?? [],
-    loading, error, refresh,
-    updatedAt: snap?.forecastFetchedAt ? new Date(snap.forecastFetchedAt) : null,
-    staleSince: snap?.staleSince ? new Date(snap.staleSince) : null,
+    forecast: visible?.forecast ?? null,
+    alerts: visible?.alerts ?? [],
+    alertFeed: visible?.alertFeed ?? { status: 'unknown', checkedAt: null },
+    now: visible?.now ?? null,
+    sources: visible?.sources ?? [],
+    loading: snapshotKey !== requestKey || loading, error: snapshotKey === requestKey ? error : null, refresh,
+    updatedAt: visible?.forecastFetchedAt ? new Date(visible.forecastFetchedAt) : null,
+    staleSince: visible?.staleSince ? new Date(visible.staleSince) : null,
   };
 }
 

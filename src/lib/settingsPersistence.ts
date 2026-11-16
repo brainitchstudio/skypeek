@@ -3,6 +3,7 @@ import type { Place } from './types';
 
 export const SETTINGS_KEY = 'sky-peek-settings';
 export const SETTINGS_BACKUP_KEY = 'sky-peek-settings-backup';
+export const SESSION_KEYS_KEY = 'sky-peek-session-keys';
 
 type Reader = Pick<Storage, 'getItem'>;
 type Writer = Pick<Storage, 'getItem' | 'setItem'>;
@@ -41,13 +42,22 @@ function parseSettings(raw: string | null, defaults: Settings): Partial<Settings
   return saved as Partial<Settings>;
 }
 
-export function loadSettings(storage: Reader, defaults: Settings): Settings {
+export function loadSettings(storage: Reader, defaults: Settings, session?: Reader): Settings {
   let saved: Partial<Settings> | null = null;
   try {
     saved = parseSettings(storage.getItem(SETTINGS_KEY), defaults)
       ?? parseSettings(storage.getItem(SETTINGS_BACKUP_KEY), defaults);
   } catch { /* storage may be disabled */ }
   const merged = { ...defaults, ...saved };
+  try {
+    const transient = JSON.parse(session?.getItem(SESSION_KEYS_KEY) ?? 'null');
+    if (transient && typeof transient === 'object') {
+      const keys = Object.fromEntries(Object.entries(transient.keys ?? {}).filter(([id, key]) => /^\d+$/.test(id) && typeof key === 'string'));
+      const verified = Object.fromEntries(Object.entries(transient.verified ?? {}).filter(([id, value]) => id in keys && typeof value === 'boolean'));
+      merged.keys = { ...merged.keys, ...keys };
+      merged.verified = { ...merged.verified, ...verified };
+    }
+  } catch { /* Invalid session credentials are ignored. */ }
   return {
     ...merged,
     types: defaults.types.map((value, index) => saved?.types?.[index] ?? value),
@@ -57,12 +67,18 @@ export function loadSettings(storage: Reader, defaults: Settings): Settings {
     basemap: merged.basemap === 2 ? 2 : 0,
     defaultPlace: merged.places.some(place => place.id === merged.defaultPlace)
       ? merged.defaultPlace : merged.places[0].id,
+    viewingPlace: merged.places.some(place => place.id === merged.viewingPlace) ? merged.viewingPlace : null,
   };
 }
 
-export function saveSettings(storage: Writer, settings: Settings) {
+export function saveSettings(storage: Writer, settings: Settings, session?: Writer) {
+  // Legacy remembered keys become session-only on the next save unless the
+  // user explicitly chooses to remember them. Keep the active connection.
+  const keys = Object.fromEntries(Object.entries(settings.keys).filter(([id]) => settings.rememberKeys?.[Number(id)]));
+  const verified = Object.fromEntries(Object.entries(settings.verified).filter(([id]) => id in keys));
+  try { session?.setItem(SESSION_KEYS_KEY, JSON.stringify({ keys: settings.keys, verified: settings.verified })); } catch { /* Memory-only when session storage is unavailable. */ }
   const previous = storage.getItem(SETTINGS_KEY);
   const parsed = parseSettings(previous, settings);
-  if (parsed) storage.setItem(SETTINGS_BACKUP_KEY, JSON.stringify({ ...parsed, keys: {}, verified: {} }));
-  storage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  if (parsed) storage.setItem(SETTINGS_BACKUP_KEY, JSON.stringify({ ...parsed, places: settings.places, keys: {}, verified: {} }));
+  storage.setItem(SETTINGS_KEY, JSON.stringify({ ...settings, keys, verified }));
 }

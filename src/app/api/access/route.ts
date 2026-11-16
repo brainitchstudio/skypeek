@@ -1,64 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { acceptsBetaCode, betaCodeIdentity, betaCookieName, betaGateState, BETA_IDENTITY_COOKIE, BETA_SESSION_SECONDS, issueBetaSession } from '@/lib/betaGate';
+import { acceptsBetaCode, betaCodeIdentity, betaCookieName, betaGateState, BETA_IDENTITY_COOKIE, BETA_SESSION_SECONDS, issueBetaSession, revokeBetaSession } from '@/lib/betaGate';
 import { BETA_SCENE_COOKIE, parseScene } from '@/lib/betaScene';
+import { boundedForm, bodyErrorStatus } from '@/lib/requestBody';
+import { admitLogin } from '@/lib/loginLimit';
 
 export const runtime = 'nodejs';
-
-type Attempt = { count: number; until: number };
-const attempts = new Map<string, Attempt>();
-const WINDOW_MS = 15 * 60 * 1000;
-const MAX_ATTEMPTS = 10;
 
 function redirect(path: string) {
   return new NextResponse(null, { status: 303, headers: { Location: path } });
 }
 
-function visitorKey(request: NextRequest) {
-  return request.headers.get('x-real-ip') ?? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
-}
-
-function failed(response: NextResponse, visitor: string, now: number) {
-  const previous = attempts.get(visitor);
-  const count = previous && previous.until > now ? previous.count + 1 : 1;
-  if (!previous && attempts.size >= 500) attempts.delete(attempts.keys().next().value!);
-  attempts.set(visitor, { count, until: now + WINDOW_MS });
-  response.headers.set('Cache-Control', 'no-store');
-  return response;
-}
-
 export async function POST(request: NextRequest) {
-  if (betaGateState() !== 'ready') {
+  const gate = betaGateState();
+  // The local development gate is already open; old login tabs need no session.
+  if (gate === 'open') return redirect('/app');
+  if (gate !== 'ready') {
     return new NextResponse('Beta access is temporarily unavailable.', { status: 503 });
   }
-  const visitor = visitorKey(request);
   const now = Date.now();
-  const attempt = attempts.get(visitor);
-  if (attempt && attempt.until > now && attempt.count >= MAX_ATTEMPTS) {
-    return new NextResponse('Too many attempts. Try again later.', { status: 429, headers: { 'Cache-Control': 'no-store' } });
-  }
-  if (attempt && attempt.until <= now) attempts.delete(visitor);
+  const admission = admitLogin(request, 'visitor', now);
+  if (admission !== 200) return new NextResponse('Sign-in is temporarily limited. Try again later.', { status: admission, headers: { 'Cache-Control': 'no-store', 'Retry-After': '900' } });
 
-  const length = Number(request.headers.get('content-length') ?? 0);
-  if (length > 1024) return new NextResponse('Invalid request.', { status: 400 });
   let code = '';
   let scene: ReturnType<typeof parseScene> = null;
   try {
-    const form = await request.formData();
+    const form = await boundedForm(request, 1024);
     const input = form.get('code');
     if (typeof input === 'string') code = input.trim();
     const time = form.get('sceneTime');
     const weather = form.get('sceneWeather');
     scene = parseScene(typeof time === 'string' ? time : undefined, typeof weather === 'string' ? weather : undefined);
-  } catch {
-    return new NextResponse('Invalid request.', { status: 400 });
+  } catch (error) {
+    return new NextResponse('Invalid request.', { status: bodyErrorStatus(error), headers: { 'Cache-Control': 'no-store' } });
   }
   if (!acceptsBetaCode(code)) {
     const suffix = scene ? `&time=${scene.time}&weather=${scene.weather}` : '';
-    return failed(redirect(`/access?invalid=1${suffix}`), visitor, now);
+    const response = redirect(`/access?invalid=1${suffix}`);
+    response.headers.set('Cache-Control', 'no-store');
+    return response;
   }
-  attempts.delete(visitor);
-  const response = redirect('/');
-  response.cookies.set(betaCookieName(), issueBetaSession(now), {
+  const response = redirect('/app');
+  let session: string;
+  try {
+    session = issueBetaSession(now, code);
+    revokeBetaSession(request.cookies.get(betaCookieName())?.value);
+  } catch { return new NextResponse('Sign-in is temporarily unavailable.', { status: 503, headers: { 'Cache-Control': 'no-store' } }); }
+  response.cookies.set(betaCookieName(), session, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -83,7 +70,11 @@ export async function POST(request: NextRequest) {
   return response;
 }
 
-export async function DELETE(_request: NextRequest) {
+export async function DELETE(request: NextRequest) {
+  // Custom header forces a same-origin browser request (no permissive CORS).
+  if (request.headers.get('x-sky-peek-action') !== 'logout') return NextResponse.json({ error: 'Invalid request.' }, { status: 403 });
+  try { revokeBetaSession(request.cookies.get(betaCookieName())?.value, request.nextUrl.searchParams.get('all') === '1'); }
+  catch { return NextResponse.json({ error: 'Could not sign out. Try again.' }, { status: 503, headers: { 'Cache-Control': 'no-store' } }); }
   const response = NextResponse.json({ ok: true }, { headers: { 'Cache-Control': 'no-store' } });
   response.cookies.set(betaCookieName(), '', {
     httpOnly: true,

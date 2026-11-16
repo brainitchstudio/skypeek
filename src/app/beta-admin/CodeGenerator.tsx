@@ -31,7 +31,7 @@ export function CodeGenerator() {
       <option value={7}>7 days</option><option value={30}>30 days</option><option value={90}>90 days</option>
     </select>
     <button type="button" onClick={() => void generate()}>Generate access code</button>
-    {error && <p className="access-error" role="alert">{error}</p>}
+    {error && <p className="access-error" role="alert">{error} <a href="/beta-admin?reauthenticate=1">Sign in again</a></p>}
     {generated && <div className="access-generated" role="status">
       <span>New access code</span>
       <code>{generated.code}</code>

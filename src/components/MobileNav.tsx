@@ -1,16 +1,15 @@
-import { Check, ChevronDown, MapPin, Menu, Settings2, X } from 'lucide-react';
+import { ChevronDown, MapPin, Menu, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { NAV_ITEMS } from './Switcher';
-import { findSaved, orderPlaces, savePlace } from '@/lib/places';
-import { useSettings, type Screen } from '@/lib/settings';
+import { useLocation } from './LocationPicker';
+import type { Screen } from '@/lib/settings';
 import type { Place } from '@/lib/types';
 
-export function MobileNav({ active, badge, place, onSelect, onManagePlaces }: {
-  active: Screen; badge: boolean; place: Place; onSelect: (screen: Screen) => void; onManagePlaces: () => void;
+export function MobileNav({ active, badge, place, onSelect }: {
+  active: Screen; badge: boolean; place: Place; onSelect: (screen: Screen) => void;
 }) {
-  const { s, set } = useSettings();
+  const { openPicker } = useLocation();
   const [open, setOpen] = useState(false);
-  const [showPlaces, setShowPlaces] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
   const firstItem = useRef<HTMLButtonElement>(null);
   const current = active === 'alertDetail' ? 'alerts' : active;
@@ -28,15 +27,7 @@ export function MobileNav({ active, badge, place, onSelect, onManagePlaces }: {
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [open]);
 
-  const close = () => { setOpen(false); setShowPlaces(false); };
-  const choosePlace = (chosen: Place) => {
-    set(settings => ({
-      places: savePlace(settings.places, chosen),
-      defaultPlace: findSaved(settings.places, chosen)?.id ?? chosen.id,
-      gps: false,
-    }));
-    close();
-  };
+  const close = () => setOpen(false);
 
   return (
     <div className="mobile-nav">
@@ -54,15 +45,9 @@ export function MobileNav({ active, badge, place, onSelect, onManagePlaces }: {
             ))}
           </div>
           <div className="mobile-nav-places">
-            <button type="button" className="mobile-nav-place-toggle" aria-expanded={showPlaces} onClick={() => setShowPlaces(value => !value)}>
-              <MapPin size={20} aria-hidden /><span><small>LOCATION</small>{place.name}</span><ChevronDown size={18} className={showPlaces ? 'open' : ''} aria-hidden />
+            <button type="button" className="mobile-nav-place-toggle" aria-haspopup="dialog" onClick={() => { close(); openPicker(); }}>
+              <MapPin size={20} aria-hidden /><span><small>LOCATION</small>{place.name}</span><ChevronDown size={18} aria-hidden />
             </button>
-            {showPlaces && <div className="mobile-nav-place-list">
-              {orderPlaces(s.places).map(saved => <button type="button" key={saved.id} onClick={() => choosePlace(saved)}>
-                <span>{saved.name}</span>{saved.id === place.id && <Check size={18} aria-label="Current location" />}
-              </button>)}
-              <button type="button" onClick={() => { close(); onManagePlaces(); }}><Settings2 size={18} aria-hidden />Find or manage locations</button>
-            </div>}
           </div>
         </nav>
       )}

@@ -1,0 +1,125 @@
+.radar-options-page { min-height: 100vh; background: #e7e9e6; color: #1a2b2c; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif; }
+.radar-options-nav { max-width: 1460px; margin: auto; padding: 27px 42px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.radar-options-nav a { display: inline-flex; align-items: center; gap: 2px; color: inherit; font-size: 14px; font-weight: 650; text-decoration: none; }
+.radar-options-nav > span { color: #65817c; font-size: 10px; font-weight: 750; letter-spacing: .14em; }
+.radar-options-intro { max-width: 1460px; margin: auto; padding: 79px 42px 77px; }
+.radar-options-intro > span { color: #527c71; font-size: 11px; font-weight: 800; letter-spacing: .15em; }
+.radar-options-intro h1 { margin: 15px 0 22px; font-size: clamp(60px, 8vw, 116px); font-weight: 500; letter-spacing: -.08em; line-height: .92; }
+.radar-options-intro h1 em { color: #719a8e; font-family: Georgia, serif; font-weight: 400; }
+.radar-options-intro p { max-width: 635px; color: #657772; font-size: 17px; line-height: 1.55; }
+.radar-options-desktop-link { display: inline-flex; align-items: center; gap: 3px; margin-top: 21px; color: #286f65; text-decoration: none; font-size: 14px; font-weight: 700; }
+.radar-options-grid { max-width: 1460px; margin: auto; padding: 0 42px 115px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; justify-items: center; }
+.radar-option-study { width: 100%; max-width: 390px; }
+.radar-option-caption { min-height: 142px; padding: 0 4px; }
+.radar-option-caption > span { color: #4a756a; font-size: 10px; font-weight: 800; letter-spacing: .13em; }
+.radar-option-caption h2 { margin: 11px 0 6px; font-size: 25px; font-weight: 650; letter-spacing: -.04em; }
+.radar-option-caption p { max-width: 340px; color: #64736f; font-size: 13px; line-height: 1.5; }
+.radar-option-phone { background: #e3e9e7; }
+.radar-option-screen { position: absolute; inset: 0 0 81px; overflow: hidden; }
+.radar-option-tabs { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-around; height: 82px; padding: 10px 13px 20px; background: #f8faf9ed; border-top: 1px solid #dfe8e4; backdrop-filter: blur(16px); }
+.radar-option-tabs > div { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 62px; color: #82918d; font-size: 10px; font-weight: 650; }
+.radar-option-tabs .selected { color: #267d73; }
+.radar-option-tabs i { position: absolute; right: 12px; top: -1px; width: 5px; height: 5px; border-radius: 50%; background: #d4765b; }
+.radar-option-map { position: absolute; inset: 0; color: #e7eae4; }
+.radar-option-map svg { display: block; width: 100%; height: 100%; }
+.radar-option-map .water { stroke: #bed6db; }
+.radar-option-map .minor-roads { stroke: #d0d8d2; }
+.radar-option-map .major-roads { stroke: #f9faf6; }
+.radar-option-map .road-centers { stroke: #b9c9c5; }
+.radar-option-map .map-labels { fill: #6b7c7b; }
+.radar-option-map .rain-fields { fill: #729cb2; opacity: .51; }
+.radar-option-map .rain-cores { fill: #407da0; opacity: .48; }
+.radar-option-map-light { color: #edf0ea; }
+.radar-option-map-light .rain-fields { opacity: .43; }
+.radar-option-map-light .rain-cores { opacity: .32; }
+.radar-option-map-dark { color: #243e43; }
+.radar-option-map-dark .water { stroke: #3d5a61; }
+.radar-option-map-dark .minor-roads { stroke: #3f5657; }
+.radar-option-map-dark .major-roads { stroke: #557075; }
+.radar-option-map-dark .road-centers { stroke: #354b4f; }
+.radar-option-map-dark .map-labels { fill: #b1c2c1; }
+.radar-option-map-dark .rain-fields { fill: #50a7ba; opacity: .38; }
+.radar-option-map-dark .rain-cores { fill: #e0b16c; opacity: .55; }
+.radar-timeline { position: relative; flex: 1; height: 4px; border-radius: 99px; background: #ffffff6a; }
+.radar-timeline i { display: block; width: 68%; height: 100%; border-radius: 99px; background: #c8e8dc; }
+.radar-timeline:after { position: absolute; top: -4px; left: 68%; width: 12px; height: 12px; content: ''; border-radius: 50%; background: #fff; }
+.radar-option-legend { display: flex; gap: 8px; align-items: center; color: #b9d4d3; font-size: 8px; font-weight: 750; letter-spacing: .1em; }
+.radar-option-legend div { flex: 1; height: 5px; border-radius: 99px; background: linear-gradient(90deg, #b9d7db, #74b5ce, #e8d279, #dd9473, #a46c96); }
+
+/* Map-first option */
+.radar-immersive-top { position: absolute; z-index: 2; top: 58px; left: 20px; right: 19px; display: flex; justify-content: space-between; color: #233f43; }
+.radar-immersive-title > span, .radar-forecast-heading span, .radar-safety-title span { font-size: 10px; font-weight: 750; letter-spacing: .14em; }
+.radar-immersive-title h3, .radar-forecast-heading h3, .radar-safety-title h3 { display: flex; align-items: center; gap: 5px; margin: 4px 0 0; font-size: 29px; font-weight: 650; letter-spacing: -.045em; }
+.radar-immersive-layer, .radar-forecast-button { display: grid; place-items: center; width: 39px; height: 39px; border-radius: 50%; background: #fff; box-shadow: 0 4px 13px #2949432b; }
+.radar-immersive-search { position: absolute; z-index: 2; top: 130px; left: 18px; right: 18px; display: flex; align-items: center; gap: 10px; height: 43px; padding: 0 15px; border-radius: 12px; background: #fff; box-shadow: 0 4px 12px #29494325; color: #81918d; font-size: 13px; }
+.radar-immersive-pin, .radar-forecast-pin { position: absolute; z-index: 2; left: 51%; top: 44%; color: #295b59; filter: drop-shadow(0 3px 5px #1b333880); }
+.radar-immersive-actions { position: absolute; z-index: 2; top: 195px; right: 17px; display: flex; flex-direction: column; gap: 7px; }
+.radar-immersive-actions div { display: grid; place-items: center; width: 37px; height: 37px; border-radius: 11px; background: #fff; color: #2b5654; box-shadow: 0 3px 9px #29494324; }
+.radar-immersive-bottom { position: absolute; z-index: 2; bottom: 15px; left: 16px; right: 16px; padding: 15px; border-radius: 19px; background: #18383ef2; color: #fff; box-shadow: 0 10px 27px #152f3466; }
+.radar-immersive-live { display: flex; justify-content: space-between; font-size: 10px; font-weight: 750; letter-spacing: .07em; }
+.radar-immersive-live > span:last-child { color: #9cc3c1; letter-spacing: 0; font-weight: 550; }
+.radar-immersive-live i, .radar-forecast-time i { display: inline-block; width: 6px; height: 6px; margin-right: 3px; border-radius: 50%; background: #70d8b0; }
+.radar-immersive-play { display: flex; align-items: center; gap: 10px; margin: 18px 0; font-size: 11px; }
+.radar-immersive-bottom .radar-option-legend { margin-bottom: 16px; }
+.radar-immersive-pills { display: flex; gap: 6px; }
+.radar-immersive-pills span { display: flex; align-items: center; gap: 5px; padding: 8px 9px; border-radius: 8px; background: #ffffff1b; color: #d1e3e1; font-size: 10px; font-weight: 650; }
+
+/* Forecast lens */
+.radar-forecast .radar-option-map { bottom: 260px; }
+.radar-forecast-top { position: absolute; z-index: 2; top: 58px; left: 18px; right: 18px; }
+.radar-forecast-heading { display: flex; justify-content: space-between; align-items: center; color: #233e42; }
+.radar-forecast-time { display: flex; justify-content: space-between; margin-top: 13px; padding: 9px 11px; border-radius: 9px; background: #fffdf5f2; color: #5d7571; font-size: 9px; font-weight: 750; letter-spacing: .06em; box-shadow: 0 3px 9px #1b35311a; }
+.radar-forecast-time span:last-child { color: #8c9a95; letter-spacing: 0; font-weight: 550; }
+.radar-forecast-pin { top: 31%; }
+.radar-forecast-sheet { position: absolute; z-index: 3; bottom: 0; left: 0; right: 0; height: 390px; padding: 8px 23px 19px; border-radius: 25px 25px 0 0; background: #fbfcf9; box-shadow: 0 -6px 22px #2b4b3d24; }
+.radar-sheet-handle { width: 39px; height: 5px; margin: 0 auto 19px; border-radius: 99px; background: #d3dbd6; }
+.radar-sheet-top { display: flex; justify-content: space-between; align-items: center; }
+.radar-sheet-top span { color: #729087; font-size: 10px; font-weight: 750; letter-spacing: .13em; }
+.radar-sheet-top h4 { margin: 4px 0 0; font-size: 24px; letter-spacing: -.035em; }
+.radar-sheet-top svg { color: #6498a8; }
+.radar-forecast-sheet > p { margin: 12px 0 19px; color: #71847c; font-size: 12px; line-height: 1.46; }
+.radar-forecast-metrics { display: flex; padding: 12px 0 15px; border-top: 1px solid #e8eeea; border-bottom: 1px solid #e8eeea; }
+.radar-forecast-metrics > div { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; border-right: 1px solid #e8eeea; }
+.radar-forecast-metrics > div:last-child { border: 0; }
+.radar-forecast-metrics svg { color: #438f87; }
+.radar-forecast-metrics b { font-size: 15px; }
+.radar-forecast-metrics span { color: #9aa9a2; font-size: 9px; }
+.radar-forecast-play { display: flex; align-items: center; gap: 9px; margin-top: 19px; color: #3b6963; font-size: 10px; font-weight: 650; }
+.radar-forecast-play .radar-timeline { background: #dbe6df; }
+.radar-forecast-play .radar-timeline i { background: #4c9486; }
+.radar-forecast-play .radar-timeline:after { background: #4c9486; }
+.radar-forecast-footer { display: flex; justify-content: space-between; margin-top: 19px; color: #9eaaa5; font-size: 10px; }
+.radar-forecast-footer span:last-child { display: flex; align-items: center; color: #397c70; font-weight: 750; }
+.radar-forecast-spot { display: flex; align-items: center; gap: 8px; margin-top: 13px; padding: 10px 12px; border-radius: 10px; background: #eaf2ed; color: #347d70; font-size: 11px; font-weight: 700; }
+.radar-forecast-spot span { flex: 1; }
+
+/* Alert-aware option */
+.radar-safety .ios-status { color: #fff; }
+.radar-safety .ios-home-indicator { background: #fff; }
+.radar-safety .radar-option-tabs { background: #20373bec; border-top-color: #ffffff22; }
+.radar-safety .radar-option-tabs > div { color: #91aeb0; }
+.radar-safety .radar-option-tabs .selected { color: #fff; }
+.radar-safety-top { position: absolute; z-index: 3; top: 59px; left: 18px; right: 18px; }
+.radar-safety-title { display: flex; justify-content: space-between; align-items: center; color: #fff; }
+.radar-safety-title > span { display: grid; place-items: center; width: 37px; height: 37px; border-radius: 50%; background: #fff2; }
+.radar-safety-search { display: flex; align-items: center; gap: 8px; height: 42px; margin-top: 15px; padding: 0 13px; border-radius: 11px; background: #f8faf8; color: #425c5b; font-size: 12px; }
+.radar-safety-search svg:last-child { margin-left: auto; }
+.radar-safety-warning-shape { position: absolute; z-index: 1; top: 238px; left: -93px; width: 311px; height: 273px; border: 3px solid #e7af63; background: #e9a85854; transform: rotate(-18deg); clip-path: polygon(11% 0, 100% 13%, 80% 100%, 0 83%); }
+.radar-safety-warning-label { position: absolute; z-index: 2; top: 250px; left: 19px; display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 8px; background: #423b2ce8; color: #ffd29c; font-size: 10px; font-weight: 650; }
+.radar-safety-pin { position: absolute; z-index: 2; top: 43%; left: 61%; color: #b7e8d9; filter: drop-shadow(0 3px 7px #0008); }
+.radar-safety-tools { position: absolute; z-index: 3; top: 196px; right: 17px; display: flex; flex-direction: column; gap: 7px; }
+.radar-safety-tools span { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 9px; background: #f8faf7; color: #35585b; }
+.radar-safety-bottom { position: absolute; z-index: 3; left: 14px; right: 14px; bottom: 14px; }
+.radar-safety-alert { padding: 15px; border: 1px solid #d9a76a; border-radius: 15px; background: #3c332b; color: #fff; box-shadow: 0 10px 25px #0006; }
+.radar-safety-alert > div { display: flex; align-items: center; gap: 7px; }
+.radar-safety-alert svg { color: #f4be78; }
+.radar-safety-alert b { flex: 1; font-size: 14px; }
+.radar-safety-alert > div > span { color: #f4c48e; font-size: 9px; }
+.radar-safety-alert p { margin: 10px 0; color: #e0d2c3; font-size: 10px; line-height: 1.45; }
+.radar-safety-alert > span { display: flex; align-items: center; color: #ffcc8c; font-size: 10px; font-weight: 750; }
+.radar-safety-control { display: flex; align-items: center; gap: 10px; margin-top: 7px; padding: 11px 13px; border-radius: 11px; background: #213b3fea; color: #e8f4f0; font-size: 10px; }
+.radar-safety-spot { display: flex; align-items: center; gap: 9px; margin-top: 7px; padding: 11px 13px; border-radius: 11px; background: #f7faf7; color: #285b58; font-size: 11px; font-weight: 700; }
+.radar-safety-spot span { flex: 1; }
+.radar-options-footer { display: flex; justify-content: space-between; max-width: 1460px; margin: auto; padding: 25px 42px 40px; border-top: 1px solid #cad3cd; color: #6e837a; font-size: 10px; font-weight: 750; letter-spacing: .1em; }
+@media (max-width: 1160px) { .radar-options-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 55px; } }
+@media (max-width: 720px) { .radar-options-nav { padding: 20px; } .radar-options-nav > span { display: none; } .radar-options-intro { padding: 55px 22px 55px; } .radar-options-intro p { font-size: 15px; } .radar-options-grid { grid-template-columns: 1fr; padding: 0 20px 75px; row-gap: 55px; } .radar-option-caption { min-height: 0; margin-bottom: 18px; } .radar-options-footer { padding: 24px 20px 35px; flex-direction: column; gap: 8px; } }

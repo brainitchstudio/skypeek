@@ -8,12 +8,12 @@ export const NAV_ITEMS: [Exclude<Screen, 'alertDetail'>, string, LucideIcon][] =
   ['radar', 'Radar', Radar], ['alerts', 'Alerts', TriangleAlert], ['settings', 'Settings', Settings],
 ];
 
-export function Switcher({ active, badge, onSelect, place, onManagePlaces }: {
-  active: string; badge: boolean; onSelect: (k: Screen) => void; place: Place; onManagePlaces: () => void;
+export function Switcher({ active, badge, onSelect, place }: {
+  active: string; badge: boolean; onSelect: (k: Screen) => void; place: Place;
 }) {
   return (
     <nav className="switcher" aria-label="Main">
-      <PlaceMenu place={place} onManage={onManagePlaces} />
+      <PlaceMenu place={place} />
       <span className="dock-sep" />
       {NAV_ITEMS.map(([k, label, Glyph]) => {
         const on = k === active;

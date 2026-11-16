@@ -18,6 +18,7 @@ export const DEFAULTS = {
   delivery: [true, false, false], // banner, system notification, sound
   tiers: [0, 0, 1],
   gps: false,
+  viewingPlace: null as string | null, // null uses the main saved place; gps takes precedence
   places: [
     { id: 'brooklyn', name: 'Brooklyn, NY', region: 'Kings County', lat: 40.6782, lon: -73.9442 },
     { id: 'manhattan', name: 'Manhattan, NY', region: 'New York County', lat: 40.7831, lon: -73.9712 },
@@ -28,6 +29,7 @@ export const DEFAULTS = {
   provider: 0,
   keys: {} as Record<number, string>,
   verified: {} as Record<number, boolean>,
+  rememberKeys: {} as Record<number, boolean>,
   refreshI: 1,
   basemap: 0,
   radarSrc: 4, // 0 demo, 1 RainViewer, 2 OpenWeather, 3 Tomorrow.io, 4 NOAA national, 5 NOAA station
@@ -41,7 +43,7 @@ export type Settings = typeof DEFAULTS;
 export type SetSettings = (patch: Partial<Settings> | ((s: Settings) => Partial<Settings>)) => void;
 
 function load(): Settings {
-  try { return loadSettings(localStorage, DEFAULTS); } catch { return DEFAULTS; }
+  try { return loadSettings(localStorage, DEFAULTS, sessionStorage); } catch { return DEFAULTS; }
 }
 
 const Ctx = createContext<{ s: Settings; set: SetSettings } | null>(null);
@@ -53,10 +55,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     const current = latest.current;
     const next = { ...current, ...(typeof patch === 'function' ? patch(current) : patch) };
     latest.current = next;
-    try { saveSettings(localStorage, next); } catch { /* browser storage may be unavailable */ }
+    try { saveSettings(localStorage, next, sessionStorage); } catch { /* browser storage may be unavailable */ }
     setState(next);
   }, []);
-  useEffect(() => { try { saveSettings(localStorage, latest.current); } catch { /* browser storage may be unavailable */ } }, []);
+  useEffect(() => { try { saveSettings(localStorage, latest.current, sessionStorage); } catch { /* browser storage may be unavailable */ } }, []);
   const value = useMemo(() => ({ s, set }), [s, set]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

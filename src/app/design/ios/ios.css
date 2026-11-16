@@ -1,0 +1,166 @@
+.ios-gallery { min-height: 100vh; background: #e8e9e5; color: #172324; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif; }
+.ios-gallery-header { max-width: 1460px; margin: auto; padding: 28px 42px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; letter-spacing: .1em; }
+.ios-gallery-header a { color: inherit; text-decoration: none; letter-spacing: 0; font-size: 14px; font-weight: 600; }
+.ios-gallery-intro { max-width: 1460px; margin: auto; padding: 76px 42px 84px; }
+.ios-gallery-intro .ios-eyebrow { color: #57766f; }
+.ios-gallery-intro h1 { margin: 18px 0 20px; font-size: clamp(58px, 7vw, 112px); font-weight: 500; letter-spacing: -.075em; line-height: .94; }
+.ios-gallery-intro h1 em { font-family: Georgia, serif; font-weight: 400; color: #7c958d; }
+.ios-gallery-intro p { max-width: 560px; color: #596667; font-size: 17px; line-height: 1.55; }
+.ios-gallery-radar-link { display: inline-flex; align-items: center; gap: 3px; margin-top: 23px; color: #2a7669; text-decoration: none; font-size: 14px; font-weight: 700; }
+.ios-gallery-grid { max-width: 1460px; margin: auto; padding: 0 42px 110px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); justify-items: center; column-gap: 30px; row-gap: 84px; }
+.ios-study { width: 100%; max-width: 390px; }
+.ios-study-label { display: flex; justify-content: space-between; margin: 0 3px 15px; color: #5a6967; font-size: 11px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
+.ios-phone { position: relative; width: 100%; aspect-ratio: 390 / 844; overflow: hidden; border: 7px solid #202728; border-radius: 55px; background: #f5f5f1; box-shadow: 0 22px 45px #293c362e, 0 3px 9px #293c3628; }
+.ios-phone:before { content: ''; position: absolute; inset: 0; z-index: 8; border: 1px solid #ffffff7a; border-radius: 48px; pointer-events: none; }
+.ios-status { position: absolute; top: 0; left: 0; right: 0; height: 54px; z-index: 7; padding: 16px 27px 0; display: flex; justify-content: space-between; color: #172324; font-size: 15px; }
+.ios-status b { font-weight: 700; }
+.ios-status-icons { font-size: 13px; font-weight: 800; letter-spacing: 1px; }
+.ios-status-light { color: #fff; }
+.ios-island { position: absolute; width: 112px; height: 28px; top: 10px; left: 50%; transform: translateX(-50%); border-radius: 99px; background: #121719; }
+.ios-screen { position: absolute; inset: 0 0 83px; overflow: hidden; }
+.ios-eyebrow { font-size: 10px; font-weight: 750; letter-spacing: .14em; }
+.ios-spark { color: #d3aa57; font-size: 14px; }
+.ios-place-header { position: relative; z-index: 2; height: 113px; padding: 59px 25px 0; display: flex; align-items: flex-start; justify-content: space-between; }
+.ios-place-header h2 { margin: 5px 0 0; display: flex; gap: 5px; align-items: center; font-size: 31px; font-weight: 650; letter-spacing: -.045em; }
+.ios-circle { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 50%; background: #ffffff91; }
+.ios-tabs { position: absolute; bottom: 0; left: 0; right: 0; z-index: 6; height: 83px; padding: 10px 15px 20px; display: flex; justify-content: space-around; border-top: 1px solid #e2e6e2; background: #f8f9f7f2; backdrop-filter: blur(18px); }
+.ios-tabs > div { position: relative; width: 61px; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #82908d; font-size: 10px; font-weight: 600; }
+.ios-tabs > div.selected { color: #277168; }
+.ios-tabs i { position: absolute; top: -1px; right: 12px; width: 5px; height: 5px; background: #d36955; border-radius: 50%; }
+.ios-tabs-dark { background: #172b34ed; border-top-color: #ffffff30; }
+.ios-tabs-dark > div { color: #adc4c9; }
+.ios-tabs-dark > div.selected { color: #fff; }
+.ios-radar-condensed .ios-screen { background: #fff; }
+.ios-radar-condensed .dm-source { bottom: 66px; }
+.ios-radar-condensed .dm-playback { bottom: 12px; }
+.ios-home-indicator { position: absolute; bottom: 7px; left: 50%; z-index: 9; width: 124px; height: 5px; border-radius: 99px; transform: translateX(-50%); background: #202728; }
+.ios-phone.dark .ios-home-indicator { background: white; }
+
+/* Today */
+.ios-today { background: linear-gradient(167deg, #d4e8e9 0%, #e8eee8 52%, #f6efe0 100%); }
+.ios-today .ios-place-header { color: #24484d; }
+.ios-today-hero { position: relative; height: 398px; padding-top: 45px; text-align: center; color: #23454a; }
+.ios-hero-sun { position: absolute; top: 14px; right: 40px; color: #f2c469; opacity: .88; filter: drop-shadow(0 0 19px #ffdc75); }
+.ios-today-temp { position: relative; font-size: 132px; font-weight: 250; line-height: 1; letter-spacing: -.11em; margin-right: 12px; }
+.ios-today-temp span { font-size: 70px; vertical-align: top; letter-spacing: -.08em; }
+.ios-condition { margin-top: 3px; font-size: 22px; font-weight: 600; letter-spacing: -.025em; }
+.ios-today-hero p { margin-top: 10px; color: #5a7778; font-size: 14px; line-height: 1.45; }
+.ios-high-low { margin-top: 16px; font-size: 13px; font-weight: 650; }
+.ios-today-bottom { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 18px 13px; }
+.ios-section-heading, .ios-list-heading { display: flex; align-items: center; justify-content: space-between; color: #607370; font-size: 10px; font-weight: 750; letter-spacing: .13em; }
+.ios-hour-strip { display: flex; justify-content: space-between; margin: 13px -2px 17px; }
+.ios-hour-strip > div { width: 19%; display: flex; flex-direction: column; align-items: center; gap: 10px; color: #44646a; }
+.ios-hour-strip span { font-size: 11px; color: #70817e; }
+.ios-hour-strip svg { color: #dba84a; }
+.ios-hour-strip b { color: #27454a; font-size: 16px; font-weight: 650; }
+.ios-now-card { display: flex; flex-direction: column; gap: 5px; padding: 17px 19px; border-radius: 19px; background: #fff9; box-shadow: 0 4px 20px #344c4111; }
+.ios-now-card span:first-child { color: #82908b; font-size: 11px; }
+.ios-now-card strong { font-size: 17px; letter-spacing: -.02em; }
+.ios-now-card span:last-child { display: flex; align-items: center; gap: 3px; color: #52776d; font-size: 12px; font-weight: 650; }
+
+/* Forecast screens */
+.ios-paper { background: #f8f9f6; }
+.ios-content { padding: 0 20px; }
+.ios-subtitle { margin: 0 0 22px; color: #798582; font-size: 13px; }
+.ios-segment { display: flex; padding: 4px; border-radius: 13px; background: #e9eeea; color: #82908b; font-size: 12px; font-weight: 650; }
+.ios-segment > * { flex: 1; padding: 9px 0; text-align: center; }
+.ios-segment b { border-radius: 9px; background: #fff; color: #285e57; box-shadow: 0 2px 6px #294d3d14; }
+.ios-hour-focus { display: flex; align-items: center; justify-content: space-between; height: 150px; padding: 16px 18px; margin: 18px 0 25px; border-radius: 22px; background: linear-gradient(120deg, #d8ebdf, #ecf1e7); color: #315b57; }
+.ios-hour-focus > div { display: flex; flex-direction: column; }
+.ios-hour-focus strong { margin: 5px 0 0; font-size: 66px; font-weight: 300; line-height: 1; letter-spacing: -.07em; }
+.ios-hour-focus > div > span:last-child { font-size: 12px; }
+.ios-hour-focus svg { color: #dcaf5b; }
+.ios-list-heading span { display: inline-flex; align-items: center; gap: 2px; color: #8d9b96; }
+.ios-hour-list { margin-top: 9px; }
+.ios-hour-list > div { height: 60px; display: grid; grid-template-columns: 57px 43px 1fr 55px 50px; align-items: center; border-bottom: 1px solid #e8ece8; }
+.ios-hour-list b { font-size: 13px; font-weight: 650; }
+.ios-hour-list svg { color: #d4ab56; }
+.ios-hour-list strong { font-size: 23px; font-weight: 500; }
+.ios-hour-list span { display: flex; align-items: center; gap: 2px; color: #5b9ab6; font-size: 12px; font-weight: 650; }
+.ios-hour-list span svg { color: inherit; }
+.ios-hour-list small { color: #889793; font-size: 11px; text-align: right; }
+.ios-source { margin-top: 16px; color: #a2adaa; font-size: 10px; }
+.ios-days-summary { display: flex; gap: 13px; padding: 17px; margin-bottom: 29px; border-radius: 18px; background: #e9f0ee; }
+.ios-days-summary svg { color: #4d8ca7; flex: none; }
+.ios-days-summary div { display: flex; flex-direction: column; gap: 4px; }
+.ios-days-summary b { font-size: 15px; }
+.ios-days-summary span { color: #748580; font-size: 12px; line-height: 1.35; }
+.ios-days-list { margin-top: 12px; }
+.ios-days-list > div { height: 61px; display: grid; grid-template-columns: 52px 34px 35px 37px 1fr 37px; align-items: center; gap: 2px; border-bottom: 1px solid #e8ece8; }
+.ios-days-list > div.current { margin: 0 -10px; padding: 0 10px; border-radius: 12px; border: 0; background: #eaf0eb; }
+.ios-days-list b { font-size: 15px; }
+.ios-days-list svg { color: #d5a954; }
+.ios-days-list > div:nth-child(3) svg, .ios-days-list > div:nth-child(4) svg { color: #6898b1; }
+.ios-days-list small { color: #4b91b0; font-size: 10px; font-weight: 650; }
+.ios-days-list span { color: #9ba8a3; font-size: 13px; }
+.ios-days-list strong { font-size: 16px; text-align: right; }
+.ios-temp-track { position: relative; height: 5px; background: #e1e8e4; border-radius: 99px; }
+.ios-temp-track i { position: absolute; top: 0; height: 5px; border-radius: 99px; background: linear-gradient(90deg, #8eb6bd, #e8c26d); }
+.ios-uv-card { margin-top: 18px; padding: 17px; border-radius: 18px; background: #fff; }
+.ios-uv-card div { display: flex; align-items: center; gap: 8px; }
+.ios-uv-card svg { color: #dcab4d; }
+.ios-uv-card b { font-size: 14px; }
+.ios-uv-card p { margin-top: 7px; font-size: 12px; }
+.ios-uv-card span { display: block; margin-top: 5px; color: #8e9b96; font-size: 11px; }
+
+/* Radar */
+.ios-radar { background: #dfe5df; color: #fff; }
+.ios-map-art { position: absolute; inset: 0; }
+.ios-map-art svg { width: 100%; height: 100%; }
+.ios-map-pin { position: absolute; top: 46%; left: 49%; color: #234c51; filter: drop-shadow(0 3px 5px #0005); }
+.ios-radar-top { position: relative; z-index: 2; padding: 59px 18px 0; }
+.ios-radar-title { display: flex; justify-content: space-between; align-items: center; color: #233b3d; }
+.ios-radar-title h2 { display: flex; align-items: center; gap: 5px; margin: 4px 0 0; font-size: 29px; letter-spacing: -.045em; }
+.ios-map-round { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: 0 4px 12px #0002; }
+.ios-map-search { display: flex; align-items: center; gap: 10px; height: 42px; margin-top: 17px; padding: 0 14px; border-radius: 12px; background: #fff; color: #85918d; font-size: 12px; box-shadow: 0 4px 12px #0002; }
+.ios-radar-controls { position: absolute; z-index: 2; left: 17px; right: 17px; bottom: 18px; }
+.ios-radar-legend { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; padding: 9px 12px; border-radius: 10px; background: #183039e8; font-size: 9px; font-weight: 700; letter-spacing: .06em; }
+.ios-radar-legend div { flex: 1; height: 5px; border-radius: 99px; background: linear-gradient(90deg,#94bfd1,#4e9dca,#eec86e,#df7a69,#a25586); }
+.ios-radar-card { padding: 16px; border-radius: 18px; background: #183039f3; box-shadow: 0 10px 24px #0004; }
+.ios-radar-card > div:first-child { display: flex; align-items: center; gap: 5px; font-size: 9px; font-weight: 750; letter-spacing: .07em; }
+.ios-radar-card > div:first-child span:last-child { margin-left: auto; color: #a9c9c9; letter-spacing: 0; font-weight: 500; }
+.ios-live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #67c9a2; }
+.ios-radar-card strong { display: block; margin: 10px 0 3px; font-size: 17px; }
+.ios-radar-card small { color: #b4c7c6; font-size: 11px; }
+.ios-player { display: flex; align-items: center; gap: 10px; margin-top: 17px; font-size: 10px; }
+.ios-player > div { position: relative; flex: 1; height: 4px; border-radius: 99px; background: #738b8f; }
+.ios-player > div i { display: block; width: 72%; height: 100%; border-radius: 99px; background: #c2e3d7; }
+.ios-player > div:after { content: ''; position: absolute; top: -4px; left: 72%; width: 12px; height: 12px; border-radius: 50%; background: #fff; }
+.ios-map-tools { display: flex; gap: 8px; margin-top: 10px; }
+.ios-map-tools span { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; background: #fff; color: #234145; box-shadow: 0 3px 10px #0002; }
+
+/* Alerts & Settings */
+.ios-alert-feature { padding: 27px 25px 20px; border-radius: 22px; background: #e8f1ec; text-align: center; }
+.ios-alert-icon { display: grid; place-items: center; width: 56px; height: 56px; margin: 0 auto 19px; border-radius: 18px; background: #d4e9dd; color: #39745d; }
+.ios-alert-feature .ios-eyebrow { color: #6c8979; }
+.ios-alert-feature h3 { margin: 8px 0 8px; font-size: 24px; letter-spacing: -.04em; }
+.ios-alert-feature p { color: #688077; font-size: 13px; line-height: 1.45; }
+.ios-alert-feature > div:last-child { display: inline-flex; align-items: center; gap: 7px; margin-top: 20px; padding: 9px 12px; border-radius: 99px; background: #f5faf6; color: #4b7f68; font-size: 11px; font-weight: 650; }
+.ios-alert-feature + .ios-list-heading { margin: 29px 0 11px; }
+.ios-nearby { display: flex; align-items: center; gap: 11px; height: 69px; border-bottom: 1px solid #e6ebe7; }
+.ios-nearby-icon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: #e0ebef; color: #5893a9; }
+.ios-nearby-icon.amber { background: #f5ecd9; color: #b48944; }
+.ios-nearby > div:nth-child(2) { display: flex; flex: 1; flex-direction: column; gap: 4px; }
+.ios-nearby b { font-size: 12px; }
+.ios-nearby span { color: #8a9993; font-size: 11px; }
+.ios-nearby > svg { color: #9ba7a2; }
+.ios-alert-note { display: flex; align-items: center; gap: 11px; margin-top: 25px; padding: 16px; border-radius: 15px; background: #fff; color: #527a70; }
+.ios-alert-note span { flex: 1; font-size: 12px; line-height: 1.4; }
+.ios-settings-header { padding: 62px 25px 24px; }
+.ios-settings-header h2 { margin-top: 5px; font-size: 34px; letter-spacing: -.05em; }
+.ios-settings .ios-list-heading { margin: 10px 3px 10px; }
+.ios-settings-group { margin-bottom: 24px; border-radius: 16px; background: #fff; overflow: hidden; }
+.ios-settings-group > div:not(.ios-add-place) { display: flex; align-items: center; gap: 12px; min-height: 58px; margin: 0 14px; border-bottom: 1px solid #edf0ed; }
+.ios-settings-group > div:last-child { border-bottom: 0; }
+.ios-settings-icon { display: grid; place-items: center; flex: none; width: 31px; height: 31px; border-radius: 9px; background: #eaf0eb; color: #53857a; }
+.ios-settings-icon.blue { background: #dceee9; color: #268273; }
+.ios-settings-group > div > span:nth-child(2) { display: flex; flex: 1; flex-direction: column; gap: 3px; }
+.ios-settings-group b { font-size: 12px; font-weight: 650; }
+.ios-settings-group small { color: #96a29e; font-size: 10px; }
+.ios-settings-group > div > svg { color: #a4afaa; }
+.ios-settings-group > div > small { margin-left: auto; }
+.ios-add-place { padding: 12px 18px; color: #2a8175; font-size: 12px; font-weight: 700; }
+.ios-settings-footnote { color: #a5afaa; text-align: center; font-size: 10px; line-height: 1.5; }
+.ios-gallery-footer { max-width: 1460px; margin: auto; padding: 27px 42px 40px; display: flex; justify-content: space-between; border-top: 1px solid #cdd4cd; color: #70817b; font-size: 11px; font-weight: 700; letter-spacing: .1em; }
+@media (max-width: 1100px) { .ios-gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 680px) { .ios-gallery-header { padding: 20px; } .ios-gallery-header > span { display: none; } .ios-gallery-intro { padding: 55px 22px 58px; } .ios-gallery-intro p { font-size: 15px; } .ios-gallery-grid { grid-template-columns: 1fr; padding: 0 20px 70px; gap: 55px; } .ios-gallery-footer { padding: 25px 20px; flex-direction: column; gap: 8px; } }

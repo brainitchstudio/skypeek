@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Switcher } from './Switcher';
 import { MobileNav } from './MobileNav';
 import { LocationWelcome, TOUR_STEPS, WelcomeTour, WhatsNew } from './Onboarding';
@@ -18,38 +18,15 @@ import { DaysScreen } from '@/screens/Days';
 import { HourlyScreen } from '@/screens/Hourly';
 import { SettingsScreen } from '@/screens/Settings';
 import { TodayScreen } from '@/screens/Today';
+import { LocationProvider, useLocation } from './LocationPicker';
 
 // MapLibre is about 1 MB, so only the Radar screen loads it.
 const RadarScreen = dynamic(() => import('@/screens/Radar').then(m => m.RadarScreen), { ssr: false });
 const SCENE_KEY = 'sky-peek-onboarding-scene';
 
-function useActivePlace(): { place: Place; gpsError: string | null } {
-  const { s, set } = useSettings();
-  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
-  const [gpsError, setGpsError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!s.gps) { setCoords(null); return; }
-    setGpsError(null);
-    navigator.geolocation.getCurrentPosition(
-      p => setCoords({ lat: p.coords.latitude, lon: p.coords.longitude }),
-      () => { setGpsError('Location access was denied, so the default place is in use.'); set({ gps: false }); },
-    );
-  }, [s.gps, set]);
-
-  const place = useMemo<Place>(() => {
-    if (coords) return { id: 'gps', name: 'Current location', region: '', ...coords };
-    return s.places.find(p => p.id === s.defaultPlace) ?? s.places[0] ?? {
-      id: 'brooklyn', name: 'Brooklyn, NY', region: 'Kings County', lat: 40.6782, lon: -73.9442,
-    };
-  }, [coords, s.places, s.defaultPlace]);
-
-  return { place, gpsError };
-}
-
 function Shell() {
   const { s, set } = useSettings();
-  const { place, gpsError } = useActivePlace();
+  const { place, error: gpsError } = useLocation();
   const weather = useWeather(place, s);
   useAlertDelivery(weather.alerts, s);
   const [hour, setHour] = useState<number | null>(null);
@@ -104,7 +81,7 @@ function Shell() {
   };
   const startTour = () => { setTourStep(0); nav('today'); setIntro('tour'); };
   const chooseFirstPlace = (chosen: Place) => {
-    const next = { ...s, places: [chosen], defaultPlace: chosen.id, gps: false, screen: 'today' as const };
+    const next = { ...s, places: [chosen], defaultPlace: chosen.id, viewingPlace: chosen.id, gps: false, screen: 'today' as const };
     try {
       saveSettings(localStorage, next);
       markLocationChosen(localStorage);
@@ -136,7 +113,6 @@ function Shell() {
           active={s.screen === 'alertDetail' ? 'alerts' : s.screen}
           badge={weather.alerts.length > 0}
           place={place}
-          onManagePlaces={() => nav('settings', { setTab: 'locations' })}
           onSelect={k => { if (k === 'settings') nav(k, { setTab: 'alerts' }); else nav(k); }}
         />
       </div>
@@ -144,7 +120,6 @@ function Shell() {
         active={s.screen}
         badge={weather.alerts.length > 0}
         place={place}
-        onManagePlaces={() => nav('settings', { setTab: 'locations' })}
         onSelect={k => { if (k === 'settings') nav(k, { setTab: 'alerts' }); else nav(k); }}
       />
       {intro === 'location' && <LocationWelcome scene={scene} onChoose={chooseFirstPlace} />}
@@ -155,5 +130,5 @@ function Shell() {
 }
 
 export default function App() {
-  return <SettingsProvider><Shell /></SettingsProvider>;
+  return <SettingsProvider><LocationProvider><Shell /></LocationProvider></SettingsProvider>;
 }

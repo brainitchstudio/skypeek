@@ -10,6 +10,15 @@ public/maplibre-gl-worker.js
 .env
 .env.*
 !.env.example
+.sky-peek-install-token
+.sky-peek-config.json
+sky-peek-home.json
+.sky-peek-data/
+.sky-peek-sessions/
+.sky-peek-limits/
+.hallmark/
+.superdesign/tmp/
+/dist/
 *.log
 /ChatGPT Image*.png
 /.git-root-backup/

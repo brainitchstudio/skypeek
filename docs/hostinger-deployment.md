@@ -1,6 +1,19 @@
 # Hostinger deployment
 
-Sky Peek is a Next.js app with live API routes and a server-side beta gate. Deploy it as a **Node.js Web App**, not through Hostinger's PHP/HTML Git integration or as a static export. The existing `npm run build` and `npm run start` scripts are the build and start commands. MySQL is not needed for the current app.
+> Security update: the session and data behavior below is superseded by the current implementation. Visitor and owner cookies now use revocable server-side sessions in the private data directory. A deployment of this update requires everyone to sign in once again; existing valid access codes remain usable. Visitor sessions are capped at seven days and at invite expiry. Owner sessions have a four-hour maximum, a 15-minute idle timeout, and require authentication within five minutes for invite generation. Sign-out revokes the server session. Provider keys default to browser-session storage unless explicitly remembered. Point-coordinate cache entries now expire after seven days and are capped at 40; archive cleanup runs daily while collecting data. See the deployment requirements below before rollout.
+
+## Security rollout requirements
+
+- Set `SKY_PEEK_DATA_DIR` to a private persistent writable directory outside every public web root, or verify the existing Hostinger `hbuilds` sibling detection. It holds `.sky-peek-sessions/` and `.sky-peek-limits/` as well as installed configuration and homepage text. All proxy/Node workers must share the same local filesystem and OS identity. Independent replicas without that shared storage are unsupported; use a transactional shared store before that deployment model. Do not expose, publish, reset or restore stale session files casually. Store failure denies protected access instead of silently reverting to stateless cookies.
+- Preserve data across ordinary code deployments. Current session cookies intentionally reject the old signed format; existing visitor/owner browser sessions end once when the update is deployed. The code credentials themselves are not rotated by this migration.
+- Login budgets persist across restarts and use an atomic directory lock. Defaults cap visitor verification at 120 attempts and owner verification at 40 attempts per 15-minute window across the app. This counts successful attempts too. These conservative small-beta limits may need tuning before a larger release. A crashed process can leave a lock: stop all Node workers before removing a stale `visitor.lock` or `owner.lock` inside `.sky-peek-limits`, then restart. Never remove a live worker's lock. No automatic stale-lock guessing is used.
+- Incoming IP headers are ignored by default. Only set `SKY_PEEK_TRUSTED_IP_HEADER=x-real-ip` (or `x-forwarded-for`) after confirming the public proxy overwrites that header and direct Node access is blocked. This adds a per-client budget of 10 visitor or 8 owner attempts per window; it never disables the global budget.
+- CSP is enforced with fresh script nonces and explicit provider connections; every HTML page is dynamically rendered and private/no-store. Keep CDN HTML caching disabled. Inline script/event handlers and unapproved script loads are blocked. Styles permit inline values for MapLibre/React; font stylesheet exceptions are limited to Google Fonts. The policy has unit/proxy coverage but requires actual browser testing of every enabled radar/provider mode in staging. Do not weaken script policy to hide a violation.
+- Next proxy body cloning is limited to 16 KiB; mutation routes independently count received bytes at 1, 2 or 8 KiB before parsing. Add matching ingress limits and timeouts. HTTPS/HSTS and live proxy/log settings still require host verification; no HSTS deployment claim is made here.
+- Run the test suite, production build, network-enabled dependency advisory scan, browser CSP/injection/radar checks, cookie replay/logout checks and sensitive-log review before widening beta access. No local listener smoke check could be completed in the restricted implementation environment (`listen EPERM`).
+- No whole-device erasure button has been shipped in this stage. A comprehensive cross-tab/in-flight-safe purge, further provider/host retention checks, session-store quotas/metadata retention and operational hardening remain scheduled. The public `/privacy` page describes current behavior, including this limitation.
+
+Sky Peek is a Next.js app with live API routes, a public homepage, and a server-side beta gate for `/app`. Deploy it as a **Node.js Web App**, not through Hostinger's PHP/HTML Git integration or as a static export. The existing `npm run build` and `npm run start` scripts are the build and start commands. MySQL is not needed for the current app.
 
 ## Before the first deploy
 
@@ -39,7 +52,13 @@ Review the detected settings:
 
 The app serves from `/` on the subdomain, so no Next.js `basePath` or `assetPrefix` is needed. Hostinger manages the public host and port; no hard-coded port or domain belongs in this repository.
 
+The public homepage is at `/`; the visitor app is at `/app`. The **Log in** link leads to `/access`. The owner can update homepage wording at `/beta-admin/homepage` without a build. Those edits are stored in the private `domains/skypeek.brainitch.studio/.sky-peek-data/` directory, outside Hostinger's replaced `hbuilds` versions. Keep a backup of that directory. If Hostinger does not allow the Node process to write there, set `SKY_PEEK_DATA_DIR` to another private persistent writable directory in the app environment settings.
+
+For continuing app development, keep GitHub automatic deployments enabled. Pushes build and deploy a new version without a manual ZIP upload. Hostinger replaces its managed build folders on each deployment, so changes to Next.js code still require a new build; editing individual deployed files is not a durable update method.
+
 ### Beta gate variables
+
+If valid beta variables are already configured, the browser installer is locked. The installer is an alternative first setup path for a new deployment; see [the upload installer guide](shared-hosting-install.md). Keep working variables in place on an existing live site.
 
 Before starting the production app, add these **runtime** variables in Hostinger's Web App environment settings:
 
@@ -64,7 +83,7 @@ Generated codes are self-contained signed tokens; no database or redeployment is
 
 ## Verify the deployment
 
-1. Confirm Hostinger reports a successful build. Open `https://skypeek.brainitch.studio/` in a private browser window; it should redirect to `/access`. Enter a wrong code, then a generated code, and verify that `/`, `/lab`, and `/design` open after access is granted. Check that leaving beta from Settings returns to `/access`.
+1. Confirm Hostinger reports a successful build. Open `https://skypeek.brainitch.studio/` in a private browser window; the public homepage should load. Choose **Log in** to open `/access`. Enter a wrong code, then a generated code, and verify that `/app`, `/lab`, and `/design` open after access is granted. Check that leaving beta from Settings returns to `/access`.
 2. Check the live weather routes: search for a US street address, open the radar SpotCheck storm outlines, and enable map-wide alerts. A build can succeed even if one of these external services is temporarily unavailable; inspect the deployment logs when an endpoint consistently fails.
 3. Check the browser console and network requests for missing MapLibre worker assets and failed weather/radar requests.
 4. In Hostinger's resource usage, watch memory, process count, and 503 responses during the beta. Weather collection runs largely in each visitor's browser, while the weather and beta API routes use the Hostinger Node.js process. More visitors also mean more upstream weather requests; the current request ledger is per browser, not account-wide.

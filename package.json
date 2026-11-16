@@ -11,6 +11,7 @@
     "dev": "next dev",
     "prebuild": "npm run copy-worker",
     "build": "next build",
+    "package:shared": "SKY_PEEK_STANDALONE_BUILD=1 npm run build && node scripts/package-shared.mjs",
     "start": "next start",
     "test": "vitest run"
   },
@@ -21,7 +22,9 @@
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "topojson-client": "^3.1.0",
-    "us-atlas": "^3.0.1"
+    "us-atlas": "^3.0.1",
+    "@mapbox/vector-tile": "^3.0.0",
+    "pbf": "^5.1.2"
   },
   "devDependencies": {
     "@types/geojson": "^7946.0.16",

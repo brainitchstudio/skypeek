@@ -97,6 +97,7 @@ export function AlertDetailScreen({ weather, place, nav }: ScreenProps) {
   }
   return (
     <div className="screen scroll alert-detail">
+      <StaleNote weather={weather} />
       <div className="stripe" style={{ background: cur.color }} />
       <div className="top">
         <div className="main">

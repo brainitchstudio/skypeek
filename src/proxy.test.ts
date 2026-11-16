@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
-import { BETA_COOKIE, issueBetaSession } from '@/lib/betaGate';
+import { BETA_COOKIE, issueBetaSession, revokeBetaSession } from '@/lib/betaGate';
 import { proxy } from './proxy';
 
 describe('beta proxy', () => {
@@ -11,8 +11,9 @@ describe('beta proxy', () => {
   });
   afterEach(() => vi.unstubAllEnvs());
 
-  it('sends anonymous page visits to the code page', () => {
-    for (const path of ['/', '/lab', '/design']) {
+  it('keeps the homepage public and sends anonymous app visits to the code page', () => {
+    expect(proxy(new NextRequest('https://skypeek.brainitch.studio/')).status).toBe(200);
+    for (const path of ['/app', '/lab', '/design']) {
       const response = proxy(new NextRequest(`https://skypeek.brainitch.studio${path}`));
       expect(response.status).toBe(307);
       expect(response.headers.get('location')).toBe('https://skypeek.brainitch.studio/access');
@@ -34,6 +35,20 @@ describe('beta proxy', () => {
     const request = new NextRequest('https://skypeek.brainitch.studio/lab', { headers: { cookie: `${BETA_COOKIE}=${cookie}` } });
     expect(proxy(request).status).toBe(200);
     vi.stubEnv('BETA_SESSION_SECRET', '');
-    expect(proxy(request).status).toBe(503);
+    const uninstalled = proxy(request);
+    expect(uninstalled.status).toBe(307);
+    expect(uninstalled.headers.get('location')).toBe('https://skypeek.brainitch.studio/install');
+  });
+
+  it('denies a copied cookie after logout and overwrites forged nonce headers', () => {
+    const token = issueBetaSession();
+    revokeBetaSession(token);
+    expect(proxy(new NextRequest('https://skypeek.brainitch.studio/api/location', { headers: { cookie: `${BETA_COOKIE}=${token}` } })).status).toBe(401);
+    const request = () => new NextRequest('https://skypeek.brainitch.studio/', { headers: { 'x-nonce': 'attacker-nonce', 'Content-Security-Policy': "script-src * 'unsafe-inline'" } });
+    const first = proxy(request());
+    const second = proxy(request());
+    expect(first.headers.get('Content-Security-Policy')).not.toContain('attacker-nonce');
+    expect(first.headers.get('Content-Security-Policy')).not.toBe(second.headers.get('Content-Security-Policy'));
+    expect(first.headers.get('Cache-Control')).toBe('private, no-store');
   });
 });

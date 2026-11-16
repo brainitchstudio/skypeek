@@ -67,12 +67,16 @@ export function SettingsScreen({ weather, place, gpsError, onReplayTour, onShowW
           <Label>SkyPeek guide</Label>
           <button type="button" className="link" onClick={onReplayTour}>Replay welcome tour</button>
           <button type="button" className="link quiet" onClick={onShowWhatsNew}>What’s new</button>
+          <a className="link quiet" href="/privacy" target="_blank" rel="noreferrer">Privacy and device data</a>
         </div>
         {process.env.NODE_ENV === 'production' && <div className="field">
           <Label>Beta access</Label>
           <button type="button" className="link" onClick={() => {
-            void fetch('/api/access', { method: 'DELETE' }).then(() => { window.location.href = '/access'; });
+            void fetch('/api/access', { method: 'DELETE', headers: { 'x-sky-peek-action': 'logout' } }).then(response => { if (response.ok) window.location.href = '/access'; });
           }}>Leave beta</button>
+          <button type="button" className="link quiet" onClick={() => {
+            void fetch('/api/access?all=1', { method: 'DELETE', headers: { 'x-sky-peek-action': 'logout' } }).then(response => { if (response.ok) window.location.href = '/access'; });
+          }}>Sign out every session using this access code</button>
         </div>}
 </div>}
         {s.setTab === 'radar' && <RadarSettings />}
@@ -162,7 +166,7 @@ function Locations({ gpsError }: { gpsError: string | null }) {
   return (
     <div className="split">
       <div className="side">
-        <p className="lead">Your main location builds Today, Hourly and 10 Day, centers the radar and sets which alerts you receive. Star your favorites to keep them at the top.</p>
+        <p className="lead">Choose the weather location directly from Today. Your main saved location is the fallback when device location is unavailable. Star your favorites to keep them at the top.</p>
         <div className="group">
           <ToggleRow on={s.gps} onClick={() => set(c => ({ gps: !c.gps }))}>
             <span className="row-stack"><span className="row-name">Use current location</span><span className="row-note">Follow this device’s location</span></span>
@@ -195,7 +199,7 @@ function Locations({ gpsError }: { gpsError: string | null }) {
                 {n ? <Icon kind={iconFor(n.condition, n.isDaytime)} /> : <div />}
                 <div className="nm"><div className="a">{p.name}</div><div className="b">{p.region}</div></div>
                 <div className="tmp">{temp(n?.tempF, s.units)}</div>
-                <button type="button" className={`def${def ? ' on' : ''}`} onClick={() => set({ defaultPlace: p.id, gps: false })}>{def ? 'Main location' : 'Make main'}</button>
+                <button type="button" className={`def${def ? ' on' : ''}`} onClick={() => set({ defaultPlace: p.id })}>{def ? 'Main location' : 'Make main'}</button>
                 <button type="button" className="rm" style={{ visibility: def ? 'hidden' : 'visible' }}
                   onClick={() => set(c => ({ places: c.places.filter(x => x.id !== p.id) }))}>Remove</button>
               </div>
@@ -380,6 +384,12 @@ function DataSource({ weather, place }: { weather: Weather; place: Place }) {
               <button type="button" className="primary" onClick={test}>Test connection</button>
             </div>
             <div className="help">{prov.help}</div>
+            <ToggleRow on={!!s.rememberKeys[P]} onClick={() => set(c => ({ rememberKeys: { ...c.rememberKeys, [P]: !c.rememberKeys[P] } }))}>Remember this key on this device</ToggleRow>
+            <p className="help">By default, keys last for this browser session. Remembered keys remain readable by this site's code and anyone using this browser profile. Existing keys now use session storage unless you choose to remember them.</p>
+            <button type="button" className="link" onClick={() => {
+              set(c => ({ keys: Object.fromEntries(Object.entries(c.keys).filter(([id]) => Number(id) !== P)), verified: { ...c.verified, [P]: false } }));
+              setBad(''); setShow(false);
+            }}>Disconnect and remove key</button>
           </> : <div className="no-key">No key needed for the National Weather Service.</div>}
           <div className="status"><i style={{ background: dot }} /><span style={{ color: fg }}>{status}</span></div>
         </div>
@@ -439,6 +449,7 @@ function RadarSettings() {
           <div className="help">The connected OpenWeather key is used first when its plan includes the Lightning API. Reports cover 50 km around your active location.</div>
           <input type="password" aria-label="Weather Company lightning API key" autoComplete="off" value={s.keys[4] ?? ''}
             placeholder="Weather Company lightning API key" onChange={e => set(current => ({ keys: { ...current.keys, 4: e.target.value } }))} />
+          <ToggleRow on={!!s.rememberKeys[4]} onClick={() => set(c => ({ rememberKeys: { ...c.rememberKeys, 4: !c.rememberKeys[4] } }))}>Remember lightning key on this device</ToggleRow>
           <div className="help">Optional fallback: a Weather Company key with Recent Lightning Strikes for Region access covers 100 miles. NOAA density and the nearby lightning banner work without a key.</div>
         </div>
 </div>;

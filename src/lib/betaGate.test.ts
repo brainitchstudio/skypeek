@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { scryptSync } from 'node:crypto';
-import { acceptsBetaAdminCode, acceptsBetaCode, betaAdminReady, betaCodeIdentity, betaGateState, BETA_SESSION_SECONDS, generateBetaInvite, issueBetaAdminSession, issueBetaSession, validBetaAdminSession, validBetaInvite, validBetaSession } from './betaGate';
+import { acceptsBetaAdminCode, acceptsBetaCode, betaAdminReady, betaCodeIdentity, betaGateState, BETA_SESSION_SECONDS, generateBetaInvite, issueBetaAdminSession, issueBetaSession, validBetaAdminSession, validBetaInvite, validBetaSession, revokeBetaSession, revokeBetaAdminSession, BETA_ADMIN_IDLE_MS, freshBetaAdminSession } from './betaGate';
 
 const CODE = 'rainy-foxes-visit-2026';
 const SECRET = 'a-long-private-signing-secret-that-stays-on-the-server';
@@ -71,6 +71,16 @@ describe('beta gate', () => {
     expect(acceptsBetaCode(CODE)).toBe(false);
   });
 
+  it('accepts a salted owner code hash for browser installation', () => {
+    const code = 'private-owner-code-for-setup-2026';
+    const salt = '0123456789abcdef0123456789abcdef';
+    const hash = scryptSync(code, Buffer.from(salt, 'hex'), 32).toString('hex');
+    vi.stubEnv('BETA_ADMIN_CODE', `scrypt$${salt}$${hash}`);
+    expect(acceptsBetaAdminCode(code)).toBe(true);
+    expect(acceptsBetaAdminCode('wrong-owner-code-for-setup-2026')).toBe(false);
+    expect(validBetaAdminSession(issueBetaAdminSession())).toBe(true);
+  });
+
   it('leaves local development open when no gate is configured', () => {
     vi.stubEnv('NODE_ENV', 'development');
     vi.stubEnv('BETA_ACCESS_CODE', '');
@@ -103,5 +113,31 @@ describe('beta gate', () => {
     expect(validBetaAdminSession(cookie, now + 12 * 3600_000)).toBe(false);
     vi.stubEnv('BETA_ADMIN_CODE', 'different-owner-code-with-high-entropy');
     expect(validBetaAdminSession(cookie, now + 1000)).toBe(false);
+  });
+
+  it('rejects copied visitor and owner cookies after server-side logout', () => {
+    const visitor = issueBetaSession();
+    const owner = issueBetaAdminSession();
+    revokeBetaSession(visitor);
+    revokeBetaAdminSession(owner);
+    expect(validBetaSession(visitor)).toBe(false);
+    expect(validBetaAdminSession(owner)).toBe(false);
+  });
+
+  it('caps a redeemed invite session at the invite expiry', () => {
+    const now = Date.now();
+    const invite = generateBetaInvite(1, now);
+    const session = issueBetaSession(now + 23 * 3600_000, invite);
+    expect(validBetaSession(session, now + 23 * 3600_000 + 1000)).toBe(true);
+    expect(validBetaSession(session, now + 24 * 3600_000)).toBe(false);
+  });
+
+  it('requires recent owner authentication and expires idle owner sessions', () => {
+    const now = Date.now();
+    const session = issueBetaAdminSession(now);
+    expect(freshBetaAdminSession(session, now + 1000)).toBe(true);
+    expect(freshBetaAdminSession(session, now + 5 * 60_000)).toBe(false);
+    // The freshness check touched last use at five minutes.
+    expect(validBetaAdminSession(session, now + 5 * 60_000 + BETA_ADMIN_IDLE_MS)).toBe(false);
   });
 });

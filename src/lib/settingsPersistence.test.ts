@@ -18,10 +18,27 @@ describe('browser settings persistence', () => {
     const saved = loadSettings(storage({ [SETTINGS_KEY]: JSON.stringify(old) }), DEFAULTS);
     expect(saved.places).toEqual([home]);
     expect(saved.defaultPlace).toBe(home.id);
+    expect(saved.viewingPlace).toBeNull();
     expect(saved.units).toBe('C');
     expect(saved.screen).toBe('today');
     expect(saved.radarForecastHours).toBe(DEFAULTS.radarForecastHours);
     expect(saved.delivery).toEqual([false, ...DEFAULTS.delivery.slice(1)]);
+  });
+
+  it('keeps the viewing selection separate from the main saved place and GPS preference', () => {
+    const away = { ...home, id: 'away', name: 'Tulsa, OK', lat: 36.15, lon: -95.99 };
+    const selected = { ...DEFAULTS, places: [home, away], defaultPlace: home.id, viewingPlace: away.id, gps: false };
+    const loaded = loadSettings(storage({ [SETTINGS_KEY]: JSON.stringify(selected) }), DEFAULTS);
+    expect(loaded.defaultPlace).toBe(home.id);
+    expect(loaded.viewingPlace).toBe(away.id);
+    expect(loaded.gps).toBe(false);
+    expect(loadSettings(storage({ [SETTINGS_KEY]: JSON.stringify({ ...selected, gps: true }) }), DEFAULTS).gps).toBe(true);
+  });
+
+  it('falls back to the main place when a previously viewed saved place was removed', () => {
+    const loaded = loadSettings(storage({ [SETTINGS_KEY]: JSON.stringify({ places: [home], defaultPlace: home.id, viewingPlace: 'removed' }) }), DEFAULTS);
+    expect(loaded.viewingPlace).toBeNull();
+    expect(loaded.defaultPlace).toBe(home.id);
   });
 
   it('recovers a selected place and preferences from the previous valid save', () => {
@@ -51,5 +68,26 @@ describe('browser settings persistence', () => {
     const backup = JSON.parse(saved.getItem(SETTINGS_BACKUP_KEY)!);
     expect(backup.keys).toEqual({});
     expect(backup.verified).toEqual({});
+  });
+
+  it('keeps unremembered keys only in session storage, including legacy keys', () => {
+    const local = storage();
+    const session = storage();
+    const settings = { ...DEFAULTS, keys: { 1: 'session-key' }, verified: { 1: true } };
+    saveSettings(local, settings, session);
+    expect(JSON.parse(local.getItem(SETTINGS_KEY)!).keys).toEqual({});
+    expect(loadSettings(local, DEFAULTS, session).keys).toEqual({ 1: 'session-key' });
+    expect(loadSettings(local, DEFAULTS, storage()).keys).toEqual({});
+    saveSettings(local, { ...settings, rememberKeys: { 1: true } }, session);
+    expect(loadSettings(local, DEFAULTS, storage()).keys).toEqual({ 1: 'session-key' });
+    saveSettings(local, { ...settings, keys: {}, verified: {} }, session);
+    expect(loadSettings(local, DEFAULTS, session).keys).toEqual({});
+  });
+
+  it('does not recover a removed place from the settings backup', () => {
+    const local = storage();
+    saveSettings(local, { ...DEFAULTS, places: [...DEFAULTS.places, home] });
+    saveSettings(local, DEFAULTS);
+    expect(JSON.parse(local.getItem(SETTINGS_BACKUP_KEY)!).places).toEqual(DEFAULTS.places);
   });
 });

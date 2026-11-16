@@ -12,7 +12,7 @@ const concepts = [
 
 export default function DesignPage() {
   return <main className="design-page">
-    <header className="design-heading"><a href="/">SkyPeek <ArrowUpRight size={15} /></a><span>THE MOBILE EDITION · DESIGN STUDIES</span></header>
+    <header className="design-heading"><a href="/">SkyPeek <ArrowUpRight size={15} /></a><a href="/design/ios">Full iOS mockups <ArrowUpRight size={15} /></a></header>
     <FlatLibrary />
     <section className="design-intro" id="concepts"><p>FIVE WAYS TO MEET THE DAY</p><h1>A forecast.<br />A feeling.</h1><div>Two quiet essentials. Three with a mid-century soul. Exploring Today on mobile, with the same sample forecast in every direction.</div></section>
     <div className="design-grid">{concepts.map((concept, index) => <article className="design-study" key={concept.theme}>
