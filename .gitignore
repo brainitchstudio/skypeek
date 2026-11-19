@@ -4,6 +4,7 @@ next-env.d.ts
 *.tsbuildinfo
 .DS_Store
 public/maplibre-gl-worker.js
+public/maplibre-gl-worker.mjs
 .superpowers
 .claude
 .venv
@@ -17,7 +18,8 @@ sky-peek-home.json
 .sky-peek-sessions/
 .sky-peek-limits/
 .hallmark/
-.superdesign/tmp/
+.superdesign/
+.case-study-build/
 /dist/
 *.log
 /ChatGPT Image*.png
