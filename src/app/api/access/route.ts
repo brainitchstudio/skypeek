@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
   }
   if (!acceptsBetaCode(code)) {
     const suffix = scene ? `&time=${scene.time}&weather=${scene.weather}` : '';
-    const response = redirect(`/access?invalid=1${suffix}`);
+    const response = redirect(`/?invalid=1${suffix}`);
     response.headers.set('Cache-Control', 'no-store');
     return response;
   }

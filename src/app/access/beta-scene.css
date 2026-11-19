@@ -89,6 +89,10 @@
 .sp-enter:focus-visible { outline: 3px solid currentColor; outline-offset: 4px; }
 .sp-error { min-height: 22px; margin: 12px 0 0; font-size: 15px; font-weight: 700; }
 .sp-invite { margin: 12px 0 0; font-size: 15px; font-weight: 500; }
+.sp-learn { max-width: 100%; margin: 32px 0 0; padding: 14px 20px; border: 1px solid currentColor; border-radius: 14px; background: color-mix(in srgb, var(--sp-sky) 76%, white); font-size: 15px; font-weight: 500; line-height: 1.5; }
+.sp-learn a { color: inherit; font-weight: 800; text-decoration: underline; text-underline-offset: 4px; }
+.sp-learn a:hover { text-decoration-thickness: 2px; }
+.sp-learn a:focus-visible { outline: 3px solid currentColor; outline-offset: 4px; }
 .sp-star, .sp-flake { position: absolute; border-radius: 50%; background: #fff; }
 .sp-cloud { position: absolute; left: 0; }
 .sp-cloud svg { display: block; width: 100%; height: auto; }

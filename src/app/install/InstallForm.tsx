@@ -16,7 +16,7 @@ export default function InstallForm() {
       });
       const result = await response.json();
       if (!response.ok) { setError(result.error || 'Setup failed.'); return; }
-      window.location.replace('/access');
+      window.location.replace('/');
     } catch { setError('Could not connect to the server. Try again.'); }
     finally { setBusy(false); }
   }

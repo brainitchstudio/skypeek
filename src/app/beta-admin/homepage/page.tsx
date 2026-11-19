@@ -9,5 +9,5 @@ export const dynamic = 'force-dynamic';
 
 export default async function HomeEditorPage() {
   if (!validBetaAdminSession((await cookies()).get(betaAdminCookieName())?.value)) redirect('/beta-admin');
-  return <main className="home-editor-page"><div className="home-editor-card"><a href="/beta-admin">← Beta owner</a><h1>Public homepage</h1><p>Edit the words visitors see at the domain. Saved changes appear on the next page load, with no app redeployment.</p><HomeEditor initial={readHomeContent()} /></div></main>;
+  return <main className="home-editor-page"><div className="home-editor-card"><a href="/beta-admin">← Beta owner</a><h1>Information page</h1><p>Edit the words visitors see at /info. Saved changes appear on the next page load, with no app redeployment.</p><HomeEditor initial={readHomeContent()} /></div></main>;
 }

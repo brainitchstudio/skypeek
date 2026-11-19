@@ -25,7 +25,7 @@ function gate(request: NextRequest, proceed: () => NextResponse) {
     return NextResponse.redirect(new URL('/install', request.url));
   }
   if (path === '/install' || path === '/api/install') return NextResponse.redirect(new URL('/', request.url));
-  if (path === '/') return proceed();
+  if (path === '/' || path === '/info') return proceed();
   if (path === '/access' || path === '/api/access' || path === '/privacy' || path.startsWith('/beta-admin') || path === '/api/beta-admin' || path === '/api/home-content') return proceed();
 
   const state = betaGateState();
@@ -36,7 +36,7 @@ function gate(request: NextRequest, proceed: () => NextResponse) {
   if (path.startsWith('/api/')) {
     return NextResponse.json({ error: 'Beta access required' }, { status: 401, headers: { 'Cache-Control': 'no-store' } });
   }
-  return NextResponse.redirect(new URL('/access', request.url));
+  return NextResponse.redirect(new URL('/', request.url));
 }
 
 export const config = {

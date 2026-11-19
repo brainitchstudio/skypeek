@@ -38,8 +38,7 @@ describe('access submission', () => {
     });
     const wrong = await POST(make('incorrect-guess'));
     expect(wrong.status).toBe(303);
-    expect(wrong.headers.get('location')).toContain('/access?invalid=1');
-    expect(wrong.headers.get('location')).toBe('/access?invalid=1');
+    expect(wrong.headers.get('location')).toBe('/?invalid=1');
     expect(wrong.headers.get('set-cookie')).toBeNull();
 
     const correct = await POST(make('rainy-foxes-visit-2026'));
@@ -71,7 +70,7 @@ describe('access submission', () => {
       headers: { 'x-real-ip': 'test-scene-code' },
     });
     const invalid = await POST(make('incorrect-guess'));
-    expect(invalid.headers.get('location')).toBe('/access?invalid=1&time=evening&weather=rain');
+    expect(invalid.headers.get('location')).toBe('/?invalid=1&time=evening&weather=rain');
     const accepted = await POST(make('rainy-foxes-visit-2026'));
     expect(accepted.cookies.get(BETA_SCENE_COOKIE)?.value).toBe('evening.rain');
   });

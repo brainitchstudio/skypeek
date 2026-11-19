@@ -52,7 +52,7 @@ Review the detected settings:
 
 The app serves from `/` on the subdomain, so no Next.js `basePath` or `assetPrefix` is needed. Hostinger manages the public host and port; no hard-coded port or domain belongs in this repository.
 
-The public homepage is at `/`; the visitor app is at `/app`. The **Log in** link leads to `/access`. The owner can update homepage wording at `/beta-admin/homepage` without a build. Those edits are stored in the private `domains/skypeek.brainitch.studio/.sky-peek-data/` directory, outside Hostinger's replaced `hbuilds` versions. Keep a backup of that directory. If Hostinger does not allow the Node process to write there, set `SKY_PEEK_DATA_DIR` to another private persistent writable directory in the app environment settings.
+The beta code gate is at `/`; the public information page is at `/info`, and the visitor app is at `/app`. The owner can update information page wording at `/beta-admin/homepage` without a build. Those edits are stored in the private `domains/skypeek.brainitch.studio/.sky-peek-data/` directory, outside Hostinger's replaced `hbuilds` versions. Keep a backup of that directory. If Hostinger does not allow the Node process to write there, set `SKY_PEEK_DATA_DIR` to another private persistent writable directory in the app environment settings.
 
 For continuing app development, keep GitHub automatic deployments enabled. Pushes build and deploy a new version without a manual ZIP upload. Hostinger replaces its managed build folders on each deployment, so changes to Next.js code still require a new build; editing individual deployed files is not a durable update method.
 
@@ -77,13 +77,13 @@ Keep the same public domain and `BETA_SESSION_SECRET` when deploying ordinary Gi
 
 1. Visit `https://skypeek.brainitch.studio/beta-admin` over HTTPS and sign in with `BETA_ADMIN_CODE`.
 2. Choose 7, 30, or 90 days and select **Generate access code**. Copy the code shown and send it privately to a tester. Repeat for each tester or group.
-3. Test one code in a private browser window at `/access`. The owner page is intentionally separate from the app navigation.
+3. Test one code in a private browser window at `/`. The owner page is intentionally separate from the app navigation.
 
 Generated codes are self-contained signed tokens; no database or redeployment is needed to create them. They can be reused and forwarded until expiry. Expiry stops new sign-ins, while a session already issued can last up to seven more days. Individual code revocation and tester tracking are not available; rotating `BETA_SESSION_SECRET` invalidates every generated code and every tester session. Keep the owner code and signing secret in a password manager, since Hostinger does not retain a history of environment values.
 
 ## Verify the deployment
 
-1. Confirm Hostinger reports a successful build. Open `https://skypeek.brainitch.studio/` in a private browser window; the public homepage should load. Choose **Log in** to open `/access`. Enter a wrong code, then a generated code, and verify that `/app`, `/lab`, and `/design` open after access is granted. Check that leaving beta from Settings returns to `/access`.
+1. Confirm Hostinger reports a successful build. Open `https://skypeek.brainitch.studio/` in a private browser window; the beta code gate should load. Choose **Learn more** to open `/info`, then return to `/`. Enter a wrong code, then a generated code, and verify that `/app`, `/lab`, and `/design` open after access is granted. Check that leaving beta from Settings returns to `/`.
 2. Check the live weather routes: search for a US street address, open the radar SpotCheck storm outlines, and enable map-wide alerts. A build can succeed even if one of these external services is temporarily unavailable; inspect the deployment logs when an endpoint consistently fails.
 3. Check the browser console and network requests for missing MapLibre worker assets and failed weather/radar requests.
 4. In Hostinger's resource usage, watch memory, process count, and 503 responses during the beta. Weather collection runs largely in each visitor's browser, while the weather and beta API routes use the Hostinger Node.js process. More visitors also mean more upstream weather requests; the current request ledger is per browser, not account-wide.

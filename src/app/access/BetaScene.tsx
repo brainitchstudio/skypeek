@@ -146,6 +146,7 @@ export function BetaScene({ time, weather, invalid = false, unavailable = false,
         {invalid && <p id="access-error" className="sp-error" role="alert">That code didn’t work. Check it and try again.</p>}
         <p className="sp-invite">No code yet? Ask the person who invited you.</p>
       </>}
+      <p className="sp-learn">Not sure what SkyPeek is? <a href="/info">Learn more <span aria-hidden="true">→</span></a></p>
     </main>}
   </div>;
 }

@@ -1,22 +1,10 @@
-import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { betaGateState } from '@/lib/betaGate';
-import { BetaScene } from './BetaScene';
-import { pickScene } from '@/lib/betaScene';
-import './beta-scene.css';
-
-export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'SkyPeek beta access', robots: { index: false, follow: false } };
 
 export default async function AccessPage({ searchParams }: { searchParams: Promise<{ invalid?: string; time?: string; weather?: string }> }) {
-  const gate = betaGateState();
-  if (gate === 'open') redirect('/app');
   const params = await searchParams;
-  const { time, weather } = pickScene(params.time, params.weather);
-  return <BetaScene
-    time={time}
-    weather={weather}
-    invalid={params.invalid === '1'}
-    unavailable={gate === 'misconfigured'}
-  />;
+  const query = new URLSearchParams();
+  if (params.invalid === '1') query.set('invalid', '1');
+  if (params.time) query.set('time', params.time);
+  if (params.weather) query.set('weather', params.weather);
+  redirect(`/${query.size ? `?${query}` : ''}`);
 }

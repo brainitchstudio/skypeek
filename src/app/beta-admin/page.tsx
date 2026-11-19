@@ -21,7 +21,7 @@ export default async function BetaAdminPage({ searchParams }: { searchParams: Pr
       {!ready ? <p className="access-error" role="alert">Code management is unavailable. Add BETA_ADMIN_CODE in the hosting environment.</p> : signedIn ? <>
         <p>Generate a new code to share with a tester. Codes work until their expiry date.</p>
         <CodeGenerator />
-        <a className="access-secondary" href="/beta-admin/homepage">Edit public homepage →</a>
+        <a className="access-secondary" href="/beta-admin/homepage">Edit information page →</a>
         <form action="/api/beta-admin" method="post"><input type="hidden" name="intent" value="logout" /><button type="submit" className="access-secondary">Sign out of code manager</button></form>
         <form action="/api/beta-admin" method="post"><input type="hidden" name="intent" value="logout-all" /><button type="submit" className="access-secondary">Sign out all owner sessions</button></form>
       </> : <>

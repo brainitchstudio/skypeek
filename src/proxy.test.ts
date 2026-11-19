@@ -11,12 +11,13 @@ describe('beta proxy', () => {
   });
   afterEach(() => vi.unstubAllEnvs());
 
-  it('keeps the homepage public and sends anonymous app visits to the code page', () => {
+  it('keeps the gate and information page public and sends anonymous app visits to the gate', () => {
     expect(proxy(new NextRequest('https://skypeek.brainitch.studio/')).status).toBe(200);
+    expect(proxy(new NextRequest('https://skypeek.brainitch.studio/info')).status).toBe(200);
     for (const path of ['/app', '/lab', '/design']) {
       const response = proxy(new NextRequest(`https://skypeek.brainitch.studio${path}`));
       expect(response.status).toBe(307);
-      expect(response.headers.get('location')).toBe('https://skypeek.brainitch.studio/access');
+      expect(response.headers.get('location')).toBe('https://skypeek.brainitch.studio/');
     }
   });
 

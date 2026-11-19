@@ -72,10 +72,10 @@ export function SettingsScreen({ weather, place, gpsError, onReplayTour, onShowW
         {process.env.NODE_ENV === 'production' && <div className="field">
           <Label>Beta access</Label>
           <button type="button" className="link" onClick={() => {
-            void fetch('/api/access', { method: 'DELETE', headers: { 'x-sky-peek-action': 'logout' } }).then(response => { if (response.ok) window.location.href = '/access'; });
+            void fetch('/api/access', { method: 'DELETE', headers: { 'x-sky-peek-action': 'logout' } }).then(response => { if (response.ok) window.location.href = '/'; });
           }}>Leave beta</button>
           <button type="button" className="link quiet" onClick={() => {
-            void fetch('/api/access?all=1', { method: 'DELETE', headers: { 'x-sky-peek-action': 'logout' } }).then(response => { if (response.ok) window.location.href = '/access'; });
+            void fetch('/api/access?all=1', { method: 'DELETE', headers: { 'x-sky-peek-action': 'logout' } }).then(response => { if (response.ok) window.location.href = '/'; });
           }}>Sign out every session using this access code</button>
         </div>}
 </div>}
